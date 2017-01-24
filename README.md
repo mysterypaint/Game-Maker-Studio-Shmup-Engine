@@ -16,12 +16,12 @@ This engine features:
   - Cheat codes on the pause screen
 
 The engine also has many debug features (Press Q to toggle debug mode):
-  E: Toggle cutscene game state
-  R: Set X camera scroll to 0.3
-  T: Give the player a powerup capsule
-  U: Trigger Kon.Code (Unlimited uses)
-  I: Give the player a Speedup
-  Numpad +/-: Increment/decrement player lives
-  Right/Left-click: Change tile value the mouse is currently hovered over
-  P: Export the current level to a new .eol in the game's "working_directory"
-  B: Kill the player (Suicide button)
+  - E: Toggle cutscene game state
+  - R: Set X camera scroll to 0.3
+  - T: Give the player a powerup capsule
+  - U: Trigger Kon.Code (Unlimited uses)
+  - I: Give the player a Speedup
+  - Numpad +/-: Increment/decrement player lives
+  - Right/Left-click: Change tile value the mouse is currently hovered over
+  - P: Export the current level to a new .eol in the game's "working_directory"
+  - B: Kill the player (Suicide button)
