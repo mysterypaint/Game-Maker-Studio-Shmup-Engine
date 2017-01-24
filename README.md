@@ -18,7 +18,7 @@ This engine features:
 The engine also has many debug features (Press Q to toggle debug mode):
   - E: Toggle cutscene game state
   - R: Set X camera scroll to 0.3
-  - T: Give the player a powerup capsule
+  - T: Increase the player's speed
   - U: Trigger Kon.Code (Unlimited uses)
   - I: Give the player a Speedup
   - Numpad +/-: Increment/decrement player lives
