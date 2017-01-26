@@ -167,14 +167,16 @@ if !audio_is_playing(sfxLaser)
         instance_destroy();
     }
 */
-  
-    if (placeMeeting(length,0,"solid"))
+    
+    if (x&gt;=0 &amp;&amp; y&gt;=0 &amp;&amp; x&lt;=global.mapWidth*global.tileWidth &amp;&amp; y&lt;=global.mapHeight * global.tileHeight)
     {
-        length = (floor((x+length)/16)*16)-x; //Distance between the tile and the actual laser position (Length = TileXPosition - Laser X position)
-    }
-    else if placeMeeting(0,0,"solid")
-    {instance_destroy();}
-  
+        if (placeMeeting(length,0,"solid"))
+        {
+            length = (floor((x+length)/16)*16)-x; //Distance between the tile and the actual laser position (Length = TileXPosition - Laser X position)
+        }
+        else if placeMeeting(0,0,"solid")
+        {instance_destroy();}
+    }      
     
     if (self.x+objCamera.scrollX+xSpeed&gt;objCamera.x+256) //Shorten the laser as it gets too far off the screen
     {

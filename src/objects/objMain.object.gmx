@@ -27,11 +27,12 @@
             <kind>1</kind>
             <string>///Declare variables and configure controls
 // Define global variables
-debugEnabled = true; //Toggle this to allow Q to toggle debug mode
+
 waitTime=300; //Timer for displaying the credits as the game boots up.
             //Recommended to set to approximately 300 for public builds
 
 
+debugEnabled = false;
 
 deltaTime = 1;      //Whenever paused, this is set to 0, and 1 when unpaused!
                     //Try multiplying things with this to account for pausing state!

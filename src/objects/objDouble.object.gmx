@@ -86,9 +86,13 @@ with (parentGun)
     {
         instance_destroy();
     }
-    if (placeMeeting(0,0,"solid") || placeMeeting(0,0,"solid"))
+    
+    if (x&gt;=0 &amp;&amp; y&gt;=0 &amp;&amp; x&lt;=global.mapWidth*global.tileWidth &amp;&amp; y&lt;=global.mapHeight * global.tileHeight)
     {
-        instance_destroy();
+        if (placeMeeting(0,0,"solid") || placeMeeting(0,0,"solid"))
+        {
+            instance_destroy();
+        }
     }
 }
 </string>

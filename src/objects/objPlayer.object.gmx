@@ -244,7 +244,17 @@ if (!dead &amp;&amp; (global.state == 2 || global.state == 3)) //Check if the pl
     vsp = -(playerSpeed*movingVert/halveMovement);
     
     //Kill if the player hits a wall or enemy bullet within the level
-    if (placeMeeting(hsp,0,"solid") || placeMeeting(0,vsp,"solid") || place_meeting(x,y,objEnemyBullet) || place_meeting(x,y,objBossLaser))
+    
+    if (x&gt;=0 &amp;&amp; y&gt;=0 &amp;&amp; x&lt;=global.mapWidth*global.tileWidth &amp;&amp; y&lt;=global.mapHeight * global.tileHeight)
+    {
+        if (placeMeeting(hsp,0,"solid") || placeMeeting(0,vsp,"solid"))
+        {
+            if (!objCamera.debug)
+            {dead = true;}
+        }
+    }
+    
+    if (place_meeting(x,y,objEnemyBullet) || place_meeting(x,y,objBossLaser))
     {
         if (!objCamera.debug)
         {dead = true;}

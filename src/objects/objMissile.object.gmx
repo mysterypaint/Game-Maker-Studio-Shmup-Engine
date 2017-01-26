@@ -84,10 +84,13 @@ with (parentGun)
     var grav = 3;
     landedGround = false;
     
-    if placeMeeting(0,grav,"solid")
-    {y=floor(y/16)*16+8;landedGround=true;}
-    if placeMeeting(1,0,"solid")
-    {instance_destroy();}
+    if (x&gt;=0 &amp;&amp; y&gt;=0 &amp;&amp; x&lt;=global.mapWidth*global.tileWidth &amp;&amp; y&lt;=global.mapHeight * global.tileHeight)
+    {
+        if placeMeeting(0,grav,"solid")
+        {y=floor(y/16)*16+8;landedGround=true;}
+        if placeMeeting(1,0,"solid")
+        {instance_destroy();}
+    }
 
     if (!landedGround)
     {
