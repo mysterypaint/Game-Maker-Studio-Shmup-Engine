@@ -27,10 +27,22 @@
             <kind>1</kind>
             <string>///Declare variables and configure controls
 // Define global variables
-deltaTime = 1;      //Whenever paused, this is set to 0, and 1 when unpaused!
-                    //Try multiplying things with this to account for pausing state!
+debugEnabled = true; //Toggle this to allow Q to toggle debug mode
 waitTime=300; //Timer for displaying the credits as the game boots up.
             //Recommended to set to approximately 300 for public builds
+
+
+
+deltaTime = 1;      //Whenever paused, this is set to 0, and 1 when unpaused!
+                    //Try multiplying things with this to account for pausing state!
+mapSwitchTimer=0;
+showLoop = 0; //Timer for displaying which loop the player is on (Set on the last event in the levelEvents() script)
+
+loopCounter = 1; //Keeps track of how many game loops we've done (Starts at 1)
+     
+global.currentMap = 0; //Reserved for keeping track of the game's current map
+global.prevMap = 0; //Reserved for keeping track of the game's previous map
+switchingMaps = false; //Turned off at the very end of loadLevel() script
 global.state = states.initialize;
 global.statePrevious = global.state; //Reserved variable for storing previous state. Useful for pausing/cutscenes
 global.pauseTimer=0;
@@ -56,9 +68,16 @@ resetKey = false;            //Initialization for konCodeInput();
 
 //Parallax night sky
 xScroll = 0; //For the bottom-most sky scrolling
+//Manually handle the sky background parallax
 background_hspeed[0] = -0.2;
 background_hspeed[1] = -0.4;
 background_hspeed[2] = -0.6;
+
+//As soon as objCamera exists, the above values are added to the below values for parallax offset in relation to objCamera
+//This is done to prevent weird graphical hiccups in the middle of map switching, to provide a seamless experience
+bg0XParallax = 0;
+bg1XParallax = 0;
+bg2XParallax = 0;
 
 global.cameraUp = ord('W');
 global.cameraDown = ord('S');
@@ -80,6 +99,7 @@ if (file_exists("sav"))
     global.keyAction2 = real(ini_read_string("Options","keyAction2",ord('X')));
     global.keyAction3 = real(ini_read_string("Options","keyAction3",ord('C')));
     global.keyPause = real(ini_read_string("Options","keyPause",vk_enter));
+    global.highScore = real(ini_read_string("Game Data","HiScore",57300));
     windowSize = real(ini_read_string("Options","windowSize",2));
     ini_close();
 }
@@ -116,12 +136,15 @@ else
 window_set_size(256*windowSize,256*windowSize);
 
 //Initialize sounds
-global.currentSong=0;
-audio_group_load(sfxChan1);
-audio_group_load(sfxChan2);
+global.currentSong=0;       
+rememberBGM = true; //Flag to remember which song was last played
+global.prevSong=0; //Song to remember, if the previous was true.
+bgmFadeoutMultiplier = 1; //To handle song fadeout
+
+audio_group_load(sfxMenu);
 audio_sound_gain(global.currentSong, (global.bgmVol/100), 0);
-audio_group_set_gain(sfxChan1, (global.sfxVol/100), 0);
-audio_group_set_gain(sfxChan2, (global.sfxVol/100), 0);
+audio_group_set_gain(sfxMenu, (global.sfxVol/100), 0);
+audio_group_set_gain(sfxInGame, (global.sfxVol/100), 0);
 
 </string>
           </argument>
@@ -472,6 +495,12 @@ switch(global.state) //Game mode handling
     case states.gameMode: // game mode
     case states.cutscene: // cutscene mode
         handleBGM();
+        //Fix volume to account for any bgmFadeout changes
+        if audio_sound_get_gain(global.currentSong) != (global.bgmVol*objMain.bgmFadeoutMultiplier/100)
+           {
+           audio_sound_gain(global.currentSong, ((global.bgmVol*objMain.bgmFadeoutMultiplier)/100), 0);
+           }
+
         //Handle pausing
         if (keyboard_check_pressed(global.keyPause) &amp;&amp; global.pauseTimer&lt;=0)
         {
@@ -499,13 +528,14 @@ switch(global.state) //Game mode handling
         }
         break;
     case states.startRoom: // START screen
+        handleBGM();
         if startRoomTimer&gt;0{startRoomTimer--;}
         if startRoomTimer&lt;=0 {global.state = states.gameMode;}
         break;
     case states.paused: // paused
         //Handle Unpausing
         konCodeInput(); //huhuh
-        if (keyboard_check_pressed(global.keyPause) &amp;&amp; global.pauseTimer&lt;=0)
+        if (keyboard_check_pressed(global.keyPause) &amp;&amp; !keyboard_check(vk_alt) &amp;&amp; global.pauseTimer&lt;=0)
         {
         deltaTime = 1;
         audio_resume_sound(global.currentSong);
@@ -587,6 +617,7 @@ if (timer &lt;= 0)
         }
 
 global.tick++;
+if (mapSwitchTimer&gt;0){mapSwitchTimer-=deltaTime;}
 </string>
           </argument>
         </arguments>
@@ -705,9 +736,7 @@ if global.tick&lt;=waitTime+10
 {
 draw_set_color(c_white);
 draw_set_alpha(1);
-draw_text(8*5,8*12,"    Gradius Engine#         Alpha##          by##     mysterypaint#");
-draw_set_color(c_red);
-draw_text(8*1,8*24,"You can edit the wait time#in objMain, and can#     change the text in#       objMain's Draw Event.");
+draw_text(8*5,8*12,"    Gradius Engine#         v1.1##          by##     mysterypaint#");
 }
 
 //Fade out on top of the text

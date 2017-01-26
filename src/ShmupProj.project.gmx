@@ -3,12 +3,12 @@
   <Configs name="configs">
     <Config>Configs\Default</Config>
   </Configs>
-  <datafiles number="1" name="datafiles">
-    <datafiles number="1" name="maps">
+  <datafiles number="2" name="datafiles">
+    <datafiles number="2" name="maps">
       <datafile>
         <name>map00.oel</name>
         <exists>-1</exists>
-        <size>23502</size>
+        <size>3453</size>
         <exportAction>2</exportAction>
         <exportDir></exportDir>
         <overwrite>0</overwrite>
@@ -22,16 +22,40 @@
         </ConfigOptions>
         <filename>map00.oel</filename>
       </datafile>
+      <datafile>
+        <name>map01.oel</name>
+        <exists>-1</exists>
+        <size>23502</size>
+        <exportAction>2</exportAction>
+        <exportDir></exportDir>
+        <overwrite>0</overwrite>
+        <freeData>-1</freeData>
+        <removeEnd>0</removeEnd>
+        <store>0</store>
+        <ConfigOptions>
+          <Config name="Default">
+            <CopyToMask>9223372036854775807</CopyToMask>
+          </Config>
+        </ConfigOptions>
+        <filename>map01.oel</filename>
+      </datafile>
     </datafiles>
   </datafiles>
   <NewExtensions/>
   <sounds name="sound">
     <sounds name="bgm">
-      <sound>sound\apollon</sound>
-      <sound>sound\apollonLoop</sound>
+      <sound>sound\BGM00</sound>
+      <sound>sound\BGM00Loop</sound>
+      <sound>sound\BGM01</sound>
+      <sound>sound\BGM01Loop</sound>
+      <sound>sound\BGM02</sound>
+      <sound>sound\BGM02Loop</sound>
     </sounds>
     <sounds name="sfx">
       <sound>sound\itsjoke</sound>
+      <sound>sound\sfxBarrierWeaken</sound>
+      <sound>sound\sfxBigExplosion</sound>
+      <sound>sound\sfxBossShot</sound>
       <sound>sound\sfxBulletShot</sound>
       <sound>sound\sfxCapsuleGet</sound>
       <sound>sound\sfxCursorMove</sound>
@@ -47,9 +71,20 @@
     </sounds>
   </sounds>
   <sprites name="sprites">
+    <sprites name="Enemies">
+      <sprite>sprites\spr16x16Explosion</sprite>
+      <sprite>sprites\sprBean</sprite>
+      <sprite>sprites\sprBoss1</sprite>
+      <sprite>sprites\sprBossEye</sprite>
+      <sprite>sprites\sprBossLaser</sprite>
+      <sprite>sprites\sprDee01</sprite>
+      <sprite>sprites\sprEnemyBullet</sprite>
+      <sprite>sprites\sprLion</sprite>
+      <sprite>sprites\sprBigExplosion</sprite>
+      <sprite>sprites\sprBossBarrier</sprite>
+    </sprites>
     <sprite>sprites\spr_crosshair</sprite>
     <sprite>sprites\spr16x16</sprite>
-    <sprite>sprites\spr16x16Explosion</sprite>
     <sprite>sprites\sprBullet</sprite>
     <sprite>sprites\sprCapsule</sprite>
     <sprite>sprites\sprCursor</sprite>
@@ -57,7 +92,6 @@
     <sprite>sprites\sprFont</sprite>
     <sprite>sprites\sprFrontShield</sprite>
     <sprite>sprites\sprLaser</sprite>
-    <sprite>sprites\sprLion</sprite>
     <sprite>sprites\sprMissile</sprite>
     <sprite>sprites\sprOption</sprite>
     <sprite>sprites\sprPlayer</sprite>
@@ -85,12 +119,14 @@
     <script>scripts\hudDetermineColor.gml</script>
     <script>scripts\konCodeInput.gml</script>
     <scripts name="LevelData">
+      <script>scripts\exportLevel.gml</script>
       <script>scripts\getTile.gml</script>
+      <script>scripts\levelEvents.gml</script>
       <script>scripts\loadLevel.gml</script>
       <script>scripts\placeMeeting.gml</script>
       <script>scripts\placeSprites.gml</script>
       <script>scripts\spawnSprites.gml</script>
-      <script>scripts\exportLevel.gml</script>
+      <script>scripts\changeMap.gml</script>
     </scripts>
     <script>scripts\menuExecute.gml</script>
     <script>scripts\resetRoom.gml</script>
@@ -101,15 +137,26 @@
     <script>scripts\unusedScript.gml</script>
   </scripts>
   <objects name="objects">
-    <object>objects\obj16x16Explosion</object>
+    <objects name="Enemies">
+      <object>objects\obj16x16Explosion</object>
+      <object>objects\objBean</object>
+      <object>objects\objBigExplosion</object>
+      <object>objects\objBoss1</object>
+      <object>objects\objBossBarrier</object>
+      <object>objects\objBossEye</object>
+      <object>objects\objBossLaser</object>
+      <object>objects\objBossParent</object>
+      <object>objects\objDee01</object>
+      <object>objects\objEnemyBullet</object>
+      <object>objects\objEnemyParent</object>
+      <object>objects\objLion</object>
+    </objects>
     <object>objects\objBullet</object>
     <object>objects\objCamera</object>
     <object>objects\objCapsule</object>
     <object>objects\objDouble</object>
-    <object>objects\objEnemy</object>
     <object>objects\objFrontShield</object>
     <object>objects\objLaser</object>
-    <object>objects\objLion</object>
     <object>objects\objMain</object>
     <object>objects\objMissile</object>
     <object>objects\objOption</object>
@@ -126,8 +173,8 @@
   <audiogroups name="audiogroups">
     <audiogroup name="audiogroup_default"/>
     <audiogroup name="bgm"/>
-    <audiogroup name="sfxChan1"/>
-    <audiogroup name="sfxChan2"/>
+    <audiogroup name="sfxMenu"/>
+    <audiogroup name="sfxInGame"/>
   </audiogroups>
   <TutorialState>
     <IsTutorial>0</IsTutorial>

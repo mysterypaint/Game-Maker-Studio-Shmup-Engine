@@ -6,10 +6,14 @@ if currentMenu==1
     {
         //Start
         case 0:
-            instance_create(0,0,objCamera);
-            loadLevel("map00.oel");
+            instance_create(-256,0,objCamera);
+            instance_create(objCamera.x+128,128,objPlayer);
             instance_create(objPlayer.x,objPlayer.y,objPlayerCapsuleHitbox);
-            changeBGM(apollon,false);
+            audio_group_unload(sfxMenu);
+            audio_group_load(sfxInGame);
+            loadLevel("map00.oel");
+            global.prevMap = "map00.oel";
+            changeBGM(BGM00,false);
             objMain.x = objCamera.x;
             objMain.y = objCamera.y;
             global.state = states.startRoom;

@@ -54,7 +54,7 @@ image_speed=0.25*objMain.deltaTime;
             <string>if (wasRed)
 {
 //If the enemy was red, spawn a red capsule
-instance_create(x,y,objCapsule);
+instance_create(x-2,y-3,objCapsule);
 }
 </string>
           </argument>

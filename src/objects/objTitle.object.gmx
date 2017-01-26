@@ -351,8 +351,8 @@ if audio_sound_get_gain(global.currentSong) != (global.bgmVol/100)
    }
 
 
-   audio_group_set_gain(sfxChan1, (global.sfxVol/100), 0);
-   audio_group_set_gain(sfxChan2, (global.sfxVol/100), 0);
+   audio_group_set_gain(sfxMenu, (global.sfxVol/100), 0);
+   audio_group_set_gain(sfxInGame, (global.sfxVol/100), 0);
 
 
 if holdTimer&gt;0

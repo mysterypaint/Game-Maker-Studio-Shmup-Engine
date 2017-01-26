@@ -25,7 +25,8 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>depth=1000000;
+            <string>///Initialize some variables
+depth=1000000;
 
 debug=false;
 camMoveSpeed=4;
@@ -34,6 +35,8 @@ tilemapViewportHeight=288;
 //Always leave these at 0
 scrollX=0.3;
 scrollY=0;
+prevScrollX = 0.3;
+prevScrollY = 0;
 
 //Reserved for recalling the previous scroll rate upon pausing/cutscene triggers
 scrollXPrevious=0;
@@ -54,6 +57,11 @@ viewportHeight=256;
 //Cutscene bars
 yCutsceneBarTo=0;
 yCutsceneBarPos=-32;
+
+//Force background to where this camera is
+background_x[0] = objCamera.x+objMain.bg0XParallax;
+background_x[1] = objCamera.x+objMain.bg1XParallax;
+background_x[2] = objCamera.x+objMain.bg2XParallax;
 </string>
           </argument>
         </arguments>
@@ -82,9 +90,12 @@ yCutsceneBarPos=-32;
 var movingVert;
 var movingHoriz;
 
-if (keyboard_check_pressed(ord('Q')))
+if (objMain.debugEnabled)
 {
-debug = !debug;
+    if (keyboard_check_pressed(ord('Q')))
+    {
+    debug = !debug;
+    }
 }
 
 if (debug)
@@ -146,13 +157,52 @@ movingHoriz=0;
     }
 }
 
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Movement code
+
+//Every frame, we should check for any level events (bgm changing, map switching, etc)
+levelEvents();
+
+//We should also have the background follow the camera.
+background_x[0] = objCamera.x+objMain.bg0XParallax;
+background_x[1] = objCamera.x+objMain.bg1XParallax;
+background_x[2] = objCamera.x+objMain.bg2XParallax;
+
 if (global.state==states.gameMode)
 {
 x += scrollX;
 y += scrollY;
 }
+
 view_xview = objCamera.x;
 view_yview = objCamera.y;
+
+objMain.bg0XParallax+=background_hspeed[0];
+objMain.bg1XParallax+=background_hspeed[1];
+objMain.bg2XParallax+=background_hspeed[2];
+
+background_x[0] = x+objMain.bg0XParallax;
+background_x[1] = x+objMain.bg1XParallax;
+background_x[2] = x+objMain.bg2XParallax;
 </string>
           </argument>
         </arguments>
@@ -252,11 +302,16 @@ if (global.state==2 || global.state==3 || global.state==5)
 
 if (global.state != states.startRoom)
 {
+    drawSprites(objBossLaser,sprBossLaser);
+    drawSprites(objBoss1,sprBoss1);
+    drawSprites(objBossEye,sprBossEye);
+    drawSprites(objBossBarrier,sprBossBarrier);
     drawSprites(obj16x16Explosion,spr16x16Explosion);
     drawSprites(objCapsule,sprCapsule);
     drawSprites(objMissile,sprMissile);
     drawSprites(objBullet,sprBullet);
     drawSprites(objDouble,sprDouble);
+
     draw_enable_alphablend(false);
     drawLaser();
     draw_enable_alphablend(true);
@@ -378,8 +433,11 @@ if (global.state != states.startRoom)
     
                }
         }
-    
+    drawSprites(objEnemyBullet,sprEnemyBullet);
+    drawSprites(objDee01,sprDee01);
     drawSprites(objLion,sprLion);
+    drawSprites(objBean,sprBean);
+    drawSprites(objBigExplosion,sprBigExplosion);
 }
 </string>
           </argument>
@@ -480,24 +538,22 @@ if (global.tick%17==2 &amp;&amp; startWaitTimer&lt;=0)
     {startFlickerOn=!startFlickerOn; startWaitTimer=5;}
 if startWaitTimer&gt;0{startWaitTimer--;}
 
-if (objMain.x == y)
+if (global.state==states.startRoom)
 {
-    if (global.state==states.startRoom)
+    draw_set_color(c_black);
+    draw_rectangle(objMain.x-16,objMain.y-16,objMain.x+viewportWidth+16,objMain.y+viewportHeight+16,false);
+    
+    if (startFlickerOn)
     {
-        draw_set_color(c_black);
-        draw_rectangle(objMain.x-16,objMain.y-16,objMain.x+viewportWidth+16,objMain.y+viewportHeight+16,false);
-        
-        if (startFlickerOn)
-        {
-        draw_sprite(sprStart,0,objMain.x+(viewportWidth/2),objMain.y+(viewportHeight/2)-8); //Arcade Style
-        //draw_set_color(c_white);
-        //draw_text(objMain.x+(viewportWidth/2)-(8*2),objMain.y+(viewportHeight/2)-(8*2),"START"); //SNES Style
-        }
+    draw_sprite(sprStart,0,objMain.x+(viewportWidth/2),objMain.y+(viewportHeight/2)-8); //Arcade Style
+    //draw_set_color(c_white);
+    //draw_text(objMain.x+(viewportWidth/2)-(8*2),objMain.y+(viewportHeight/2)-(8*2),"START"); //SNES Style
     }
 }
 
 if (global.tick%40==2)
     {pauseFlickerOn=!pauseFlickerOn;}
+
 
 if (global.state==states.paused)
 {
@@ -508,6 +564,21 @@ if (global.state==states.paused)
     {
     draw_text(x+(viewportWidth/2)-(8*3),y+(viewportHeight/2)-(8*2),"PAUSED"); //SNES Style
     }
+}
+
+if (global.state==states.gameMode &amp;&amp; objMain.showLoop&gt;0)
+{
+    draw_enable_alphablend(true);
+    draw_set_color(c_white);
+    
+    
+    draw_text(x,y+(viewportHeight/2)-(8*3),"    Congratulations! Now try");
+    if (pauseFlickerOn)
+    {
+    draw_text(x+(viewportWidth/2)-(8*3),y+(viewportHeight/2)-(8*2),"Loop " + string(objMain.loopCounter) + "!");
+    }
+    
+    objMain.showLoop--;
 }
 </string>
           </argument>
@@ -764,9 +835,10 @@ if (debug)
     draw_set_alpha(1);
     
     draw_set_color(c_white);
+    draw_text(objCamera.x,objCamera.y+4,"#####FPS: " + string(fps)
+    + "#Total entities: " + string(instance_count)
+    + "#Game Loop: " + string(objMain.loopCounter));
     
-    //draw_text(objCamera.x,objCamera.y+4,"#####objCamera.x: " + string(objCamera.x) + "#objCamera.y: " + string(objCamera.y) + "#objPlayer.x: " + string(objPlayer.x) + "#objPlayer.y: " + string(objPlayer.y));
-
     if global.state == 2
     {
         if keyboard_check_pressed(ord('E'))

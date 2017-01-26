@@ -319,3 +319,5 @@ file_text_close(file);
 
 global.tilesetWidth=16;
 global.tilesetHeight=16;
+global.currentMap = argument[0]; //Let the game know which map is currently loaded
+objMain.switchingMaps = false;

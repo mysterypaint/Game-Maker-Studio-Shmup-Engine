@@ -22,8 +22,8 @@
   </bitDepths>
   <preload>-1</preload>
   <data>sfxCapsuleGet.wav</data>
-  <compressed>0</compressed>
+  <compressed>1</compressed>
   <streamed>0</streamed>
-  <uncompressOnLoad>0</uncompressOnLoad>
-  <audioGroup>0</audioGroup>
+  <uncompressOnLoad>1</uncompressOnLoad>
+  <audioGroup>3</audioGroup>
 </sound>
