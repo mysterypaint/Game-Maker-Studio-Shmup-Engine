@@ -147,7 +147,8 @@ if instance_exists(objBossBarrier)
 {
     with (objBossBarrier)
     {
-    instance_create(x,y,obj16x16Explosion);
+    thisExplosion = instance_create(x,y,obj16x16Explosion);
+    thisExplosion.wasRed = false; //Don't give the player a capsule on destruction
     instance_destroy();
     }
     audio_stop_sound(sfxEnemyDestroyed);
