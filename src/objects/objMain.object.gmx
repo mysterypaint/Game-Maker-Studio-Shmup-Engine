@@ -28,13 +28,12 @@
             <string>///Declare variables and configure controls
 // Define global variables
 
-waitTime=300; //Timer for displaying the credits as the game boots up.
+waitTime=1; //Timer for displaying the credits as the game boots up.
             //Recommended to set to approximately 300 for public builds
 
+debugEnabled = true;
 
-debugEnabled = false;
-
-deltaTime = 1;      //Whenever paused, this is set to 0, and 1 when unpaused!
+deltaTime = 300;      //Whenever paused, this is set to 0, and 1 when unpaused!
                     //Try multiplying things with this to account for pausing state!
 mapSwitchTimer=0;
 showLoop = 0; //Timer for displaying which loop the player is on (Set on the last event in the levelEvents() script)
@@ -141,6 +140,7 @@ global.currentSong=0;
 rememberBGM = true; //Flag to remember which song was last played
 global.prevSong=0; //Song to remember, if the previous was true.
 bgmFadeoutMultiplier = 1; //To handle song fadeout
+songStream = 0;  //Keeps track of how far into the song we are (for looping in handleBGM();)
 
 audio_group_load(sfxMenu);
 audio_sound_gain(global.currentSong, (global.bgmVol/100), 0);
@@ -496,11 +496,6 @@ switch(global.state) //Game mode handling
     case states.gameMode: // game mode
     case states.cutscene: // cutscene mode
         handleBGM();
-        //Fix volume to account for any bgmFadeout changes
-        if audio_sound_get_gain(global.currentSong) != (global.bgmVol*objMain.bgmFadeoutMultiplier/100)
-           {
-           audio_sound_gain(global.currentSong, ((global.bgmVol*objMain.bgmFadeoutMultiplier)/100), 0);
-           }
 
         //Handle pausing
         if (keyboard_check_pressed(global.keyPause) &amp;&amp; global.pauseTimer&lt;=0)
@@ -606,7 +601,7 @@ if (timer &lt;= 0)
                 window_set_size(256*windowSize,256*windowSize);
                 timer = 10;
             }
-            else if (keyboard_check_pressed(vk_alt)&amp;&amp;keyboard_check_pressed(vk_enter))
+            else if (keyboard_check(vk_alt)&amp;&amp;keyboard_check_pressed(vk_enter))
             {
                 window_set_fullscreen(!window_get_fullscreen());
                 timer = 10;

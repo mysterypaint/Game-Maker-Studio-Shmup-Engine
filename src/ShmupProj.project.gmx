@@ -45,11 +45,8 @@
   <sounds name="sound">
     <sounds name="bgm">
       <sound>sound\BGM00</sound>
-      <sound>sound\BGM00Loop</sound>
       <sound>sound\BGM01</sound>
-      <sound>sound\BGM01Loop</sound>
       <sound>sound\BGM02</sound>
-      <sound>sound\BGM02Loop</sound>
     </sounds>
     <sounds name="sfx">
       <sound>sound\itsjoke</sound>
@@ -112,7 +109,6 @@
   <paths name="paths"/>
   <scripts name="scripts">
     <script>scripts\changeBGM.gml</script>
-    <script>scripts\checkBGMIntro.gml</script>
     <script>scripts\drawLaser.gml</script>
     <script>scripts\drawSprites.gml</script>
     <script>scripts\handleBGM.gml</script>
@@ -135,6 +131,7 @@
     </scripts>
     <script>scripts\setControls.gml</script>
     <script>scripts\unusedScript.gml</script>
+    <script>scripts\unusedScript2.gml</script>
   </scripts>
   <objects name="objects">
     <objects name="Enemies">

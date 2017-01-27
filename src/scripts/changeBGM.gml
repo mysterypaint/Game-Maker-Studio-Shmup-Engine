@@ -8,4 +8,4 @@ if audio_sound_get_gain(global.currentSong) != (global.bgmVol*objMain.bgmFadeout
    audio_sound_gain(global.currentSong, ((global.bgmVol*objMain.bgmFadeoutMultiplier)/100), 0);
    }
 audio_stop_sound(global.currentSong);
-audio_play_sound(global.currentSong,1,argument[1]);
+objMain.songStream = audio_play_sound(global.currentSong,1,argument[1]);

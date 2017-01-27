@@ -11,15 +11,19 @@ arg2: The tile type to check for
 
 var inX=argument[0];
 var inY=argument[1];
+var tw = global.tileWidth;
+var th = global.tileHeight;
+var g1 = (floor((bbox_left+inX)/tw));
+var g2 = (floor((bbox_right+inX)/tw));
+var a1 = (floor((bbox_top+inY)/th));
+var a2 = (floor((bbox_bottom+inY)/th));
+var a3 = (floor((bbox_bottom-((bbox_bottom-bbox_top+1)/2)+inY)/th));
+var a4 = (floor((bbox_bottom-((bbox_bottom-bbox_top+1)/2)+inY)/th));
+var tmh = global.mapHeight-1;
+var tmw = global.mapWidth-1;
 
-var g1 = (floor((bbox_left+inX)/global.tileWidth));
-var g2 = (floor((bbox_right+inX)/global.tileWidth));
-var a1 = (floor((bbox_top+inY)/global.tileHeight));
-var a2 = (floor((bbox_bottom+inY)/global.tileHeight));
-var a3 = (floor((bbox_bottom-((bbox_bottom-bbox_top+1)/2)+inY)/global.tileHeight));
-var a4 = (floor((bbox_bottom-((bbox_bottom-bbox_top+1)/2)+inY)/global.tileHeight));
-
-if (g1<0 || g2<0 || a1<0 || a2<0 || a3<0 || a4<0){return false;}
+if (g1<0 || g2<0 || a1<0 || a2<0 || a3<0 || a4<0
+  ||g1>tmw || g2>tmw || a1>tmh || a2>tmh || a3>tmh || a4>tmh){return false;}
 
 var c1 = real(ds_grid_get(objMain.levelData, g1, a1));
 var c2 = real(ds_grid_get(objMain.levelData, g1, a2));

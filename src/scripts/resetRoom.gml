@@ -86,7 +86,8 @@ if (powerupSlot>=1){powerupSlot=1;} //Give the player a free capsule on revival 
         {
             global.currentSong = global.prevSong;
         }
-        checkBGMIntro(global.currentSong); //If the song is loopable, play the intro instead
+        
+        changeBGM(global.currentSong,false); //If the song is loopable, play the intro instead
         objMain.rememberBGM = true;
         
         //Reset the position of the camera, objMain, and objPlayer
