@@ -28,12 +28,12 @@
             <string>///Declare variables and configure controls
 // Define global variables
 
-waitTime=1; //Timer for displaying the credits as the game boots up.
+waitTime=300; //Timer for displaying the credits as the game boots up.
             //Recommended to set to approximately 300 for public builds
 
 debugEnabled = true;
 
-deltaTime = 300;      //Whenever paused, this is set to 0, and 1 when unpaused!
+deltaTime = 1;      //Whenever paused, this is set to 0, and 1 when unpaused!
                     //Try multiplying things with this to account for pausing state!
 mapSwitchTimer=0;
 showLoop = 0; //Timer for displaying which loop the player is on (Set on the last event in the levelEvents() script)
@@ -603,7 +603,8 @@ if (timer &lt;= 0)
             }
             else if (keyboard_check(vk_alt)&amp;&amp;keyboard_check_pressed(vk_enter))
             {
-                window_set_fullscreen(!window_get_fullscreen());
+                fullscreen = !fullscreen;
+                window_set_fullscreen(fullscreen);
                 timer = 10;
             }
         }
