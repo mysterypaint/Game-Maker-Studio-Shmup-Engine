@@ -819,6 +819,8 @@ if (debug)
     if (posX&lt;=global.mapWidth-1 &amp;&amp; posX&gt;=0) &amp;&amp; (posY&lt;=global.mapHeight-1 &amp;&amp; posY&gt;=0)
     {
     var tile = real(ds_grid_get(objMain.levelData,posX,posY));
+    if tile&lt;0 {tile=0;}
+    
     draw_text(objCamera.x,objCamera.y+4,"###Mouse on tile type: " + string(tile) + "(" + string(objMain.tiletypes[tile]) + ")");
     
     //Allow debug changing tile if you left/right-click over the tile. Cycle through the tiles.

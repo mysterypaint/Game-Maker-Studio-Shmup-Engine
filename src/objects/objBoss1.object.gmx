@@ -116,11 +116,42 @@ if myID==1
         case 5: bulletsToFire=4; break;
     }
     
-    for (var i=bulletsToFire; i&gt;0; i--)
+    for (var i=bulletsToFire*3; i&gt;0; i--)
     {
         var thisEnemyBullet = instance_create(x,y,objEnemyBullet);
         thisEnemyBullet.direction = direction - irandom(15) + irandom(20);
     }
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Delete the boss barrier if it's still on the screen, but do not reward points
+if instance_exists(objBossBarrier)
+{
+    with (objBossBarrier)
+    {
+    instance_create(x,y,obj16x16Explosion);
+    instance_destroy();
+    }
+    audio_stop_sound(sfxEnemyDestroyed);
+    audio_play_sound(sfxEnemyDestroyed,0,false);
 }
 </string>
           </argument>
