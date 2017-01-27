@@ -26,6 +26,7 @@
           <argument>
             <kind>1</kind>
             <string>///This obj is a generic boss parent
+dead = false;
 </string>
           </argument>
         </arguments>

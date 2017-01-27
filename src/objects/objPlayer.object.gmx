@@ -26,6 +26,8 @@
           <argument>
             <kind>1</kind>
             <string>///Code optimization attempt for in-game gameplay
+//You can read more about this here: http://www.yoyogames.com/blog/23
+
 draw_texture_flush();
 draw_sprite(sprPlayer, 0, 0, 0);
 draw_sprite(sprPlayerHitbox, 0, 0, 0);

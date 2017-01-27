@@ -1,4 +1,6 @@
 //Handle cheat codes on the pause menu
+//The Kon Code only works 3 times per game over, and is activated in objPlayer's Step Event
+
 with(objMain)
 {
     //Only remember the last key if our input was a valid one

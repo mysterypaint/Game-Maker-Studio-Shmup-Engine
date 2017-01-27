@@ -1,5 +1,4 @@
-if (objMain.rememberBGM)
-{global.prevSong = global.currentSong;}
+if (objMain.rememberBGM){global.prevSong = global.currentSong;}
 
 global.currentSong=argument[0];
 objMain.bgmFadeoutMultiplier=1;

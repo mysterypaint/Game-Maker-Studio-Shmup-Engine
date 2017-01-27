@@ -3,18 +3,10 @@
 switch (argument[0])
 {
 case "PlayerSpawn":
+        //The player and camera are spawned by menuExecute() when the player hits Game Start
+        //Whenever the player dies, the camera and player move back to x=-objCamera.viewportWidth; of whatever map needs to be reset (See resetRoom(), which does this)
+        //Perhaps I will add a new object that marks checkpoints? Maybe in a future engine update.
         show_message("No longer a thing, ignoring...");
-        /*
-        if !instance_exists(objPlayer)
-        {
-        var myID = instance_create(argument[2],argument[3],objPlayer); with (myID) {myID = argument[1];}
-        //Move the camera so that the player is perfectly in the center of the screen
-        //... But if the camera would end up out of bounds, set the position to the map's edge instead.
-        if (objPlayer.x-(objCamera.viewportWidth/2)<0)
-        {objCamera.x=0;}else{objCamera.x=objPlayer.x-(objCamera.viewportWidth/2);}
-        if (objPlayer.y-(objCamera.viewportHeight/2)<0)
-        {objCamera.y=0;}else{objCamera.y=objPlayer.y-(objCamera.viewportHeight/2);}
-        }*/
         break;
 case "objLion":
         var myID = instance_create(argument[2],argument[3],objLion);

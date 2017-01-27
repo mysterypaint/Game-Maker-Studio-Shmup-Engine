@@ -1,10 +1,23 @@
+/*Parse the level data from Included Files
+
+It's possible to load externally too, but I haven't needed it
+and wrote this code a while back (I may write something better one day)
+
+So, I won't comment too much on this code:
+It reads through the whole text document and parses/stores each piece in global ds_grids/arrays,
+spawns all the sprites on the map, then tells objMain that we have finished "switchingMaps".
+*/
+
 if objMain.extFiles=true
 {
-dir = program_directory + "maps\";
-
-background_replace(tileset0, program_directory + "/maps/tileset_test.png",0,0);
+    dir = program_directory + "maps\";
+    
+    background_replace(tileset0, program_directory + "/maps/tileset_test.png",0,0);
 }
-else {dir=working_directory + "maps\";}
+else
+{
+    dir=working_directory + "maps\";
+}
 
 var str = "";
 var file = "";
@@ -17,22 +30,13 @@ global.mapWidth=0;
 
 if (ds_exists(objMain.levelData,ds_type_grid))
 {
-ds_grid_destroy(objMain.levelData);
-
-//objMain.levelDataPrevious = ds_grid_create(ds_grid_width(objMain.levelData), ds_grid_height(objMain.levelData));
-//ds_grid_copy(objMain.levelDataPrevious, objMain.levelData);
-//clear the primary map for loading
-//ds_grid_clear(objMain.levelData, 0);
-
-//destroy the temporary map after we've completely transitioned to the new map using this code:
-//ds_grid_destroy(objMain.levelDataPrevious);
+    ds_grid_destroy(objMain.levelData);
 }
 
 if (ds_exists(objMain.levelDataLayer2,ds_type_grid))
 {
-ds_grid_destroy(objMain.levelDataLayer2);
+    ds_grid_destroy(objMain.levelDataLayer2);
 }
-
 
 file = file_text_open_read(dir + argument[0]);
 
@@ -63,8 +67,7 @@ for (k=1; k <= string_length(mapHeader); k++)
                }
                
     j="";
-      }
-    
+      }    
 }
 
 global.tileWidth=16;

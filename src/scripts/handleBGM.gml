@@ -17,8 +17,11 @@ switch(currSng)
     default: break;
 }
 
+//Handle song looping if the song loops/isn't playing "nothing"
 if (!nothing && songLoops)
 {
+    //We'll do this by calculating the difference between the end of the track and the current position we're at (The audio clip has a bit of data after this to make some leeway for this script to work.
+    //Then, we'll jump to the loop relative to how far we are into the song
     var totalLength = introLength + loopLength;
     var tPos = audio_sound_get_track_position(sngStrm);
     if (tPos>totalLength)
@@ -29,6 +32,6 @@ if (!nothing && songLoops)
 
 //Fix volume to account for any bgmFadeout changes
 if audio_sound_get_gain(global.currentSong) != (global.bgmVol*objMain.bgmFadeoutMultiplier/100)
-   {
-   audio_sound_gain(global.currentSong, ((global.bgmVol*objMain.bgmFadeoutMultiplier)/100), 0);
-   }
+{
+    audio_sound_gain(global.currentSong, ((global.bgmVol*objMain.bgmFadeoutMultiplier)/100), 0);
+}

@@ -90,6 +90,7 @@ background_x[2] = objCamera.x+objMain.bg2XParallax;
 var movingVert;
 var movingHoriz;
 
+//Toggle debug mode with Q. Go to objMain's Create Event to disable this for public builds.
 if (objMain.debugEnabled)
 {
     if (keyboard_check_pressed(ord('Q')))
@@ -98,15 +99,20 @@ if (objMain.debugEnabled)
     }
 }
 
+//Debug Mode code (There's even more in objCamera's Draw Event "Debug Mode" script
 if (debug)
 {
 
-if keyboard_check_pressed(ord('P')){exportLevel()};
+    //Export level debug code
+    if keyboard_check_pressed(ord('P')){exportLevel()};
     
+    //Sets camera scroll to 0.3
     if (keyboard_check_pressed(ord('R')))
     {
     scrollX = 0.3;
     }
+    
+    //Increment/decrement player lives
     if (keyboard_check_pressed(vk_add))
             {
             global.playerLives++;
@@ -115,33 +121,35 @@ if keyboard_check_pressed(ord('P')){exportLevel()};
             {
             global.playerLives--;
             }
+    
+    //Debug camera movement input checking
+    if (keyboard_check(global.cameraUp) &amp;&amp; global.cameraUp != global.keyUp) || (keyboard_check(vk_up) &amp;&amp; global.cameraUp == global.keyUp)
+    {
+    movingVert=1;
+    }
+    else if (keyboard_check(global.cameraDown) &amp;&amp; global.cameraDown != global.keyDown) || (keyboard_check(vk_down) &amp;&amp; global.cameraDown == global.keyDown)
+    {
+    movingVert=2;
+    }
+    else
+    {
+    movingVert=0;
+    }
 
-if (keyboard_check(global.cameraUp) &amp;&amp; global.cameraUp != global.keyUp) || (keyboard_check(vk_up) &amp;&amp; global.cameraUp == global.keyUp)
-{
-movingVert=1;
-}
-else if (keyboard_check(global.cameraDown) &amp;&amp; global.cameraDown != global.keyDown) || (keyboard_check(vk_down) &amp;&amp; global.cameraDown == global.keyDown)
-{
-movingVert=2;
-}
-else
-{
-movingVert=0;
-}
-
-if (keyboard_check(global.cameraLeft) &amp;&amp; global.cameraLeft != global.keyLeft) || (keyboard_check(vk_left) &amp;&amp; global.cameraLeft == global.keyLeft)
-{
-movingHoriz=1;
-}
-else if (keyboard_check(global.cameraRight) &amp;&amp; global.cameraRight != global.keyRight) || (keyboard_check(vk_right) &amp;&amp; global.cameraRight == global.keyRight)
-{
-movingHoriz=2;
-}
-else
-{
-movingHoriz=0;
-}
-
+    if (keyboard_check(global.cameraLeft) &amp;&amp; global.cameraLeft != global.keyLeft) || (keyboard_check(vk_left) &amp;&amp; global.cameraLeft == global.keyLeft)
+    {
+    movingHoriz=1;
+    }
+    else if (keyboard_check(global.cameraRight) &amp;&amp; global.cameraRight != global.keyRight) || (keyboard_check(vk_right) &amp;&amp; global.cameraRight == global.keyRight)
+    {
+        movingHoriz=2;
+    }
+    else
+    {
+        movingHoriz=0;
+    }
+    
+    //Based on the camera movement input, move the camera itself by camMoveSpeed (Defined in objCamera's Create Event)
     switch(movingVert)
     {
     case 1: y-=camMoveSpeed;break; //up
@@ -226,7 +234,14 @@ background_x[2] = x+objMain.bg2XParallax;
           <argument>
             <kind>1</kind>
             <string>///Drawing layer 1
+//This is the bottom-most layer to draw onto the screen
+
+//For optimization purposes.
+//You can read more about this here: http://www.yoyogames.com/blog/23
 draw_enable_alphablend(true);
+
+
+
 if (global.state==2 || global.state==3 || global.state==5)
 {
     if (ds_exists(objMain.levelData,ds_type_grid))

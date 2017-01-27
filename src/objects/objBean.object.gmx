@@ -261,7 +261,7 @@ if (patternType == 1)
                 {
                 var thisEnemyBullet = instance_create(x,y,objEnemyBullet);
                 thisEnemyBullet.direction = direction - irandom(15) + irandom(20);
-                nextFire = 33 + (irandom(3)*irandom(66) + irandom(73) + irandom(94) + (irandom(9)*4));
+                nextFire = 33 + (irandom(3)*irandom(33) + irandom(56) + irandom(24) + (irandom(9)*4));
                 }
                 nextFire--;
             }
@@ -322,6 +322,7 @@ if (patternType == 2)
             {
                 movingX = moveSpeedX; //Retreat to the right of the screen
             }
+            
             if (x&gt;objCamera.x+objCamera.viewportWidth+32 &amp;&amp; movingX &gt; 0)
             {silentKill=true; instance_destroy();} //Destroy if too far to the right while retreating
             
@@ -344,6 +345,21 @@ if (patternType == 2)
                 
             x+=movingX;
             y+=movingY;
+            
+            
+            //Fire some bullets
+            
+            //Shoot bullets at the player, at a random rate
+            if objMain.loopCounter&gt;1
+            {
+                if (nextFire &lt;= 0)
+                {
+                var thisEnemyBullet = instance_create(x,y,objEnemyBullet);
+                thisEnemyBullet.direction = direction - irandom(15) + irandom(20);
+                nextFire = 33 + (irandom(3)*irandom(33) + irandom(56) + irandom(24) + (irandom(9)*4));
+                }
+                nextFire--;
+            }
         }
     }
 }

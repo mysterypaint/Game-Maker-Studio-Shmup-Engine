@@ -201,7 +201,7 @@ if (active)
           <argument>
             <kind>1</kind>
             <string>///Handle colissions
-if (active)
+if (active &amp;&amp; !objBossParent.dead)
 {
     if (!objPlayer.dead)
     {
@@ -211,8 +211,11 @@ if (active)
         }
     }
 }
-audio_stop_sound(sfxBarrierWeaken);
-audio_play_sound(sfxBarrierWeaken,0,false);
+if (!objBossParent.dead)
+{
+    audio_stop_sound(sfxBarrierWeaken);
+    audio_play_sound(sfxBarrierWeaken,0,false);
+}
 if (!objCamera.debug)
 {
 objPlayer.dead = true;
@@ -240,15 +243,18 @@ objPlayer.dead = true;
           <argument>
             <kind>1</kind>
             <string>///Handle colissions
-if (active)
+if (active &amp;&amp; !objBossParent.dead)
 {
     if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
     {
         HP-=other.bulletStrength;
     }
 }
-audio_stop_sound(sfxBarrierWeaken);
-audio_play_sound(sfxBarrierWeaken,0,false);
+if (!objBossParent.dead)
+{
+    audio_stop_sound(sfxBarrierWeaken);
+    audio_play_sound(sfxBarrierWeaken,0,false);
+}
 with (other)
 {instance_destroy();}
 </string>
@@ -274,15 +280,18 @@ with (other)
           <argument>
             <kind>1</kind>
             <string>///Handle colissions
-if (active)
+if (active &amp;&amp; !objBossParent.dead)
 {
     if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
     {
         HP-=other.bulletStrength;
     }
 }
-audio_stop_sound(sfxBarrierWeaken);
-audio_play_sound(sfxBarrierWeaken,0,false);
+if (!objBossParent.dead)
+{
+    audio_stop_sound(sfxBarrierWeaken);
+    audio_play_sound(sfxBarrierWeaken,0,false);
+}
 with (other)
 {length-=3;} //Instead of destroying the whole laser, just shorten its length
 </string>
@@ -308,15 +317,18 @@ with (other)
           <argument>
             <kind>1</kind>
             <string>///Handle colissions
-if (active)
+if (active &amp;&amp; !objBossParent.dead)
 {
     if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
     {
         HP-=other.bulletStrength;
     }
 }
-audio_stop_sound(sfxBarrierWeaken);
-audio_play_sound(sfxBarrierWeaken,0,false);
+if (!objBossParent.dead)
+{
+    audio_stop_sound(sfxBarrierWeaken);
+    audio_play_sound(sfxBarrierWeaken,0,false);
+}
 with (other)
 {instance_destroy();}
 </string>
@@ -342,15 +354,19 @@ with (other)
           <argument>
             <kind>1</kind>
             <string>///Handle colissions
-if (active)
+if (active &amp;&amp; !objBossParent.dead)
 {
     if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
     {
         HP-=other.bulletStrength;
     }
 }
-audio_stop_sound(sfxBarrierWeaken);
-audio_play_sound(sfxBarrierWeaken,0,false);
+if (!objBossParent.dead)
+{
+    audio_stop_sound(sfxBarrierWeaken);
+    audio_play_sound(sfxBarrierWeaken,0,false);
+}
+
 with (other)
 {instance_destroy();}
 </string>
@@ -376,15 +392,18 @@ with (other)
           <argument>
             <kind>1</kind>
             <string>///Handle colissions
-if (active)
+if (active &amp;&amp; !objBossParent.dead)
 {
     if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
     {
         HP-=other.bulletStrength;
     }
 }
-audio_stop_sound(sfxBarrierWeaken);
-audio_play_sound(sfxBarrierWeaken,0,false);
+if (!objBossParent.dead)
+{
+    audio_stop_sound(sfxBarrierWeaken);
+    audio_play_sound(sfxBarrierWeaken,0,false);
+}
 with (other)
 {instance_destroy();}
 </string>

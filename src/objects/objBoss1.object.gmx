@@ -338,6 +338,7 @@ if (global.state == states.gameMode &amp;&amp; active)
                 if (instance_number(objBossEye)&lt;=0 &amp;&amp; !dead){bossState = bOneStates.death; alarm[0]=150; dead=true;}
                 break;
             case bOneStates.death:
+                dead=true;
             default:
             break;
         }

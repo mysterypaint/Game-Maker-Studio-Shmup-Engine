@@ -108,6 +108,7 @@
   </backgrounds>
   <paths name="paths"/>
   <scripts name="scripts">
+    <script>scripts\__README.gml</script>
     <script>scripts\changeBGM.gml</script>
     <script>scripts\drawLaser.gml</script>
     <script>scripts\drawSprites.gml</script>
@@ -131,7 +132,6 @@
     </scripts>
     <script>scripts\setControls.gml</script>
     <script>scripts\unusedScript.gml</script>
-    <script>scripts\unusedScript2.gml</script>
   </scripts>
   <objects name="objects">
     <objects name="Enemies">
