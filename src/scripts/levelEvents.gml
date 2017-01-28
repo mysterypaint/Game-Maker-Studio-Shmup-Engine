@@ -17,9 +17,11 @@ switch(global.currentMap)
         {
         //... Boss time!
         objMain.rememberBGM = false;
+        global.prevSong = BGM01;
         audio_stop_sound(global.currentSong);
         changeBGM(BGM02,false); //Boss BGM Intro (Loop handled automatically)
         global.prevMap = "map01.oel"; //Just in case we die here
+        global.currentMap = "map01.oel"; //Just in case we die here
         
         //Assemble our boss
         var p1 = instance_create(objCamera.x+objCamera.viewportWidth+64,128,objBoss1);

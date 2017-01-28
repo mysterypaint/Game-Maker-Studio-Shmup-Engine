@@ -25,8 +25,19 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>moveSpeed = 0.7;
-speed = moveSpeed * objMain.deltaTime;
+            <string>
+moveSpeed = 0.7;
+
+if objMain.loopCounter &gt; 6
+{
+loopModifier = 6; //Cap speed at this value
+}
+else
+{
+    loopModifier = objMain.loopCounter;
+}
+
+speed = (moveSpeed + (loopModifier*0.4)) * objMain.deltaTime;
 </string>
           </argument>
         </arguments>
@@ -49,8 +60,7 @@ speed = moveSpeed * objMain.deltaTime;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>
-speed = (moveSpeed + (objMain.loopCounter*0.4)) * objMain.deltaTime;
+            <string>speed = (moveSpeed + (loopModifier*0.4)) * objMain.deltaTime;
 image_speed = speed * objMain.deltaTime;
 
 if (global.state == states.startRoom)
@@ -63,7 +73,7 @@ if (global.state == states.startRoom)
 if (x&lt;objCamera.x-64 ||
     y &lt; objCamera.y - 64 ||
     y&gt;objCamera.y+objCamera.viewportHeight+64 ||
-    x&gt;objCamera.x+objCamera.viewportWidth+64 ) || placeMeeting(0,0,"solid")
+    x&gt;objCamera.x+objCamera.viewportWidth+64 || (placeMeeting(0,0,"solid")))
 {
     instance_destroy();
 }
@@ -126,6 +136,8 @@ if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
     if (other.foundPlayer)
     {
         other.HP--;
+        audio_stop_sound(sfxBarrierWeaken);
+        audio_play_sound(sfxBarrierWeaken,0,false);
         instance_destroy();
     }
 }

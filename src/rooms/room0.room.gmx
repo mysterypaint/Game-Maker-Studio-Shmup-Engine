@@ -18,7 +18,8 @@
     cutscene,
     startRoom,
     paused,
-    gameOver
+    equipScreen,
+    gameOver,
 }</code>
   <enableViews>-1</enableViews>
   <clearViewBackground>-1</clearViewBackground>

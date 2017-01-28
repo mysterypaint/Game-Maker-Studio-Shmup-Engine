@@ -210,10 +210,17 @@ if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
           <argument>
             <kind>1</kind>
             <string>///Handle colissions
-if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
+if (other.foundPlayer)
 {
-    with (other)
-    {HP--;}
+    if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
+    {
+        with (other)
+        {
+            HP--;
+            audio_stop_sound(sfxBarrierWeaken);
+            audio_play_sound(sfxBarrierWeaken,0,false);
+        }
+    }
 }
 </string>
           </argument>

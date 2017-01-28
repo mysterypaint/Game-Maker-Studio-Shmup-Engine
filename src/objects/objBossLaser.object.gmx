@@ -113,11 +113,18 @@ if (objPlayer.excTimer&gt;0)
           <argument>
             <kind>1</kind>
             <string>///Handle colissions
-if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
+if (other.foundPlayer)
 {
-    with (other)
-    {HP--;}
-    instance_destroy();
+    if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
+    {
+        with (other)
+        {
+            HP--;
+            audio_stop_sound(sfxBarrierWeaken);
+            audio_play_sound(sfxBarrierWeaken,0,false);
+        }
+        instance_destroy();
+    }
 }
 </string>
           </argument>

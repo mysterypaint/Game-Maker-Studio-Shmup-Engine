@@ -26,7 +26,22 @@
           <argument>
             <kind>1</kind>
             <string>bulletStrength = 1;
-bulletXSpeed = 6;
+image_speed = 0;
+
+if objMain.doubleType == 1
+{
+    bulletXSpeed = 6;
+}
+else if (objMain.doubleType == 2 || objMain.doubleType == 4)
+{
+    bulletXSpeed = -6;
+}
+else if (objMain.doubleType == 3)
+{
+    bulletXSpeed = 0;
+}
+
+
 bulletYSpeed = -6;
 </string>
           </argument>
@@ -80,9 +95,18 @@ with (parentGun)
             <string>if (global.state == states.gameMode || global.state == states.cutscene)
 {
     self.x+=objCamera.scrollX+bulletXSpeed;
-    self.y+=objCamera.scrollY+bulletYSpeed;
+    
+    if (objMain.doubleType == 1 || objMain.doubleType == 3 || objMain.doubleType == 4)
+    {
+        self.y+=objCamera.scrollY+bulletYSpeed;
+    }
 
-    if self.x+objCamera.scrollX+bulletXSpeed&gt;objCamera.x+288 //Delete the bullet if it's 32 pixels past the camera bounds
+    if (self.x+objCamera.scrollX+bulletXSpeed&gt;objCamera.x+288 || self.x&lt;objCamera.x-32) //Delete the bullet if it's 32 pixels past the camera bounds
+    {
+        instance_destroy();
+    }
+    
+    if (self.y&lt;objCamera.y-32 || self.y&gt;objCamera.y+objCamera.viewportHeight+32) //Delete the bullet if it's 32 pixels past the camera bounds
     {
         instance_destroy();
     }

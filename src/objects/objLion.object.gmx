@@ -25,11 +25,21 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>event_inherited();
+            <string>///Inherit parent event and declare variables
+event_inherited();
+
 HP = 1;
 image_index = 0;
 image_speed = 0;
-nextFire = 0;
+
+//Next time to fire a bullet
+//The modifier is for game balancing. Change it here!
+loopCap=objMain.loopCounter;
+if loopCap&gt;10{loopCap=10;}
+
+nextFireModifier = 33 + ((irandom(88)/loopCap)*irandom(21) + irandom(56) + (irandom(88)/loopCap) + (irandom(9)*2 + (loopCap*0.7))/loopCap);
+nextFire = nextFireModifier;
+
 imgIndex = 1;
 imgSpd = 0.25*objMain.deltaTime;
 turningRight=true;
@@ -227,7 +237,7 @@ if (active)
         {
         var thisEnemyBullet = instance_create(x,y,objEnemyBullet);
         thisEnemyBullet.direction = direction - irandom(15) + irandom(20);
-        nextFire = 33 + (irandom(3)*irandom(66) + irandom(73) + irandom(94) + (irandom(9)*4));
+        nextFire = nextFireModifier;
         }
         nextFire--;
     }

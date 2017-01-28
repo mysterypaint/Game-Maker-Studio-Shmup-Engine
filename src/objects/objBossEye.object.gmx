@@ -288,16 +288,23 @@ if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
           <argument>
             <kind>1</kind>
             <string>///Handle colissions
-if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
+if (other.foundPlayer)
 {
-    if (image_index != 2)
+    if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
     {
-    HP-=other.bulletStrength;
-    audio_stop_sound(sfxBarrierWeaken);
-    audio_play_sound(sfxBarrierWeaken,0,false);
+        if (image_index != 2)
+        {
+        HP-=other.bulletStrength;
+        audio_stop_sound(sfxBarrierWeaken);
+        audio_play_sound(sfxBarrierWeaken,0,false);
+        }
+        with (other)
+        {
+            HP--;
+            audio_stop_sound(sfxBarrierWeaken);
+            audio_play_sound(sfxBarrierWeaken,0,false);
+        }
     }
-    with (other)
-    {HP--;}
 }
 </string>
           </argument>

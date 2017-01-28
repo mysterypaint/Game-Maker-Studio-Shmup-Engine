@@ -23,8 +23,13 @@ var a1 = (floor((bbox_top+inY)/th));
 var a2 = (floor((bbox_bottom+inY)/th));
 var a3 = (floor((bbox_bottom-((bbox_bottom-bbox_top+1)/2)+inY)/th));
 var a4 = (floor((bbox_bottom-((bbox_bottom-bbox_top+1)/2)+inY)/th));
-var tmh = global.mapHeight-1;
-var tmw = global.mapWidth-1;
+var mh = global.mapHeight-1;
+var mw = global.mapWidth-1;
+
+//Return false if we're not in map bounds
+//Doesn't affect much for actual builds but stops Game Maker from outputting errors, causing serious lag from the console output and potentially project crashes, too.
+if (g1<0 || g2<0 || a1<0 || a2<0 || a3<0 || a4<0
+  ||g1>mw || g2>mw || a1>mh || a2>mh || a3>mh || a4>mh){return false;}
 
 /*
 Find out the tile interaction behavior for:

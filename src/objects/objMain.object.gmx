@@ -31,7 +31,7 @@
 waitTime=300; //Timer for displaying the credits as the game boots up.
             //Recommended to set to approximately 300 for public builds
 
-debugEnabled = true;
+debugEnabled = false;
 
 deltaTime = 1;      //Whenever paused, this is set to 0, and 1 when unpaused!
                     //Try multiplying things with this to account for pausing state!
@@ -61,10 +61,32 @@ global.playerScore = 0;
 global.highScore = 57300;   //Arbitrary number. It's the one GR3 uses, lol
 global.playerLives = 2;     //Give the player 3 lives [The last life is 0, not 1]
 
+
+//Equip menu stuff
+typeSelect = true;
+shieldSelect = 0;
+equipTypePos = 1;
+equipShieldPos = 0;
+equipChangeTimer = 0;
+equipTypeBlinkShow = true;
+equipShieldBlinkShow = false;
+equipBackTimer = 0;
+
+//Keep track of player's arsenal
+missileType = 1;
+doubleType = 1;
+laserType = 1;
+optionType = 1;
+shieldType = 1;
+
 title = 0;
 timer = 0;
 fullscreen = false;
 resetKey = false;            //Initialization for konCodeInput();
+
+
+
+
 
 //Parallax night sky
 xScroll = 0; //For the bottom-most sky scrolling
@@ -644,6 +666,157 @@ if (global.playerScore &gt; global.highScore)
           </argument>
         </arguments>
       </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Handle item equip screen
+if (global.state==states.equipScreen)
+{
+    if !audio_is_playing(BGM03)
+    {
+        changeBGM(BGM03,true);
+    }
+    
+    //Get input
+    var keyLeft = -keyboard_check_pressed(global.keyLeft);
+    var keyRight = (keyboard_check_pressed(global.keyRight));
+    var moveX = keyLeft+keyRight;
+    var keyUp = -keyboard_check_pressed(global.keyUp);
+    var keyDown = (keyboard_check_pressed(global.keyDown));
+    var moveY = keyUp+keyDown;
+    var gameStart = false;
+    
+    if equipChangeTimer&gt;1{equipChangeTimer--;}
+    if equipBackTimer&gt;1{equipBackTimer--;}
+
+    if (equipChangeTimer==1 || equipBackTimer==1)
+    {
+        if (menuProgressedLast==1){shieldSelect++;}
+        if (menuProgressedLast==2){shieldSelect--;}
+        menuProgressedLast = 0;
+        equipChangeTimer=0;
+        equipBackTimer=0;
+    }
+    
+    if ((keyboard_check_pressed(global.keyAction2) || keyboard_check_pressed(global.keyPause)) &amp;&amp; equipChangeTimer&lt;=0 &amp;&amp; equipBackTimer&lt;=0 &amp;&amp; shieldSelect&lt;2)
+    {
+        audio_stop_sound(sfxMenuAccept);
+        audio_stop_sound(sfxMenuCancel);
+        audio_play_sound(sfxMenuAccept,0,false);
+        equipChangeTimer=50;
+        menuProgressedLast=1;
+    }
+    
+    if (keyboard_check_pressed(global.keyAction1) &amp;&amp; shieldSelect&gt;0 &amp;&amp; equipBackTimer&lt;=0 &amp;&amp; equipChangeTimer&lt;=0)
+    {
+        audio_stop_sound(sfxMenuCancel);
+        audio_play_sound(sfxMenuCancel,0,false);
+        equipBackTimer=15;
+        menuProgressedLast=2;
+    }
+    
+    if (typeSelect)
+    {
+        if (shieldSelect==0)
+        {
+            if (equipChangeTimer&lt;=0)
+            {
+                if (moveY==1) {audio_stop_sound(sfxMenuTweak); audio_play_sound(sfxMenuTweak,0,false); equipTypePos++;}
+                if (moveY==-1) {audio_stop_sound(sfxMenuTweak); audio_play_sound(sfxMenuTweak,0,false); equipTypePos--;}
+            }
+            
+            if (equipTypePos&lt;1){equipTypePos=4;}
+            if (equipTypePos&gt;4){equipTypePos=1;}
+        
+            switch(equipTypePos)
+            {
+                case 1:
+                    missileType = 1;
+                    doubleType = 1;
+                    laserType = 1;
+                    optionType = 1;
+                    break;
+                case 2:
+                    missileType = 1;    // 2-way
+                    doubleType = 2;     // Tail gun
+                    laserType = 1;      // Ripple
+                    optionType = 1;     // Option
+                    break;
+                case 3:
+                    missileType = 1;    // Spread Bomb
+                    doubleType = 3;     // Vertical
+                    laserType = 3;      // C-Laser
+                    optionType = 1;     // Option
+                    break;
+                case 4:
+                    missileType = 1;    // Photon Torpedo
+                    doubleType = 4;     // Back Double
+                    laserType = 1;      // Twin Laser
+                    optionType = 1;     // Option
+                    break;
+                default:
+                    break;
+            }
+        }
+        if (shieldSelect==1)
+        {
+            if (equipChangeTimer&lt;=0)
+            {
+                if (moveX==1) {audio_stop_sound(sfxMenuTweak); audio_play_sound(sfxMenuTweak,0,false); equipShieldPos++;}
+                if (moveX==-1) {audio_stop_sound(sfxMenuTweak); audio_play_sound(sfxMenuTweak,0,false); equipShieldPos--;}
+            }
+            //Wrap around
+            if (equipShieldPos&gt;1) {equipShieldPos = 0;}
+            if (equipShieldPos&lt;0) {equipShieldPos = 1;}
+            
+            //Finally, assign the shield type
+            if (equipShieldPos==0){shieldType = 0;} //Shield
+            if (equipShieldPos==1){shieldType = 1;} //Force Field
+        }
+    }
+    
+    
+    
+    
+    
+    
+    if (typeSelect &amp;&amp; shieldSelect&gt;1 &amp;&amp; equipChangeTimer&lt;=0)
+    {gameStart=true;}
+    
+    if (gameStart)
+    {
+        instance_create(-256,0,objCamera);
+        instance_create(objCamera.x+128,128,objPlayer);
+        instance_create(objPlayer.x,objPlayer.y,objPlayerCapsuleHitbox);
+        audio_group_unload(sfxMenu);
+        audio_group_load(sfxInGame);
+        loadLevel("map00.oel");
+        global.prevMap = "map00.oel";
+        audio_stop_sound(global.currentSong);
+        changeBGM(BGM00,false);
+        objMain.x = objCamera.x;
+        objMain.y = objCamera.y;
+        global.state = states.startRoom;
+        objMain.startRoomTimer = objMain.startRoomTimerLength;
+    }
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
     </event>
     <event eventtype="8" enumb="0">
       <action>
@@ -755,6 +928,80 @@ else if global.tick&gt;20 &amp;&amp; global.tick&lt;=waitTime
 draw_set_alpha(0);
 draw_rectangle(-1,16,257,257,false);
 }
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Handle item equip screen
+
+if (global.state==states.equipScreen)
+{
+    //For optimization purposes.
+    //You can read more about this here: http://www.yoyogames.com/blog/23
+    draw_enable_alphablend(false);
+
+    draw_set_color(c_black);
+    draw_rectangle(-32,-32,500,500,false);
+    draw_background(weaponSelect,0,0);
+    draw_enable_alphablend(true);
+    
+    if (equipChangeTimer%5==0)
+    {
+    equipTypeBlinkShow = !equipTypeBlinkShow;
+    equipShieldBlinkShow = !equipShieldBlinkShow;
+    }
+    
+    //Equip menu stuff
+    if (typeSelect)
+    {
+        if (equipTypeBlinkShow || equipChangeTimer&lt;=0  || shieldSelect!=0)
+        {
+            draw_sprite(sprEquipHighlight,0,14,26+(equipTypePos*32));                           //Top-Left
+            draw_sprite_ext(sprEquipHighlight,0,241,26+(equipTypePos*32),-1,1,0,c_white,1);     //Top-Right
+            draw_sprite_ext(sprEquipHighlight,0,14,54+(equipTypePos*32),1,-1,0,c_white,1);      //Bottom-Left
+            draw_sprite_ext(sprEquipHighlight,0,241,54+(equipTypePos*32),-1,-1,0,c_white,1);    //Bottom-Right
+            
+            draw_set_color(c_green);
+            draw_rectangle(16,24+(equipTypePos*32),238,24+(equipTypePos*32),false);     //Upper
+            draw_rectangle(13,27+(equipTypePos*32),13,52+(equipTypePos*32),false);      //Left
+            draw_rectangle(241,27+(equipTypePos*32),241,52+(equipTypePos*32),false);    //Right
+            draw_rectangle(16,55+(equipTypePos*32),238,55+(equipTypePos*32),false);     //Lower
+        }
+    }
+    
+    
+    if (equipShieldBlinkShow || equipChangeTimer&lt;=0 || shieldSelect!=1)
+    {
+    draw_sprite(sprEquipHighlight,0,153+(equipShieldPos*48),188);                         //Top-Left
+    draw_sprite_ext(sprEquipHighlight,0,183+(equipShieldPos*48),188,-1,1,0,c_white,1);    //Top-Right
+    draw_sprite_ext(sprEquipHighlight,0,153+(equipShieldPos*48),214,1,-1,0,c_white,1);    //Bottom-Left
+    draw_sprite_ext(sprEquipHighlight,0,183+(equipShieldPos*48),214,-1,-1,0,c_white,1);   //Bottom-Right
+    
+    draw_set_color(c_green);
+    
+    draw_rectangle(155+(equipShieldPos*48),186,180+(equipShieldPos*48),186,false);     //Upper
+    draw_rectangle(152+(equipShieldPos*48),190,152+(equipShieldPos*48),211,false);     //Left
+    draw_rectangle(183+(equipShieldPos*48),190,183+(equipShieldPos*48),211,false);     //Right
+    draw_rectangle(155+(equipShieldPos*48),215,180+(equipShieldPos*48),215,false);     //Lower
+    }
+}
+
 </string>
           </argument>
         </arguments>

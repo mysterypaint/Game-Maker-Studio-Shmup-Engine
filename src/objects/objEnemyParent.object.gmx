@@ -56,22 +56,24 @@ silentKill=false;
           <argument>
             <kind>1</kind>
             <string>///Upon destruction, depending which game loop we're on, fire some extra bullets
-
-var bulletsToFire=3;
-switch(objMain.loopCounter)
+if (!silentKill)
 {
-    case 0: bulletsToFire=0; break;
-    case 1: bulletsToFire=0; break;
-    case 2: bulletsToFire=1; break;
-    case 3: bulletsToFire=2; break;
-    case 4: bulletsToFire=3; break;
-    case 5: bulletsToFire=4; break;
-}
-
-for (var i=bulletsToFire; i&gt;0; i--)
-{
-    var thisEnemyBullet = instance_create(x,y,objEnemyBullet);
-    thisEnemyBullet.direction = direction - irandom(15) + irandom(20);
+    var bulletsToFire=3;
+    switch(objMain.loopCounter)
+    {
+        case 0: bulletsToFire=0; break;
+        case 1: bulletsToFire=0; break;
+        case 2: bulletsToFire=1; break;
+        case 3: bulletsToFire=2; break;
+        case 4: bulletsToFire=3; break;
+        case 5: bulletsToFire=4; break;
+    }
+    
+    for (var i=bulletsToFire; i&gt;0; i--)
+    {
+        var thisEnemyBullet = instance_create(x,y,objEnemyBullet);
+        thisEnemyBullet.direction = direction - irandom(15) + irandom(20);
+    }
 }
 </string>
           </argument>
@@ -301,7 +303,11 @@ if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
     {
         HP-=other.bulletStrength;
         with (other)
-        {HP--;}
+        {
+        HP--;
+        audio_stop_sound(sfxBarrierWeaken);
+        audio_play_sound(sfxBarrierWeaken,0,false);
+        }
     }
 }
 </string>

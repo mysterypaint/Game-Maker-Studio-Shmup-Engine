@@ -325,7 +325,15 @@ if (global.state != states.startRoom)
     drawSprites(objCapsule,sprCapsule);
     drawSprites(objMissile,sprMissile);
     drawSprites(objBullet,sprBullet);
+    
+    if (objMain.doubleType==1 || objMain.doubleType==3 || objMain.doubleType==4)
+    {
     drawSprites(objDouble,sprDouble);
+    }
+    else if (objMain.doubleType==2)
+    {
+    drawSprites(objDouble,sprBullet);
+    }
 
     draw_enable_alphablend(false);
     drawLaser();

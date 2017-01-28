@@ -47,8 +47,10 @@
       <sound>sound\BGM00</sound>
       <sound>sound\BGM01</sound>
       <sound>sound\BGM02</sound>
+      <sound>sound\BGM03</sound>
     </sounds>
     <sounds name="sfx">
+      <sound>sound\___unusedSound</sound>
       <sound>sound\itsjoke</sound>
       <sound>sound\sfxBarrierWeaken</sound>
       <sound>sound\sfxBigExplosion</sound>
@@ -99,12 +101,14 @@
     <sprite>sprites\sprPowerupHUD</sprite>
     <sprite>sprites\sprStart</sprite>
     <sprite>sprites\sprTitleLogo</sprite>
+    <sprite>sprites\sprEquipHighlight</sprite>
   </sprites>
   <backgrounds name="background">
     <background>background\tileset0</background>
     <background>background\sky1</background>
     <background>background\sky2</background>
     <background>background\sky3</background>
+    <background>background\weaponSelect</background>
   </backgrounds>
   <paths name="paths"/>
   <scripts name="scripts">
@@ -131,7 +135,7 @@
       <script>scripts\saveOptions.gml</script>
     </scripts>
     <script>scripts\setControls.gml</script>
-    <script>scripts\unusedScript.gml</script>
+    <script>scripts\shootingScript.gml</script>
   </scripts>
   <objects name="objects">
     <objects name="Enemies">

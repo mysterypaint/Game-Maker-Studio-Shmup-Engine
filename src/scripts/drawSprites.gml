@@ -9,7 +9,7 @@ if instance_exists(argument[0])
         thisObject = instance_find(argument[0],i);
         with (thisObject)
         {
-            draw_sprite(argument[1],image_index,x,y);
+            draw_sprite_ext(argument[1],image_index,x,y,image_xscale,image_yscale,0,c_white,1);
         }
     
     }

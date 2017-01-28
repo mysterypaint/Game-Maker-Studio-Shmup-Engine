@@ -27,7 +27,14 @@
             <kind>1</kind>
             <string>///Initialize some variables
 silentKill = false;
-nextFire = 0; //Next time to fire a bullet
+
+//Next time to fire a bullet
+//The modifier is for game balancing. Change it here!
+loopCap=objMain.loopCounter;
+if loopCap&gt;10{loopCap=10;}
+
+nextFireModifier = 33 + ((irandom(88)/loopCap)*irandom(21) + irandom(56) + (irandom(88)/loopCap) + (irandom(9)*2 + (loopCap*0.7))/loopCap);
+nextFire = nextFireModifier;
 
 patternType = 1; //Changes movement behavior of the sprite
                  //On level spawning, this value changes depending which version was placed on the map
@@ -251,20 +258,17 @@ if (patternType == 1)
             x+=movingX;
             y+=movingY;
             
-            
-            //Fire some bullets
-            
             //Shoot bullets at the player, at a random rate
             if objMain.loopCounter&gt;1
             {
-                if (nextFire &lt;= 0)
+                if (nextFire &lt;= 0 &amp;&amp; x&lt;objCamera.x+objCamera.viewportWidth+16)
                 {
                 var thisEnemyBullet = instance_create(x,y,objEnemyBullet);
                 thisEnemyBullet.direction = direction - irandom(15) + irandom(20);
-                nextFire = 33 + (irandom(3)*irandom(33) + irandom(56) + irandom(24) + (irandom(9)*4));
+                nextFire = nextFireModifier;
                 }
-                nextFire--;
             }
+            nextFire--;
         }
     }
 }
@@ -346,20 +350,17 @@ if (patternType == 2)
             x+=movingX;
             y+=movingY;
             
-            
-            //Fire some bullets
-            
             //Shoot bullets at the player, at a random rate
             if objMain.loopCounter&gt;1
             {
-                if (nextFire &lt;= 0)
+                if (nextFire &lt;= 0 &amp;&amp; x&lt;objCamera.x+objCamera.viewportWidth+16)
                 {
                 var thisEnemyBullet = instance_create(x,y,objEnemyBullet);
                 thisEnemyBullet.direction = direction - irandom(15) + irandom(20);
-                nextFire = 33 + (irandom(3)*irandom(33) + irandom(56) + irandom(24) + (irandom(9)*4));
+                nextFire = nextFireModifier;
                 }
-                nextFire--;
             }
+            nextFire--;
         }
     }
 }
