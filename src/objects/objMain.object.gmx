@@ -31,7 +31,7 @@
 waitTime=300; //Timer for displaying the credits as the game boots up.
             //Recommended to set to approximately 300 for public builds
 
-debugEnabled = false;
+debugEnabled = true;
 
 deltaTime = 1;      //Whenever paused, this is set to 0, and 1 when unpaused!
                     //Try multiplying things with this to account for pausing state!
@@ -906,7 +906,7 @@ if global.tick&lt;=waitTime+10
 {
 draw_set_color(c_white);
 draw_set_alpha(1);
-draw_text(8*5,8*12,"    Gradius Engine#         v1.1##          by##     mysterypaint#");
+draw_text(8*5,8*12,"    Gradius Engine#      v1.3 Alpha##          by##     mysterypaint#");
 }
 
 //Fade out on top of the text
