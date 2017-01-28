@@ -29,5 +29,14 @@
     <frame index="6">images\sprPowerupHUD_6.png</frame>
     <frame index="7">images\sprPowerupHUD_7.png</frame>
     <frame index="8">images\sprPowerupHUD_8.png</frame>
+    <frame index="9">images\sprPowerupHUD_9.png</frame>
+    <frame index="10">images\sprPowerupHUD_10.png</frame>
+    <frame index="11">images\sprPowerupHUD_11.png</frame>
+    <frame index="12">images\sprPowerupHUD_12.png</frame>
+    <frame index="13">images\sprPowerupHUD_13.png</frame>
+    <frame index="14">images\sprPowerupHUD_14.png</frame>
+    <frame index="15">images\sprPowerupHUD_15.png</frame>
+    <frame index="16">images\sprPowerupHUD_16.png</frame>
+    <frame index="17">images\sprPowerupHUD_17.png</frame>
   </frames>
 </sprite>

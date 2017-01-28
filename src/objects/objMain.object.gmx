@@ -28,7 +28,7 @@
             <string>///Declare variables and configure controls
 // Define global variables
 
-waitTime=300; //Timer for displaying the credits as the game boots up.
+waitTime=1; //Timer for displaying the credits as the game boots up.
             //Recommended to set to approximately 300 for public builds
 
 debugEnabled = true;
@@ -699,9 +699,11 @@ if (global.state==states.equipScreen)
     var moveY = keyUp+keyDown;
     var gameStart = false;
     
+    //Adds a delay between button presses, but also controls the green rectangles blinking in the Draw Event    
     if equipChangeTimer&gt;1{equipChangeTimer--;}
     if equipBackTimer&gt;1{equipBackTimer--;}
 
+    //Wrap around the menu if we go out of bounds
     if (equipChangeTimer==1 || equipBackTimer==1)
     {
         if (menuProgressedLast==1){shieldSelect++;}
@@ -711,6 +713,7 @@ if (global.state==states.equipScreen)
         equipBackTimer=0;
     }
     
+    //Move around the menu if we press Confirm/Start, but add a delay between presses.
     if ((keyboard_check_pressed(global.keyAction2) || keyboard_check_pressed(global.keyPause)) &amp;&amp; equipChangeTimer&lt;=0 &amp;&amp; equipBackTimer&lt;=0 &amp;&amp; shieldSelect&lt;2)
     {
         audio_stop_sound(sfxMenuAccept);
@@ -720,6 +723,7 @@ if (global.state==states.equipScreen)
         menuProgressedLast=1;
     }
     
+    //Move around the menu if we press Cancel, but add a delay between presses.
     if (keyboard_check_pressed(global.keyAction1) &amp;&amp; shieldSelect&gt;0 &amp;&amp; equipBackTimer&lt;=0 &amp;&amp; equipChangeTimer&lt;=0)
     {
         audio_stop_sound(sfxMenuCancel);
@@ -750,22 +754,22 @@ if (global.state==states.equipScreen)
                     optionType = 1;
                     break;
                 case 2:
-                    missileType = 1;    // 2-way
+                    missileType = 2;    // 2-way
                     doubleType = 2;     // Tail gun
-                    laserType = 1;      // Ripple
-                    optionType = 1;     // Option
+                    laserType = 2;      // Ripple
+                    optionType = 2;     // Option
                     break;
                 case 3:
-                    missileType = 1;    // Spread Bomb
+                    missileType = 3;    // Spread Bomb
                     doubleType = 3;     // Vertical
-                    laserType = 3;      // C-Laser
-                    optionType = 1;     // Option
+                    laserType = 3;      // C.Laser
+                    optionType = 3;     // Option
                     break;
                 case 4:
-                    missileType = 1;    // Photon Torpedo
+                    missileType = 4;    // Photon Torpedo
                     doubleType = 4;     // Back Double
-                    laserType = 1;      // Twin Laser
-                    optionType = 1;     // Option
+                    laserType = 4;      // Twin Laser
+                    optionType = 4;     // Option
                     break;
                 default:
                     break;
@@ -789,10 +793,10 @@ if (global.state==states.equipScreen)
     }
     
     
+    //If we've hit the end of the menu, start the game
     
-    
-    
-    
+    //Separated with "gameStart" flag because there will be two different menus that can be filled out at different times.
+    //This is a WIP.
     if (typeSelect &amp;&amp; shieldSelect&gt;1 &amp;&amp; equipChangeTimer&lt;=0)
     {gameStart=true;}
     
@@ -967,6 +971,10 @@ if (global.state==states.equipScreen)
     equipShieldBlinkShow = !equipShieldBlinkShow;
     }
     
+    
+    //All the code from here to the bottom draws the green, rectangular boxes on the Equip Type Mode screen
+    draw_set_color($88E0A0);
+    
     //Equip menu stuff
     if (typeSelect)
     {
@@ -977,28 +985,24 @@ if (global.state==states.equipScreen)
             draw_sprite_ext(sprEquipHighlight,0,14,54+(equipTypePos*32),1,-1,0,c_white,1);      //Bottom-Left
             draw_sprite_ext(sprEquipHighlight,0,241,54+(equipTypePos*32),-1,-1,0,c_white,1);    //Bottom-Right
             
-            draw_set_color(c_green);
             draw_rectangle(16,24+(equipTypePos*32),238,24+(equipTypePos*32),false);     //Upper
             draw_rectangle(13,27+(equipTypePos*32),13,52+(equipTypePos*32),false);      //Left
             draw_rectangle(241,27+(equipTypePos*32),241,52+(equipTypePos*32),false);    //Right
             draw_rectangle(16,55+(equipTypePos*32),238,55+(equipTypePos*32),false);     //Lower
         }
-    }
-    
-    
-    if (equipShieldBlinkShow || equipChangeTimer&lt;=0 || shieldSelect!=1)
-    {
-    draw_sprite(sprEquipHighlight,0,153+(equipShieldPos*48),188);                         //Top-Left
-    draw_sprite_ext(sprEquipHighlight,0,183+(equipShieldPos*48),188,-1,1,0,c_white,1);    //Top-Right
-    draw_sprite_ext(sprEquipHighlight,0,153+(equipShieldPos*48),214,1,-1,0,c_white,1);    //Bottom-Left
-    draw_sprite_ext(sprEquipHighlight,0,183+(equipShieldPos*48),214,-1,-1,0,c_white,1);   //Bottom-Right
-    
-    draw_set_color(c_green);
-    
-    draw_rectangle(155+(equipShieldPos*48),186,180+(equipShieldPos*48),186,false);     //Upper
-    draw_rectangle(152+(equipShieldPos*48),190,152+(equipShieldPos*48),211,false);     //Left
-    draw_rectangle(183+(equipShieldPos*48),190,183+(equipShieldPos*48),211,false);     //Right
-    draw_rectangle(155+(equipShieldPos*48),215,180+(equipShieldPos*48),215,false);     //Lower
+
+        if (equipShieldBlinkShow || equipChangeTimer&lt;=0 || shieldSelect!=1)
+        {
+        draw_sprite(sprEquipHighlight,0,153+(equipShieldPos*48),188);                         //Top-Left
+        draw_sprite_ext(sprEquipHighlight,0,183+(equipShieldPos*48),188,-1,1,0,c_white,1);    //Top-Right
+        draw_sprite_ext(sprEquipHighlight,0,153+(equipShieldPos*48),214,1,-1,0,c_white,1);    //Bottom-Left
+        draw_sprite_ext(sprEquipHighlight,0,183+(equipShieldPos*48),214,-1,-1,0,c_white,1);   //Bottom-Right
+        
+        draw_rectangle(155+(equipShieldPos*48),186,180+(equipShieldPos*48),186,false);     //Upper
+        draw_rectangle(152+(equipShieldPos*48),190,152+(equipShieldPos*48),211,false);     //Left
+        draw_rectangle(183+(equipShieldPos*48),190,183+(equipShieldPos*48),211,false);     //Right
+        draw_rectangle(155+(equipShieldPos*48),215,180+(equipShieldPos*48),215,false);     //Lower
+        }
     }
 }
 

@@ -6,6 +6,8 @@ if currentMenu==1
     {
         //Start
         case 0:
+            //Jump to the equip screen state
+            //objMain's Step Event and Draw Event control the entire state
             global.state = states.equipScreen;
             objMain.shieldSelect = 0;
             objMain.menuProgressedLast = 0;
