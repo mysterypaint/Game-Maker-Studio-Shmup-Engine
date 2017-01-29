@@ -38,7 +38,7 @@ deltaTime = 1;      //Whenever paused, this is set to 0, and 1 when unpaused!
 mapSwitchTimer=0;
 showLoop = 0; //Timer for displaying which loop the player is on (Set on the last event in the levelEvents() script)
 
-loopCounter = 5; //Keeps track of how many game loops we've done (Starts at 1)
+loopCounter = 1; //Keeps track of how many game loops we've done (Starts at 1)
      
 global.currentMap = 0; //Reserved for keeping track of the game's current map
 global.prevMap = 0; //Reserved for keeping track of the game's previous map
