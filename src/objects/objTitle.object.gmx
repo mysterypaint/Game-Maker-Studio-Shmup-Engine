@@ -36,6 +36,8 @@ draw_sprite(sprStart, 0, 0, 0);
 draw_sprite(sky1, 0, 0, 0);
 draw_sprite(sky2, 0, 0, 0);
 draw_sprite(sky3, 0, 0, 0);
+draw_sprite(sprEquipHighlight, 0, 0, 0);
+draw_sprite(weaponSelect, 0, 0, 0);
 </string>
           </argument>
         </arguments>
@@ -70,10 +72,11 @@ menu[2] = "Quit";
 menu2[0] = "BGM Vol: " + string(global.bgmVol);
 menu2[1] = "SFX Vol: " + string(global.sfxVol);
 menu2[2] = "GRV Options: " + string(global.grVOptEnabled);
-menu2[3] = "Window Size: " + string(objMain.windowSize) + "x";
-menu2[4] = "Set Config";
-menu2[5] = "Apply Changes";
-menu2[6] = "Back";
+menu2[3] = "Friendly Mode: " + string(global.frModeEnabled);
+menu2[4] = "Window Size: " + string(objMain.windowSize) + "x";
+menu2[5] = "Set Config";
+menu2[6] = "Apply Changes";
+menu2[7] = "Back";
 
 pressStartText=true;
 
@@ -207,12 +210,14 @@ if !(keyboard_check(vk_alt) &amp;&amp; keyboard_check(vk_enter))   //Prevent men
 if currentMenu==2
 {
     var grVOptText = "Off";
+    var frModeText = "Off";
     if (global.grVOptEnabled) {grVOptText = "On";}
-
+    if (global.frModeEnabled) {frModeText = "On";}
     menu2[0] = "BGM Vol: " + string(global.bgmVol);
     menu2[1] = "SFX Vol: " + string(global.sfxVol);
     menu2[2] = "GRV Options: " + grVOptText;
-    menu2[3] = "Window Size: " + string(objMain.windowSize) + "x";
+    menu2[3] = "Friendly Mode: " + frModeText;
+    menu2[4] = "Window Size: " + string(objMain.windowSize) + "x";
     if moveY==0
     {
         if mpos==0
@@ -306,6 +311,20 @@ if currentMenu==2
                 }
         }
         if mpos==3
+        {
+            //Handle GRV-style Options
+            if moveXPressed&lt;0
+                {
+                    audio_stop_sound(sfxMenuTweak);audio_play_sound(sfxMenuTweak,1,false);
+                    global.frModeEnabled=!global.frModeEnabled;
+                }
+            else if moveXPressed&gt;0
+                {
+                    audio_stop_sound(sfxMenuTweak);audio_play_sound(sfxMenuTweak,1,false);
+                    global.frModeEnabled=!global.frModeEnabled;
+                }
+        }
+        if mpos==4
         {
             //handle windowSize
             if moveXPressed&lt;0
@@ -415,9 +434,10 @@ if pressStartText==false &amp;&amp; currentMenu!=3
     {
         for (m=0; m &lt; array_length_1d(menu2); m++;)
         {
+        draw_set_color($ff33cc);
         draw_text(x+space,(y+m*space)+64,string(menu2[m]));
         
-        
+        draw_set_color($cc4488);
         if mpos==0
             {
             draw_text(x-(8*6),y+(8*19),"Set the global BGM volume.");
@@ -432,9 +452,13 @@ if pressStartText==false &amp;&amp; currentMenu!=3
             }
         else if mpos==3
             {
-            draw_text(x-(8*6),y+(8*19),"Set the Window Size.#Alt+Enter toggles fullscreen.");
+            draw_text(x-(8*6),y+(8*19),"If enabled, give the player#a Force Field#             for every life.##Also, all Force Fields will#    take up to 10 hits.");
             }
         else if mpos==4
+            {
+            draw_text(x-(8*6),y+(8*19),"Set the Window Size.#Alt+Enter toggles fullscreen.");
+            }
+        else if mpos==5
             {
             draw_set_color($ff33cc);
             draw_text(x-(8*6),y+(8*19),"Configure your controls.");
@@ -442,11 +466,11 @@ if pressStartText==false &amp;&amp; currentMenu!=3
             draw_text(x-24,y+(8*21),"Note: Custom controls are#only effective in-game!");
             draw_set_color($ff33cc);
             }
-        else if mpos==5
+        else if mpos==6
             {
             draw_text(x-(8*6),y+(8*19),"Save the current settings.");
             }
-        else if mpos==6
+        else if mpos==7
             {
             draw_text(x-(8*6),y+(8*19),"Discard changes and return.");
             }

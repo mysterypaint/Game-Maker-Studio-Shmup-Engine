@@ -25,7 +25,8 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>active = false; //Active if object is on the camera
+            <string>event_inherited();
+active = false; //Active if object is on the camera
 enabled = false; //Enabled if the object is in the correct spot to start running its code
 nextFire = 0;
 image_speed=0;
@@ -41,7 +42,6 @@ enum bOneStates
 dirY = -1;
 bossState=bOneStates.initialize;
 movingY = -1; //Upward
-dead = false; //Death flag
 
 myID = 0;
 </string>
@@ -343,7 +343,7 @@ if (global.state == states.gameMode &amp;&amp; active)
             break;
         }
         var cutBreaks = objMain.loopCounter
-        if (cutBreaks &gt; 20) {cutBreaks = 20;}
+        if (cutBreaks &gt; 10) {cutBreaks = 10;}
         if (cutBreaks &lt; 1) {cutBreaks = 1;}
         nextFire-=cutBreaks;
         

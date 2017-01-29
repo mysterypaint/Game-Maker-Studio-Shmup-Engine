@@ -28,7 +28,7 @@
             <string>///Declare variables and configure controls
 // Define global variables
 
-waitTime=1; //Timer for displaying the credits as the game boots up.
+waitTime=300; //Timer for displaying the credits as the game boots up.
             //Recommended to set to approximately 300 for public builds
 
 debugEnabled = true;
@@ -38,7 +38,7 @@ deltaTime = 1;      //Whenever paused, this is set to 0, and 1 when unpaused!
 mapSwitchTimer=0;
 showLoop = 0; //Timer for displaying which loop the player is on (Set on the last event in the levelEvents() script)
 
-loopCounter = 1; //Keeps track of how many game loops we've done (Starts at 1)
+loopCounter = 5; //Keeps track of how many game loops we've done (Starts at 1)
      
 global.currentMap = 0; //Reserved for keeping track of the game's current map
 global.prevMap = 0; //Reserved for keeping track of the game's previous map
@@ -71,6 +71,8 @@ equipChangeTimer = 0;
 equipTypeBlinkShow = true;
 equipShieldBlinkShow = false;
 equipBackTimer = 0;
+frModeFlicker = false;
+glFlicker = false;
 
 //Keep track of player's arsenal
 missileType = 1;
@@ -113,6 +115,7 @@ if (file_exists("sav"))
     global.bgmVol = real(ini_read_string("Options","bgmVol",75));
     global.sfxVol = real(ini_read_string("Options","sfxVol",75));
     global.grVOptEnabled = real(ini_read_string("Options","grVOptEnabled",false));
+    global.frModeEnabled = real(ini_read_string("Options","frModeEnabled",false));
     global.keyUp = real(ini_read_string("Options","keyUp",vk_up));
     global.keyDown = real(ini_read_string("Options","keyDown",vk_down));
     global.keyLeft = real(ini_read_string("Options","keyLeft",vk_left));
@@ -138,6 +141,7 @@ else
     global.keyAction3 = ord('C');
     global.keyPause = vk_enter;
     global.grVOptEnabled = false;
+    global.frModeEnabled = false;
     windowSize = 2;
     ini_open("sav");
     ini_write_string("Options","bgmVol",string(75));
@@ -548,7 +552,20 @@ switch(global.state) //Game mode handling
     case states.startRoom: // START screen
         handleBGM();
         if startRoomTimer&gt;0{startRoomTimer--;}
-        if startRoomTimer&lt;=0 {global.state = states.gameMode;}
+        if startRoomTimer&lt;=0
+        {
+            global.state = states.gameMode;
+            //Handle friendly mode
+            if (global.frModeEnabled)
+            {
+                objMain.shieldType=1; //Just in case this slipped past us, enforce that [?] is Force Field
+                objPlayer.HP = 11;
+                objPlayer.HPMax = 11; //Used for objCamera so it can properly scale Force Field when drawn to the screen
+                objPlayer.hasQuestion = true;
+                audio_stop_sound(sfxMenuAccept);
+                audio_play_sound(sfxMenuAccept,0,false);
+            }
+        }
         break;
     case states.paused: // paused
         //Handle Unpausing
@@ -777,18 +794,35 @@ if (global.state==states.equipScreen)
         }
         if (shieldSelect==1)
         {
-            if (equipChangeTimer&lt;=0)
+            //Autopilot into Force Field if we have Friendly Mode enabled
+            if (global.frModeEnabled)
             {
-                if (moveX==1) {audio_stop_sound(sfxMenuTweak); audio_play_sound(sfxMenuTweak,0,false); equipShieldPos++;}
-                if (moveX==-1) {audio_stop_sound(sfxMenuTweak); audio_play_sound(sfxMenuTweak,0,false); equipShieldPos--;}
+                if (equipChangeTimer&lt;=0)
+                {
+                    menuProgressedLast=1;
+                    equipShieldPos = 1;
+                    shieldType = 1;
+                    audio_stop_sound(sfxMenuAccept);
+                    audio_stop_sound(sfxMenuCancel);
+                    audio_play_sound(sfxMenuAccept,0,false);
+                    equipChangeTimer=50;
+                }
             }
-            //Wrap around
-            if (equipShieldPos&gt;1) {equipShieldPos = 0;}
-            if (equipShieldPos&lt;0) {equipShieldPos = 1;}
-            
-            //Finally, assign the shield type
-            if (equipShieldPos==0){shieldType = 0;} //Shield
-            if (equipShieldPos==1){shieldType = 1;} //Force Field
+            else
+            {
+                if (equipChangeTimer&lt;=0)
+                {
+                    if (moveX==1) {audio_stop_sound(sfxMenuTweak); audio_play_sound(sfxMenuTweak,0,false); equipShieldPos++;}
+                    if (moveX==-1) {audio_stop_sound(sfxMenuTweak); audio_play_sound(sfxMenuTweak,0,false); equipShieldPos--;}
+                }
+                //Wrap around
+                if (equipShieldPos&gt;1) {equipShieldPos = 0;}
+                if (equipShieldPos&lt;0) {equipShieldPos = 1;}
+                
+                //Finally, assign the shield type
+                if (equipShieldPos==0){shieldType = 0;} //Shield
+                if (equipShieldPos==1){shieldType = 1;} //Force Field
+            }
         }
     }
     
@@ -802,6 +836,7 @@ if (global.state==states.equipScreen)
     
     if (gameStart)
     {
+        //Friendly Mode is taken care of in the gamestates script in the Step Event of objMain
         instance_create(-256,0,objCamera);
         instance_create(objCamera.x+128,128,objPlayer);
         instance_create(objPlayer.x,objPlayer.y,objPlayerCapsuleHitbox);
@@ -839,57 +874,6 @@ if (global.state==states.equipScreen)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///Handle game closing (if objCamera doesn't exist yet)
-draw_enable_alphablend(false);
-
-if !instance_exists(objCamera)
-{
-    draw_set_alpha(1);
-    if (gameEndTimer&lt;40 &amp;&amp; gameEndTimer&gt;=30)
-    {
-    draw_rectangle_color(x, y, x+159, y+8, c_black, c_black, c_black, c_black, false);
-    draw_set_color(c_white);
-    draw_text(x,y,"Closing the game");
-    }
-    else if (gameEndTimer&lt;30 &amp;&amp; gameEndTimer&gt;=20)
-    {
-    draw_rectangle_color(x, y, x+159, y+8, c_black, c_black, c_black, c_black, false);
-    draw_set_color(c_white);
-    draw_text(x,y,"Closing the game.");
-    }
-    else if (gameEndTimer&lt;20 &amp;&amp; gameEndTimer&gt;=10)
-    {
-    draw_rectangle_color(x, y, x+159, y+8, c_black, c_black, c_black, c_black, false);
-    draw_set_color(c_white);
-    draw_text(x,y,"Closing the game..");
-    }
-    else if (gameEndTimer&lt;10)
-    {
-    draw_rectangle_color(x, y, x+159, y+8, c_black, c_black, c_black, c_black, false);
-    draw_set_color(c_white);
-    draw_text(x,y,"Closing the game...");
-    }
-}
-</string>
-          </argument>
-        </arguments>
-      </action>
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
             <string>///Handle Intro and set font
 draw_enable_alphablend(false);
 
@@ -908,9 +892,9 @@ draw_set_font(global.font);
 
 if global.tick&lt;=waitTime+10
 {
-draw_set_color(c_white);
-draw_set_alpha(1);
-draw_text(8*5,8*12,"    Gradius Engine#      v1.3 Alpha##          by##     mysterypaint#");
+    draw_set_color(c_white);
+    draw_set_alpha(1);
+    draw_text(8*5,8*12,"    Gradius Engine#         v1.3##          by##     mysterypaint#");
 }
 
 //Fade out on top of the text
@@ -919,8 +903,8 @@ draw_set_color(c_black);
 
 if global.tick&lt;=15 || (global.tick &gt;waitTime+5 &amp;&amp; global.tick &lt;=waitTime+10)
 {
-draw_set_alpha(0.8);
-draw_rectangle(-1,16,257,257,false);
+    draw_set_alpha(0.8);
+    draw_rectangle(-1,16,257,257,false);
 }
 else if (global.tick&gt;15 &amp;&amp; global.tick&lt;=20) || (global.tick&gt;waitTime &amp;&amp; global.tick&lt;=waitTime+5)
 {
@@ -971,6 +955,15 @@ if (global.state==states.equipScreen)
     equipShieldBlinkShow = !equipShieldBlinkShow;
     }
     
+    if (global.tick%90==0)
+    {
+        frModeFlicker = !frModeFlicker;
+    }
+    
+    if (global.tick%8==0)
+    {
+        glFlicker = !glFlicker;
+    }
     
     //All the code from here to the bottom draws the green, rectangular boxes on the Equip Type Mode screen
     draw_set_color($88E0A0);
@@ -1003,9 +996,76 @@ if (global.state==states.equipScreen)
         draw_rectangle(183+(equipShieldPos*48),190,183+(equipShieldPos*48),211,false);     //Right
         draw_rectangle(155+(equipShieldPos*48),215,180+(equipShieldPos*48),215,false);     //Lower
         }
+        
+        if (global.frModeEnabled &amp;&amp; frModeFlicker)
+        {
+            draw_set_color(c_yellow);
+            draw_text(0,8*28,"Friendly Mode: Auto-Force Field");
+        }
+    }
+    
+    if (shieldSelect&gt;1)
+    {
+        draw_set_color(c_black);
+        draw_rectangle(0,8*13,300,8*16,false);
+        if (glFlicker)
+        {
+            draw_set_color(c_white);
+            draw_text((8*11)+4,8*14,"Good luck!");
+        }
     }
 }
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Handle game closing (if objCamera doesn't exist yet)
+draw_enable_alphablend(false);
 
+if !instance_exists(objCamera)
+{
+    draw_set_alpha(1);
+    if (gameEndTimer&lt;40 &amp;&amp; gameEndTimer&gt;=30)
+    {
+    draw_rectangle_color(x, y, x+159, y+8, c_black, c_black, c_black, c_black, false);
+    draw_set_color(c_white);
+    draw_text(x,y,"Closing the game");
+    }
+    else if (gameEndTimer&lt;30 &amp;&amp; gameEndTimer&gt;=20)
+    {
+    draw_rectangle_color(x, y, x+159, y+8, c_black, c_black, c_black, c_black, false);
+    draw_set_color(c_white);
+    draw_text(x,y,"Closing the game.");
+    }
+    else if (gameEndTimer&lt;20 &amp;&amp; gameEndTimer&gt;=10)
+    {
+    draw_rectangle_color(x, y, x+159, y+8, c_black, c_black, c_black, c_black, false);
+    draw_set_color(c_white);
+    draw_text(x,y,"Closing the game..");
+    }
+    else if (gameEndTimer&lt;10)
+    {
+    draw_rectangle_color(x, y, x+159, y+8, c_black, c_black, c_black, c_black, false);
+    draw_set_color(c_white);
+    draw_text(x,y,"Closing the game...");
+    }
+}
 </string>
           </argument>
         </arguments>

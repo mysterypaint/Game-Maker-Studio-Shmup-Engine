@@ -50,7 +50,6 @@
       <sound>sound\BGM03</sound>
     </sounds>
     <sounds name="sfx">
-      <sound>sound\___unusedSound</sound>
       <sound>sound\itsjoke</sound>
       <sound>sound\sfxBarrierWeaken</sound>
       <sound>sound\sfxBigExplosion</sound>
@@ -67,6 +66,8 @@
       <sound>sound\sfxMenuStart</sound>
       <sound>sound\sfxMenuTweak</sound>
       <sound>sound\sfxMissile</sound>
+      <sound>sound\sfxRippleLaser</sound>
+      <sound>sound\sfxSpreadBomb</sound>
     </sounds>
   </sounds>
   <sprites name="sprites">
@@ -82,26 +83,32 @@
       <sprite>sprites\sprBigExplosion</sprite>
       <sprite>sprites\sprBossBarrier</sprite>
     </sprites>
+    <sprites name="Player">
+      <sprite>sprites\sprBullet</sprite>
+      <sprite>sprites\sprDouble</sprite>
+      <sprite>sprites\sprFrontShield</sprite>
+      <sprite>sprites\sprLaser</sprite>
+      <sprite>sprites\sprMissile</sprite>
+      <sprite>sprites\sprOption</sprite>
+      <sprite>sprites\sprPlayer</sprite>
+      <sprite>sprites\sprPlayerCapsuleHitbox</sprite>
+      <sprite>sprites\sprPlayerExplode</sprite>
+      <sprite>sprites\sprPlayerFlame</sprite>
+      <sprite>sprites\sprPlayerHitbox</sprite>
+      <sprite>sprites\sprRippleLaser</sprite>
+      <sprite>sprites\sprSpreadExplosion</sprite>
+      <sprite>sprites\sprTwinLaser</sprite>
+      <sprite>sprites\sprForceField</sprite>
+    </sprites>
     <sprite>sprites\spr_crosshair</sprite>
     <sprite>sprites\spr16x16</sprite>
-    <sprite>sprites\sprBullet</sprite>
     <sprite>sprites\sprCapsule</sprite>
     <sprite>sprites\sprCursor</sprite>
-    <sprite>sprites\sprDouble</sprite>
+    <sprite>sprites\sprEquipHighlight</sprite>
     <sprite>sprites\sprFont</sprite>
-    <sprite>sprites\sprFrontShield</sprite>
-    <sprite>sprites\sprLaser</sprite>
-    <sprite>sprites\sprMissile</sprite>
-    <sprite>sprites\sprOption</sprite>
-    <sprite>sprites\sprPlayer</sprite>
-    <sprite>sprites\sprPlayerCapsuleHitbox</sprite>
-    <sprite>sprites\sprPlayerExplode</sprite>
-    <sprite>sprites\sprPlayerFlame</sprite>
-    <sprite>sprites\sprPlayerHitbox</sprite>
     <sprite>sprites\sprPowerupHUD</sprite>
     <sprite>sprites\sprStart</sprite>
     <sprite>sprites\sprTitleLogo</sprite>
-    <sprite>sprites\sprEquipHighlight</sprite>
   </sprites>
   <backgrounds name="background">
     <background>background\tileset0</background>
@@ -114,6 +121,7 @@
   <scripts name="scripts">
     <script>scripts\__README.gml</script>
     <script>scripts\changeBGM.gml</script>
+    <script>scripts\compareBarrierGroup.gml</script>
     <script>scripts\drawLaser.gml</script>
     <script>scripts\drawSprites.gml</script>
     <script>scripts\handleBGM.gml</script>
@@ -128,6 +136,7 @@
       <script>scripts\placeSprites.gml</script>
       <script>scripts\spawnSprites.gml</script>
       <script>scripts\changeMap.gml</script>
+      <script>scripts\spawnBoss1.gml</script>
     </scripts>
     <script>scripts\menuExecute.gml</script>
     <script>scripts\resetRoom.gml</script>
@@ -152,18 +161,21 @@
       <object>objects\objEnemyParent</object>
       <object>objects\objLion</object>
     </objects>
-    <object>objects\objBullet</object>
     <object>objects\objCamera</object>
-    <object>objects\objCapsule</object>
-    <object>objects\objDouble</object>
-    <object>objects\objFrontShield</object>
-    <object>objects\objLaser</object>
     <object>objects\objMain</object>
-    <object>objects\objMissile</object>
-    <object>objects\objOption</object>
-    <object>objects\objPlayer</object>
-    <object>objects\objPlayerCapsuleHitbox</object>
     <object>objects\objTitle</object>
+    <objects name="Player">
+      <object>objects\objBullet</object>
+      <object>objects\objCapsule</object>
+      <object>objects\objDouble</object>
+      <object>objects\objFrontShield</object>
+      <object>objects\objLaser</object>
+      <object>objects\objMissile</object>
+      <object>objects\objOption</object>
+      <object>objects\objPlayer</object>
+      <object>objects\objPlayerCapsuleHitbox</object>
+      <object>objects\objSpreadExplosion</object>
+    </objects>
   </objects>
   <rooms name="rooms">
     <room>rooms\room0</room>

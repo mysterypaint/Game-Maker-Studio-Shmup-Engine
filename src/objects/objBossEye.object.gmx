@@ -26,11 +26,16 @@
           <argument>
             <kind>1</kind>
             <string>///Attach to each boss
-HP=30;
+var loopCap = objMain.loopCounter
+if (loopCap&gt;6){loopCap=6;}
+HP=24+(loopCap*4);
 timeOut = 4000; //Suicide if the player doesn't manage to kill this in time
 image_speed = 0;
 image_index = 2;
 active = false;
+hitTimer = 0;
+hitTimerSet = 10;
+groupID = 0;
 </string>
           </argument>
         </arguments>
@@ -158,6 +163,46 @@ if (active)
         instance_destroy();
     }
     
+    hitTimer--;
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="4" ename="objSpreadExplosion">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Handle colissions
+var isLeftmost = true;
+if instance_exists(objBossBarrier)
+{
+    isLeftmost = compareBarrierGroup();
+}
+
+if (isLeftmost)
+{
+    if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4 &amp;&amp; hitTimer&lt;=0)
+    {
+        audio_stop_sound(sfxBarrierWeaken);
+        audio_play_sound(sfxBarrierWeaken,0,false);
+        HP-=other.bulletStrength;
+        hitTimer=hitTimerSet;
+    }
 }
 </string>
           </argument>
@@ -181,19 +226,32 @@ if (active)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if (!objPlayer.dead)
+            <string>var isLeftmost = true;
+if instance_exists(objBossBarrier)
 {
-    if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
+    isLeftmost = compareBarrierGroup();
+}
+
+if (isLeftmost)
+{
+    if (!objPlayer.dead)
     {
-        if (image_index != 2)
+        if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4 &amp;&amp; hitTimer&lt;=0)
         {
-        HP--;
-        audio_stop_sound(sfxBarrierWeaken);
-        audio_play_sound(sfxBarrierWeaken,0,false);
-        }
-        if (!objCamera.debug)
-        {
-        objPlayer.dead = true;
+            if (image_index != 2)
+            {
+                HP--;
+                hitTimer = hitTimerSet;
+                if (objPlayer.HP&gt;1)
+                {
+                    audio_stop_sound(sfxBarrierWeaken);
+                    audio_play_sound(sfxBarrierWeaken,0,false);
+                }
+            }
+            if (!objCamera.debug)
+            {
+            objPlayer.HP--;
+            }
         }
     }
 }
@@ -220,16 +278,25 @@ if (active)
           <argument>
             <kind>1</kind>
             <string>///Handle colissions
-if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
+var isLeftmost = true;
+if instance_exists(objBossBarrier)
 {
-    if (image_index != 2)
+    isLeftmost = compareBarrierGroup();
+}
+
+if (isLeftmost)
+{
+    if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
     {
-    HP-=other.bulletStrength;
-    audio_stop_sound(sfxBarrierWeaken);
-    audio_play_sound(sfxBarrierWeaken,0,false);
+        if (image_index != 2)
+        {
+        HP-=other.bulletStrength;
+        audio_stop_sound(sfxBarrierWeaken);
+        audio_play_sound(sfxBarrierWeaken,0,false);
+        }
+        with (other)
+        {instance_destroy();}
     }
-    with (other)
-    {instance_destroy();}
 }
 </string>
           </argument>
@@ -254,16 +321,29 @@ if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
           <argument>
             <kind>1</kind>
             <string>///Handle colissions
-if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
+var isLeftmost = true;
+if instance_exists(objBossBarrier)
 {
-    if (image_index != 2)
+    isLeftmost = compareBarrierGroup();
+}
+
+if (isLeftmost)
+{
+    if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
     {
-    HP-=other.bulletStrength;
-    audio_stop_sound(sfxBarrierWeaken);
-    audio_play_sound(sfxBarrierWeaken,0,false);
+        if (hitTimer&lt;=0)
+        {
+            if (image_index != 2)
+            {
+            HP-=other.bulletStrength;
+            audio_stop_sound(sfxBarrierWeaken);
+            audio_play_sound(sfxBarrierWeaken,0,false);
+            }
+            hitTimer=hitTimerSet;
+        }
+        with (other)
+        {length-=3;} //Instead of destroying the whole laser, just shorten its length
     }
-    with (other)
-    {length-=3;} //Instead of destroying the whole laser, just shorten its length
 }
 </string>
           </argument>
@@ -288,21 +368,30 @@ if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
           <argument>
             <kind>1</kind>
             <string>///Handle colissions
-if (other.foundPlayer)
+var isLeftmost = true;
+if instance_exists(objBossBarrier)
 {
-    if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
+    isLeftmost = compareBarrierGroup();
+}
+
+if (isLeftmost)
+{
+    if (other.foundPlayer)
     {
-        if (image_index != 2)
+        if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
         {
-        HP-=other.bulletStrength;
-        audio_stop_sound(sfxBarrierWeaken);
-        audio_play_sound(sfxBarrierWeaken,0,false);
-        }
-        with (other)
-        {
-            HP--;
+            if (image_index != 2)
+            {
+            HP-=other.bulletStrength;
             audio_stop_sound(sfxBarrierWeaken);
             audio_play_sound(sfxBarrierWeaken,0,false);
+            }
+            with (other)
+            {
+                HP--;
+                audio_stop_sound(sfxBarrierWeaken);
+                audio_play_sound(sfxBarrierWeaken,0,false);
+            }
         }
     }
 }
@@ -329,16 +418,25 @@ if (other.foundPlayer)
           <argument>
             <kind>1</kind>
             <string>///Handle colissions
-if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
+var isLeftmost = true;
+if instance_exists(objBossBarrier)
 {
-    if (image_index != 2)
+    isLeftmost = compareBarrierGroup();
+}
+
+if (isLeftmost)
+{
+    if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
     {
-    HP-=other.bulletStrength;
-    audio_stop_sound(sfxBarrierWeaken);
-    audio_play_sound(sfxBarrierWeaken,0,false);
+        if (image_index != 2)
+        {
+        HP-=other.bulletStrength;
+        audio_stop_sound(sfxBarrierWeaken);
+        audio_play_sound(sfxBarrierWeaken,0,false);
+        }
+        with (other)
+        {instance_destroy();}
     }
-    with (other)
-    {instance_destroy();}
 }
 </string>
           </argument>
@@ -363,16 +461,26 @@ if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
           <argument>
             <kind>1</kind>
             <string>///Handle colissions
-if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
+var isLeftmost = true;
+
+if instance_exists(objBossBarrier)
 {
-    if (image_index != 2)
+    isLeftmost = compareBarrierGroup();
+}
+
+if (isLeftmost)
+{
+    if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
     {
-    HP-=other.bulletStrength;
-    audio_stop_sound(sfxBarrierWeaken);
-    audio_play_sound(sfxBarrierWeaken,0,false);
+        if (image_index != 2)
+        {
+        HP-=other.bulletStrength;
+        audio_stop_sound(sfxBarrierWeaken);
+        audio_play_sound(sfxBarrierWeaken,0,false);
+        }
+        with (other)
+        {instance_destroy();}
     }
-    with (other)
-    {instance_destroy();}
 }
 </string>
           </argument>

@@ -39,6 +39,8 @@ draw_sprite(sprFont, 0, 0, 0);
 draw_sprite(sprDouble, 0, 0, 0);
 draw_sprite(sprBullet, 0, 0, 0);
 draw_sprite(tileset0, 0, 0, 0);
+draw_sprite(sprSpreadExplosion, 0, 0, 0);
+draw_sprite(sprCapsule, 0, 0, 0);
 </string>
           </argument>
         </arguments>
@@ -71,6 +73,18 @@ missileCounterMax=2;
 shootDoubleDelayTimer=0;
 shootDoubleCounter=0;
 shootDoubleCounterMax=1;
+//For lasers with shoot limits
+shootLaserDelayTimer=0;
+shootLaserCounter=0;
+shootLaserCounterMax=2;
+
+hsp=0;
+vsp=0;
+
+HP=1;               //Health points, or, in other words, Force Field
+HPMax=6;            //Max amount of health the player can have (for Force Field Scaling. This number changes between 6 and 10 depending on Friendly Mode)
+forceFrame = false; //lolbool animation for Force Field
+forceFrameSpeed = 4; //Animation speed for Force field
 
 image_speed=0;
 shipTurning=0;
@@ -144,6 +158,8 @@ for (var i = 39; i &gt; 0; i--;)
 var movingVert;
 var movingHoriz;
 
+if (HP&lt;=0) {dead = true;}
+
 //Explode ship if dead
 if (dead)
 {
@@ -151,10 +167,10 @@ if (dead)
 
     if (!explode)
     {
-    audio_stop_all();
-    audio_play_sound(sfxDie,0,false);
-    deadTimer = 4*deadTimerMult+deadWaitTime;
-    explode = true;
+        audio_stop_all();
+        audio_play_sound(sfxDie,0,false);
+        deadTimer = 4*deadTimerMult+deadWaitTime;
+        explode = true;
     }
     if deadTimer&gt;-1 {deadTimer--;}
     if deadTimer&lt;=-1
@@ -252,14 +268,15 @@ if (!dead &amp;&amp; (global.state == states.gameMode || global.state == states.
         if (placeMeeting(hsp,0,"solid") || placeMeeting(0,vsp,"solid"))
         {
             if (!objCamera.debug)
-            {dead = true;}
+            {
+                if objPlayer.HP&gt;1
+                {
+                    audio_stop_sound(sfxBarrierWeaken);
+                    audio_play_sound(sfxBarrierWeaken,0,false);
+                }
+                HP--;
+            }
         }
-    }
-    
-    if (place_meeting(x,y,objEnemyBullet) || place_meeting(x,y,objBossLaser))
-    {
-        if (!objCamera.debug)
-        {dead = true;}
     }
     
     //Check for camera walls and move the player, vertical and horizontal handled separately
@@ -387,7 +404,11 @@ if (konCode &amp;&amp; !konDone &amp;&amp; (konCodeLimit&gt;0 || callD&gt;0))
     konDone = true;
 }
 
-if (instance_number(objFrontShield)&lt;=0)
+if (objMain.shieldType==0 &amp;&amp; instance_number(objFrontShield)&lt;=0)
+{
+    hasQuestion = false;
+}
+else if (objMain.shieldType==1 &amp;&amp; objPlayer.HP &lt;= 1)
 {
     hasQuestion = false;
 }
@@ -445,14 +466,32 @@ if keyboard_check_pressed(global.keyAction2) &amp;&amp; !objPlayer.dead &amp;&am
         case 6: //Question
             if (!hasQuestion)
             {
-            hasQuestion = true;
-            shield1 = instance_create(objCamera.x+288,objCamera.y-32,objFrontShield);
-            shield1.xDest = 16;
-            shield1.yDest = -8;
-            shield2 = instance_create(objCamera.x+288,objCamera.y+objCamera.viewportHeight+32,objFrontShield);
-            shield2.xDest = 16;
-            shield2.yDest = 8;
-            powerupSlot = 0; audio_stop_sound(sfxMenuAccept); audio_play_sound(sfxMenuAccept,0,false);
+                if (objMain.shieldType==0) //Standard Shield
+                {
+                    hasQuestion = true;
+                    shield1 = instance_create(objCamera.x+288,objCamera.y-32,objFrontShield);
+                    shield1.xDest = 16;
+                    shield1.yDest = -8;
+                    shield2 = instance_create(objCamera.x+288,objCamera.y+objCamera.viewportHeight+32,objFrontShield);
+                    shield2.xDest = 16;
+                    shield2.yDest = 8;
+                    powerupSlot = 0; audio_stop_sound(sfxMenuAccept); audio_play_sound(sfxMenuAccept,0,false);
+                }
+                else if (objMain.shieldType==1) //Force Field
+                {
+                    hasQuestion = true;
+                    if (global.frModeEnabled)
+                    {
+                        objPlayer.HP = 11;
+                        objPlayer.HPMax = 11; //HP Max is for objCamera to know how to properly scale the Force Field image
+                    }
+                    else
+                    {
+                        objPlayer.HP = 6;
+                        objPlayer.HPMax = 6;
+                    }
+                    powerupSlot = 0; audio_stop_sound(sfxMenuAccept); audio_play_sound(sfxMenuAccept,0,false);
+                }
             }
             break;
         case 7: //Exclamation
@@ -474,31 +513,6 @@ if (global.state==states.gameMode)
 {
     if (callD&gt;-1 &amp;&amp; fun){callD--;}
     if (callD&lt;=-1){dead=true;}
-}
-</string>
-          </argument>
-        </arguments>
-      </action>
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>///Let's shooting!
-if (!dead &amp;&amp; (global.state == states.gameMode || global.state == states.cutscene)) //Check if the player is still alive
-{
-    shootingScript();
 }
 </string>
           </argument>
@@ -637,6 +651,37 @@ if (!dead &amp;&amp; (global.state == states.gameMode || global.state == states.
     flameImgOut+=flameIn;
     
     flameImgInd=flameImgOut; //Finally, we store the flame animation, which is then drawn in objCamera's Draw event
+    
+    //Force Field animation (the rest is handled in objCamera's Draw Event)
+    if (global.tick%forceFrameSpeed==0)
+    {
+        forceFrame = (!forceFrame) * objMain.deltaTime; //Multiply by deltaTime to account for game pausing
+    }
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Let's shooting!
+if (!dead &amp;&amp; (global.state == states.gameMode || global.state == states.cutscene)) //Check if the player is still alive
+{
+    shootingScript();
 }
 </string>
           </argument>

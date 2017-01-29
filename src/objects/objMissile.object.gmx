@@ -25,11 +25,23 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>bulletStrength = 3;
+            <string>image_speed = 0; //Unused; keep at 0 to prevent glitchy animation
+image_index = 0; //Initial frame animation starts on
+//Instead, we'll handle these variables manually.
+imgIndex=0;
+imgSpeed=0.2;
+
+bulletStrength = 3;
 landedGround = false;
-image_speed = 0;
-image_index = 3;
+silentKill = false;
+
 playedSFX = false;
+vsp = 3;
+hsp = 3;
+grav = 0;
+yOffset = 0; //Graphical modification for whenever the missile is on the ground
+
+afterFromShip = false; //animation flag for Photon Torpedo
 </string>
           </argument>
         </arguments>
@@ -55,7 +67,43 @@ playedSFX = false;
             <string>///As our missile is being destroyed, decrement the shoot counter of the gun it came from
 with (parentGun)
 {
-    missileCounter--;
+    if (objMain.missileType==3)
+    {
+        missileCounter-=2;
+    }
+    else
+    {
+        missileCounter--;
+    }
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Create a Spread Bomb Explosion
+if (global.state == states.gameMode)
+{
+    if (objMain.missileType==3 &amp;&amp; !silentKill)
+    {
+        var thisExplosion = instance_create(x,y,objSpreadExplosion);
+        thisExplosion.parentGun = parentGun;
+    }
 }
 </string>
           </argument>
@@ -79,42 +127,274 @@ with (parentGun)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if (global.state == states.gameMode)
-{
-    var grav = 3;
-    landedGround = false;
-    
-    if (x&gt;=0 &amp;&amp; y&gt;=0 &amp;&amp; x&lt;=global.mapWidth*global.tileWidth &amp;&amp; y&lt;=global.mapHeight * global.tileHeight)
-    {
-        if placeMeeting(0,grav,"solid")
-        {y=floor(y/16)*16+8;landedGround=true;}
-        if placeMeeting(1,0,"solid")
-        {instance_destroy();}
-    }
+            <string>///Standard Missile
 
-    if (!landedGround)
+if (global.state == states.gameMode)
+{
+    if objMain.missileType == 1
     {
-        y+=grav;
-        x+=1;
-        image_index = 2;
-    }
-    else
-    {x+=3; image_index = 0;}
+        landedGround = false;
         
-    if (x&gt;objCamera.x+objCamera.viewportWidth+64 || y&gt;objCamera.y+objCamera.viewportHeight+12)
-    {
-        instance_destroy();
-    }
-    
-    if (!playedSFX)
-    {
-        with (parentGun)
+        if (x&gt;=0 &amp;&amp; y&gt;=0 &amp;&amp; x&lt;=global.mapWidth*global.tileWidth &amp;&amp; y&lt;=global.mapHeight * global.tileHeight)
         {
-            if (object_get_name(object_index)=="objPlayer")
+            if placeMeeting(0,vsp,"solid")
+            {y=floor(y/16)*16+8;landedGround=true;}
+            if placeMeeting(1,0,"solid")
+            {instance_destroy();}
+        }
+    
+        if (!landedGround)
+        {
+            y+=vsp;
+            x+=1;
+            image_index = 2;
+            yOffset = 0;
+        }
+        else
+        {x+=hsp; image_index = 0; yOffset = 4;}
+            
+        if (x&gt;objCamera.x+objCamera.viewportWidth+64 || y&gt;objCamera.y+objCamera.viewportHeight+12)
+        {
+            instance_destroy();
+        }
+        
+        if (!playedSFX)
+        {
+            with (parentGun)
             {
-            audio_stop_sound(sfxMissile);
-            audio_play_sound(sfxMissile,2,false);
-            other.playedSFX = true;
+                if (object_get_name(object_index)=="objPlayer")
+                {
+                audio_stop_sound(sfxMissile);
+                audio_play_sound(sfxMissile,2,false);
+                other.playedSFX = true;
+                }
+            }
+        }
+    }
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///2-Way Missile
+
+if (global.state == states.gameMode)
+{
+    if (objMain.missileType == 2)
+    {
+        //Animate
+        if (imgIndex&lt;sprite_get_number(sprMissile)-1)
+        {
+            imgIndex+=imgSpeed;    
+        }
+        image_index=imgIndex;
+        
+        if (grav&lt;9.81)
+        {
+        grav+=0.15;
+        }
+        vsp = grav;
+        
+        if (myID == 2)
+        {
+            vsp = -grav;
+            image_yscale = -1;
+        }
+        
+        hsp = 1;
+        
+        //Move the missile
+        y+=vsp;
+        x+=hsp;
+        
+        //Destroy self if we hit any wall
+        if (x&gt;=0 &amp;&amp; y&gt;=0 &amp;&amp; x&lt;=global.mapWidth*global.tileWidth &amp;&amp; y&lt;=global.mapHeight * global.tileHeight)
+        {
+            if placeMeeting(0,0,"solid")
+            {instance_destroy();}
+        }
+        
+        //Destroy self if we're too far off the camera bounds    
+        if (x&gt;objCamera.x+objCamera.viewportWidth+64 ||
+            y&gt;objCamera.y+objCamera.viewportHeight+12 ||
+            y&lt;objCamera.y-12)
+        {
+            instance_destroy();
+        }
+        
+        if (!playedSFX)
+        {
+            with (parentGun)
+            {
+                if (object_get_name(object_index)=="objPlayer")
+                {
+                audio_stop_sound(sfxMissile);
+                audio_play_sound(sfxMissile,2,false);
+                other.playedSFX = true;
+                }
+            }
+        }
+    }
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Spread Bomb
+if (global.state == states.gameMode)
+{
+    if (objMain.missileType == 3)
+    {
+        //Animate
+        if (imgIndex&lt;sprite_get_number(sprMissile)-1)
+        {
+            imgIndex+=imgSpeed;    
+        }
+        image_index=imgIndex;
+        
+        if (grav&lt;9.81)
+        {
+        grav+=0.15;
+        }
+        vsp = grav;
+        
+        hsp = 2.5;
+        
+        //Move the missile
+        y+=vsp;
+        x+=hsp;
+        
+        //Destroy self if we hit any wall
+        if (x&gt;=0 &amp;&amp; y&gt;=0 &amp;&amp; x&lt;=global.mapWidth*global.tileWidth &amp;&amp; y&lt;=global.mapHeight * global.tileHeight)
+        {
+            if placeMeeting(0,0,"solid")
+            {instance_destroy();}
+        }
+        
+        //Destroy self if we're too far off the camera bounds    
+        if (x&gt;objCamera.x+objCamera.viewportWidth+64 ||
+            y&gt;objCamera.y+objCamera.viewportHeight+12 ||
+            y&lt;objCamera.y-12)
+        {
+            silentKill = true;
+            instance_destroy();
+        }
+        
+        if (!playedSFX)
+        {
+            with (parentGun)
+            {
+                if (object_get_name(object_index)=="objPlayer")
+                {
+                audio_stop_sound(sfxMissile);
+                audio_play_sound(sfxMissile,2,false);
+                other.playedSFX = true;
+                }
+            }
+        }
+    }
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Photon Torpedo
+if (global.state == states.gameMode)
+{
+    if objMain.missileType == 4
+    {
+        landedGround = false;
+        
+        if (x&gt;=0 &amp;&amp; y&gt;=0 &amp;&amp; x&lt;=global.mapWidth*global.tileWidth &amp;&amp; y&lt;=global.mapHeight * global.tileHeight)
+        {
+            if placeMeeting(0,vsp,"solid")
+            {y=floor(y/16)*16+8;landedGround=true;}
+            if placeMeeting(1,0,"solid")
+            {instance_destroy();}
+        }
+    
+        if (!landedGround)
+        {
+            y+=vsp;
+            
+            if (!afterFromShip)
+            {
+            image_index = 0;
+            x-=0.2;
+            }
+            else
+            {
+            image_index = 2;
+            x+=1;
+            }
+            yOffset = 0;
+        }
+        else
+        {x+=hsp; image_index = 0; afterFromShip = true; yOffset = 4;}
+            
+        if (x&gt;objCamera.x+objCamera.viewportWidth+64 || y&gt;objCamera.y+objCamera.viewportHeight+12)
+        {
+            instance_destroy();
+        }
+        
+        if (!playedSFX)
+        {
+            with (parentGun)
+            {
+                if (object_get_name(object_index)=="objPlayer")
+                {
+                audio_stop_sound(sfxMissile);
+                audio_play_sound(sfxMissile,2,false);
+                other.playedSFX = true;
+                }
             }
         }
     }

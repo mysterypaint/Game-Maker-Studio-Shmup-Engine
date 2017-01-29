@@ -25,11 +25,15 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///Declare some variables
+            <string>event_inherited();
+///Declare some variables
 active = false;
-HP = 20;
+HP = 16;
 myID = 0;
 silentKill=false;
+groupID = 0;
+hitTimer = 0;
+hitTimerSet = 10;
 </string>
           </argument>
         </arguments>
@@ -53,30 +57,32 @@ silentKill=false;
           <argument>
             <kind>1</kind>
             <string>///Upon destruction, depending which game loop we're on, fire some extra bullets
-
-var bulletsToFire=3;
-switch(objMain.loopCounter)
+if (!silentKill)
 {
-    case 0: bulletsToFire=0; break;
-    case 1: bulletsToFire=0; break;
-    case 2: bulletsToFire=1; break;
-    case 3: bulletsToFire=2; break;
-    case 4: bulletsToFire=3; break;
-    case 5: bulletsToFire=4; break;
+    var bulletsToFire=3;
+    switch(objMain.loopCounter)
+    {
+        case 0: bulletsToFire=0; break;
+        case 1: bulletsToFire=0; break;
+        case 2: bulletsToFire=1; break;
+        case 3: bulletsToFire=2; break;
+        case 4: bulletsToFire=3; break;
+        case 5: bulletsToFire=4; break;
+    }
+    
+    for (var i=bulletsToFire; i&gt;0; i--)
+    {
+        var thisEnemyBullet = instance_create(x,y,objEnemyBullet);
+        thisEnemyBullet.direction = direction - irandom(15) + irandom(20);
+    }
+    
+    //Give the player score
+    global.playerScore += 100;
+    audio_stop_sound(sfxEnemyDestroyed);
+    audio_play_sound(sfxEnemyDestroyed,1,false);
+    thisExplosion = instance_create(x,y,obj16x16Explosion);
+    thisExplosion.wasRed = false;
 }
-
-for (var i=bulletsToFire; i&gt;0; i--)
-{
-    var thisEnemyBullet = instance_create(x,y,objEnemyBullet);
-    thisEnemyBullet.direction = direction - irandom(15) + irandom(20);
-}
-
-//Give the player score
-global.playerScore += 100;
-audio_stop_sound(sfxEnemyDestroyed);
-audio_play_sound(sfxEnemyDestroyed,1,false);
-thisExplosion = instance_create(x,y,obj16x16Explosion);
-thisExplosion.wasRed = false;
 </string>
           </argument>
         </arguments>
@@ -182,6 +188,70 @@ if (active)
           </argument>
         </arguments>
       </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Destroy if we don't have a group...
+if (groupID&lt;=0)
+{
+    silentKill=true;
+    instance_destroy();
+}
+
+hitTimer--;
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="4" ename="objSpreadExplosion">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Handle colissions
+if (compareBarrierGroup())
+{
+    if (active &amp;&amp; !objBossParent.dead &amp;&amp; hitTimer&lt;=0)
+    {
+        if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
+        {
+            HP-=other.bulletStrength;
+            hitTimer = hitTimerSet;
+            audio_stop_sound(sfxBarrierWeaken);
+            audio_play_sound(sfxBarrierWeaken,0,false);
+        }
+    }
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
     </event>
     <event eventtype="4" ename="objPlayer">
       <action>
@@ -205,20 +275,26 @@ if (active &amp;&amp; !objBossParent.dead)
 {
     if (!objPlayer.dead)
     {
-        if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
+        if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4 &amp;&amp; hitTimer&lt;=0)
         {
+            if (compareBarrierGroup())
+            {
             HP--;
+            hitTimer = hitTimerSet;
+            }
         }
     }
 }
-if (!objBossParent.dead)
+if (!objBossParent.dead &amp;&amp; objPlayer.HP&gt;1)
 {
     audio_stop_sound(sfxBarrierWeaken);
     audio_play_sound(sfxBarrierWeaken,0,false);
 }
 if (!objCamera.debug)
 {
-objPlayer.dead = true;
+    audio_stop_sound(sfxBarrierWeaken);
+    audio_play_sound(sfxBarrierWeaken,0,false);
+    objPlayer.HP--;
 }
 </string>
           </argument>
@@ -243,20 +319,20 @@ objPlayer.dead = true;
           <argument>
             <kind>1</kind>
             <string>///Handle colissions
-if (active &amp;&amp; !objBossParent.dead)
+if (compareBarrierGroup())
 {
-    if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
+    if (active &amp;&amp; !objBossParent.dead)
     {
-        HP-=other.bulletStrength;
+        if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
+        {
+            HP-=other.bulletStrength;
+            audio_stop_sound(sfxBarrierWeaken);
+            audio_play_sound(sfxBarrierWeaken,0,false);
+        }
     }
+    with (other)
+    {instance_destroy();}
 }
-if (!objBossParent.dead)
-{
-    audio_stop_sound(sfxBarrierWeaken);
-    audio_play_sound(sfxBarrierWeaken,0,false);
-}
-with (other)
-{instance_destroy();}
 </string>
           </argument>
         </arguments>
@@ -280,20 +356,21 @@ with (other)
           <argument>
             <kind>1</kind>
             <string>///Handle colissions
-if (active &amp;&amp; !objBossParent.dead)
+if (compareBarrierGroup())
 {
-    if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
+    if (active &amp;&amp; !objBossParent.dead &amp;&amp; hitTimer&lt;=0)
     {
-        HP-=other.bulletStrength;
+        if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
+        {
+            HP-=other.bulletStrength;
+            hitTimer = hitTimerSet;
+            audio_stop_sound(sfxBarrierWeaken);
+            audio_play_sound(sfxBarrierWeaken,0,false);
+        }
     }
+    with (other)
+    {length-=3;} //Instead of destroying the whole laser, just shorten its length
 }
-if (!objBossParent.dead)
-{
-    audio_stop_sound(sfxBarrierWeaken);
-    audio_play_sound(sfxBarrierWeaken,0,false);
-}
-with (other)
-{length-=3;} //Instead of destroying the whole laser, just shorten its length
 </string>
           </argument>
         </arguments>
@@ -317,25 +394,25 @@ with (other)
           <argument>
             <kind>1</kind>
             <string>///Handle colissions
-if (other.foundPlayer)
+if (compareBarrierGroup())
 {
-    if (active &amp;&amp; !objBossParent.dead)
+    if (other.foundPlayer)
     {
-        if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
+        if (active &amp;&amp; !objBossParent.dead)
         {
-            HP-=other.bulletStrength;
+            if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
+            {
+                HP-=other.bulletStrength;
+                audio_stop_sound(sfxBarrierWeaken);
+                audio_play_sound(sfxBarrierWeaken,0,false);
+            }
         }
-    }
-    if (!objBossParent.dead)
-    {
-        audio_stop_sound(sfxBarrierWeaken);
-        audio_play_sound(sfxBarrierWeaken,0,false);
-    }
-    with (other)
-    {
-            HP--;
-            audio_stop_sound(sfxBarrierWeaken);
-            audio_play_sound(sfxBarrierWeaken,0,false);
+        with (other)
+        {
+                HP--;
+                audio_stop_sound(sfxBarrierWeaken);
+                audio_play_sound(sfxBarrierWeaken,0,false);
+        }
     }
 }
 </string>
@@ -361,21 +438,20 @@ if (other.foundPlayer)
           <argument>
             <kind>1</kind>
             <string>///Handle colissions
-if (active &amp;&amp; !objBossParent.dead)
+if (compareBarrierGroup())
 {
-    if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
+    if (active &amp;&amp; !objBossParent.dead)
     {
-        HP-=other.bulletStrength;
+        if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
+        {
+            HP-=other.bulletStrength;
+            audio_stop_sound(sfxBarrierWeaken);
+            audio_play_sound(sfxBarrierWeaken,0,false);
+        }
     }
+    with (other)
+    {instance_destroy();}
 }
-if (!objBossParent.dead)
-{
-    audio_stop_sound(sfxBarrierWeaken);
-    audio_play_sound(sfxBarrierWeaken,0,false);
-}
-
-with (other)
-{instance_destroy();}
 </string>
           </argument>
         </arguments>
@@ -399,20 +475,20 @@ with (other)
           <argument>
             <kind>1</kind>
             <string>///Handle colissions
-if (active &amp;&amp; !objBossParent.dead)
+if (compareBarrierGroup())
 {
-    if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
+    if (active &amp;&amp; !objBossParent.dead)
     {
-        HP-=other.bulletStrength;
+        if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
+        {
+            HP-=other.bulletStrength;
+            audio_stop_sound(sfxBarrierWeaken);
+            audio_play_sound(sfxBarrierWeaken,0,false);
+        }
     }
+    with (other)
+    {instance_destroy();}
 }
-if (!objBossParent.dead)
-{
-    audio_stop_sound(sfxBarrierWeaken);
-    audio_play_sound(sfxBarrierWeaken,0,false);
-}
-with (other)
-{instance_destroy();}
 </string>
           </argument>
         </arguments>

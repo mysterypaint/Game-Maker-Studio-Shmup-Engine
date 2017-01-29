@@ -45,7 +45,7 @@ switch(currentConfig)
         {audio_stop_sound(sfxMenuTweak);audio_play_sound(sfxMenuTweak,1,false);
         global.keyPause=keyboard_key;currentConfig++; configCount++;}
         break;
-    case 9: currentConfig=0; configCount=0; mpos = 4; currentMenu=2; //Go back to the previous menu and hover over "Set Controls"
+    case 9: currentConfig=0; configCount=0; mpos = 5; currentMenu=2; //Go back to the previous menu and hover over "Set Controls"
         break;
     default: break;
 }

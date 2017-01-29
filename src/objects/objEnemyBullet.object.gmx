@@ -60,6 +60,27 @@ speed = (moveSpeed + (loopModifier*0.4)) * objMain.deltaTime;
         <arguments>
           <argument>
             <kind>1</kind>
+            <string>///Collision with objPlayer is in objPlayer's step event
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
             <string>speed = (moveSpeed + (loopModifier*0.4)) * objMain.deltaTime;
 image_speed = speed * objMain.deltaTime;
 
@@ -107,6 +128,39 @@ if (objPlayer.excTimer&gt;0)
     {
         instance_destroy();
     }
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="4" ename="objPlayer">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Deal damage and destroy the colliding instance
+if (!objCamera.debug)
+{
+    if objPlayer.HP&gt;1
+    {
+        audio_stop_sound(sfxBarrierWeaken);
+        audio_play_sound(sfxBarrierWeaken,0,false);
+    }
+    objPlayer.HP--;
+    instance_destroy();
 }
 </string>
           </argument>

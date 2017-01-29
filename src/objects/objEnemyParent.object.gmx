@@ -33,6 +33,8 @@
 HP=1;
 isolatedNum=0; //For grouped enemies (like objBean)
 silentKill=false;
+hitTimer = 0;
+hitTimerSet = 10;
 </string>
           </argument>
         </arguments>
@@ -188,6 +190,34 @@ if (objPlayer.excTimer&gt;0)
         </arguments>
       </action>
     </event>
+    <event eventtype="4" ename="objSpreadExplosion">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Handle colissions
+if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4 &amp;&amp; hitTimer&lt;=0)
+{
+    HP-=other.bulletStrength;
+    hitTimer=hitTimerSet;
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="4" ename="objPlayer">
       <action>
         <libid>1</libid>
@@ -207,12 +237,18 @@ if (objPlayer.excTimer&gt;0)
             <kind>1</kind>
             <string>if (!objPlayer.dead)
 {
-    if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
+    if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4 &amp;&amp; hitTimer&lt;=0)
     {
         HP--;
+        hitTimer = hitTimerSet;
         if (!objCamera.debug)
         {
-        objPlayer.dead = true;
+            if objPlayer.HP&gt;1
+            {
+                audio_stop_sound(sfxBarrierWeaken);
+                audio_play_sound(sfxBarrierWeaken,0,false);
+            }
+            objPlayer.HP--;
         }
     }
 }
@@ -243,7 +279,12 @@ if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
 {
     HP-=other.bulletStrength;
     with (other)
-    {instance_destroy();}
+    {
+        if (objMain.missileType != 4) //Photon Torpedo
+        {
+            instance_destroy();
+        }
+    }
 }
 </string>
           </argument>
@@ -270,9 +311,22 @@ if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
             <string>///Handle colissions
 if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
 {
-    HP-=other.bulletStrength;
-    with (other)
-    {length-=3;} //Instead of destroying the whole laser, just shorten its length
+    if (hitTimer&lt;=0)
+    {
+        HP-=other.bulletStrength;
+        hitTimer=hitTimerSet;
+    }
+    
+    if (!(objMain.laserType==2 || objMain.laserType==4))
+    {
+        with (other)
+        {length-=3;} //Instead of destroying the whole laser, just shorten its length
+    }
+    else
+    {
+        with (other)
+        {instance_destroy();}
+    }
 }
 </string>
           </argument>

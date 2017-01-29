@@ -35,6 +35,17 @@ else
             else if (laserCooldownTimer >0)
             {laserCooldownTimer--;}
             break;
+        case 2: //Ripple Laser
+        case 4: //Twin Laser
+            if (shootLaserDelayTimer<=0 && shootLaserCounter<shootLaserCounterMax && keyboard_check(global.keyAction1))
+            {
+                thisLaser = instance_create(x+objPlayer.hsp+4,y+objPlayer.vsp,objLaser);
+                thisLaser.parentGun = id;
+                shootLaserCounter++;
+                shootLaserDelayTimer=4;
+            }
+            else{shootLaserDelayTimer--;}
+            break;
         default:
             break;
     }
@@ -48,8 +59,6 @@ if (objPlayer.hasDouble)
     {
         if (shootDoubleDelayTimer<=0 && shootDoubleCounter<shootDoubleCounterMax)
         {
-            audio_stop_sound(sfxBulletShot);
-            audio_play_sound(sfxBulletShot,2,false);
             switch(objMain.doubleType)
             {
                 case 1:
@@ -96,10 +105,34 @@ if (objPlayer.hasMissile)
     {
         if (missileDelayTimer<=0 && missileCounter<missileCounterMax)
         {
-            thisBullet = instance_create(x+objPlayer.hsp,y+objPlayer.vsp,objMissile);
-            thisBullet.parentGun = id;
-            missileCounter++;
-            missileDelayTimer=4;
+            switch(objMain.missileType)
+            {
+                case 1: //Standard Missile
+                case 4: //Photon Torpedo
+                    thisBullet = instance_create(x+objPlayer.hsp,y+objPlayer.vsp,objMissile);
+                    thisBullet.parentGun = id;
+                    missileCounter++;
+                    missileDelayTimer=4;
+                    break;
+                case 2: //2-Way Missile
+                    thisBullet = instance_create(x+objPlayer.hsp,y+objPlayer.vsp,objMissile);
+                    thisBullet.parentGun = id;
+                    thisBullet.myID = 1;
+                    thisBullet2 = instance_create(x+objPlayer.hsp,y+objPlayer.vsp,objMissile);
+                    thisBullet2.parentGun = id;
+                    thisBullet2.myID = 2;
+                    missileCounter+=2;
+                    missileDelayTimer=70;
+                    break;
+                case 3: //Spread Bomb
+                    thisBullet = instance_create(x+objPlayer.hsp,y+objPlayer.vsp,objMissile);
+                    thisBullet.parentGun = id;
+                    missileCounter+=2;
+                    missileDelayTimer=30;
+                    break;
+                default:
+                    break;
+            }
         }
         else
         {missileDelayTimer--;}

@@ -3,6 +3,7 @@ if file_exists("sav") {file_delete("sav");}
     ini_write_string("Options","bgmVol",string(global.bgmVol));
     ini_write_string("Options","sfxVol",string(global.sfxVol));
     ini_write_string("Options","grVOptEnabled",string(global.grVOptEnabled));
+    ini_write_string("Options","frModeEnabled",string(global.frModeEnabled));
     ini_write_string("Options","keyUp",string(global.keyUp));
     ini_write_string("Options","keyDown",string(global.keyDown));
     ini_write_string("Options","keyLeft",string(global.keyLeft));

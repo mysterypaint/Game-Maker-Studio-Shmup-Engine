@@ -127,7 +127,12 @@ else
     {
         if (!objCamera.debug)
         {
-        objPlayer.dead = true;
+            if objPlayer.HP&gt;1
+            {
+                audio_stop_sound(sfxBarrierWeaken);
+                audio_play_sound(sfxBarrierWeaken,0,false);
+            }
+            objPlayer.HP--;
         }
     }
 }

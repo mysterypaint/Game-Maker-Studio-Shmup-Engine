@@ -12,6 +12,7 @@ if (powerupSlot>=1){powerupSlot=1;} //Give the player a free capsule on revival 
         objPlayer.cc1=0;
         objPlayer.cc2=0;
         objPlayer.callD = 0;
+        objPlayer.HP = 1;
 
         //Remove all powerups
         playerSpeed = 1;

@@ -1,4 +1,6 @@
 ///This script draws the Gradius Laser from objCamera's Draw event
+draw_enable_alphablend(false);
+
 if instance_exists(objLaser)
 {
     var i;
@@ -7,11 +9,11 @@ if instance_exists(objLaser)
         thisLaser = instance_find(objLaser,i);
         with (thisLaser)
         {
-            if laserType == 1 //Standard laser
+            if objMain.laserType == 1 //Standard laser
             {
                 draw_sprite_ext(sprLaser,2,x,y,image_xscale, image_yscale,0,c_white,1);
             }
-            else if laserType == 3 //C. Laser
+            else if objMain.laserType == 3 //C. Laser
             {
                 for (var j=0; j<=length-1; j++)
                 {
@@ -24,6 +26,18 @@ if instance_exists(objLaser)
                     draw_sprite(sprLaser,cycLas,x+(j*4),y);
                 }
             }
+            else if objMain.laserType == 4 //Twin Laser
+            {
+                draw_enable_alphablend(true);
+                draw_sprite(sprTwinLaser,0,x,y);
+            }
+            else if objMain.laserType == 2 //Ripple Laser
+            {
+                draw_enable_alphablend(true);
+                draw_sprite_ext(sprRippleLaser,0,x,y,image_xscale,image_yscale,0,c_white,1);
+            }
         }
     }
 }
+
+draw_enable_alphablend(true);

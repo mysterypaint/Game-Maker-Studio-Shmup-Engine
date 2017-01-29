@@ -25,17 +25,34 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>timeAlive = 60;
+            <string>///Declare some variables
+timeAlive = 60;
 xSpeed = 0;
 ySpeed = 0;
 length = 1;
 laserEnd = false;
 cycImgIndex = 0;
-bulletStrength = 5;
-
-if !audio_is_playing(sfxLaser)
+bulletStrength = 3;
+playedSound = false; //Specifically for Twin and Ripple Laser
+rippleTimeAlive = 0;
+rippleActivateTime = 14;
+if (objMain.laserType==4)
 {
-    audio_play_sound(sfxLaser,2,false);
+    mask_index = sprTwinLaser;
+}
+else if (objMain.laserType==2)
+{
+    mask_index = sprRippleLaser;
+    image_yscale = 16/48;
+    xScaleMod = 1;
+    yScaleMod = 0;
+}
+else
+{
+    if !audio_is_playing(sfxLaser)
+    {
+        audio_play_sound(sfxLaser,2,false);
+    }
 }
 </string>
           </argument>
@@ -59,8 +76,14 @@ if !audio_is_playing(sfxLaser)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///As our bullet is being destroyed, decrement the shoot counter of the gun it came from
-
+            <string>///For Ripple/Twin, decrement the shoot counter of the gun it came from
+if (objMain.laserType==2 || objMain.laserType==4)
+{
+    with (parentGun)
+    {
+        shootLaserCounter--;
+    }
+}
 </string>
           </argument>
         </arguments>
@@ -83,7 +106,9 @@ if !audio_is_playing(sfxLaser)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if (global.state==states.cutscene || global.state == states.gameMode)
+            <string>///Standard and Cyclone
+
+if ((global.state==states.cutscene || global.state == states.gameMode) &amp;&amp; (objMain.laserType==1 || objMain.laserType==3))
 {
     if (global.tick%3==0)
     {
@@ -183,6 +208,109 @@ if !audio_is_playing(sfxLaser)
     image_xscale = length;
     
     
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Twin Laser
+
+if ((global.state==states.cutscene || global.state == states.gameMode) &amp;&amp; objMain.laserType==4)
+{
+    if (!playedSound)
+    {
+        if (parentGun == objPlayer.id)
+        {
+            audio_stop_sound(sfxLaser);
+            audio_play_sound(sfxLaser,2,false);
+            playedSound = true;
+        }
+        xSpeed = 6;
+    }
+    y+=ySpeed+objCamera.scrollY;
+    x+=xSpeed+objCamera.scrollX;
+    if placeMeeting(0,0,"solid")
+    {instance_destroy();}      
+    
+    if (self.x+objCamera.scrollX+xSpeed&gt;objCamera.x+objCamera.viewportWidth+16) //Shorten the laser as it gets too far off the screen
+    {
+        instance_destroy();
+    }
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Ripple Laser
+
+if ((global.state==states.cutscene || global.state == states.gameMode) &amp;&amp; objMain.laserType==2)
+{
+    if (!playedSound)
+    {
+        if (parentGun == objPlayer.id)
+        {
+            audio_stop_sound(sfxRippleLaser);
+            audio_play_sound(sfxRippleLaser,2,false);
+            playedSound = true;
+        }
+        xSpeed = 6;
+    }
+
+    if ((rippleTimeAlive-rippleActivateTime)%4 == 0)
+    {
+        yScaleMod++;
+    }
+    rippleTimeAlive++;
+    
+    if yScaleMod&gt;4{yScaleMod = 4;}
+    xScaleMod = yScaleMod;
+    if yScaleMod&gt;3{xScaleMod = 3;}
+    else if yScaleMod&lt;1{xScaleMod = 1;}
+    
+    image_xscale = (8 + (2*xScaleMod))/14;
+    image_yscale = ((16 + (yScaleMod*8))/48);
+    
+    y+=ySpeed+objCamera.scrollY;
+    x+=xSpeed+objCamera.scrollX;
+    if placeMeeting(0,0,"solid")
+    {instance_destroy();}      
+    
+    if (self.x+objCamera.scrollX+xSpeed&gt;objCamera.x+objCamera.viewportWidth+16) //Shorten the laser as it gets too far off the screen
+    {
+        instance_destroy();
+    }
 }
 </string>
           </argument>

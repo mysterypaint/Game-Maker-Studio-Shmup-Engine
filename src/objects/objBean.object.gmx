@@ -25,7 +25,9 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///Initialize some variables
+            <string>event_inherited();
+
+///Initialize some variables
 silentKill = false;
 
 //Next time to fire a bullet
@@ -80,7 +82,8 @@ image_speed = 0.24 * objMain.deltaTime;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>event_inherited();
+            <string>
+event_inherited();
 
 if (global.state != states.startRoom &amp;&amp; !objMain.cleaningRoom &amp;&amp; !silentKill)
     {

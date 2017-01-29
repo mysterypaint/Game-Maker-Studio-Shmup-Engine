@@ -26,6 +26,7 @@
           <argument>
             <kind>1</kind>
             <string>///Declare some variables
+event_inherited();
 direction = 0;
 isRed = false;
 active = false;

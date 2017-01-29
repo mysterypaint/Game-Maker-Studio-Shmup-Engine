@@ -41,24 +41,29 @@ else if currentMenu==2
             global.grVOptEnabled = !global.grVOptEnabled;
             audio_stop_sound(sfxMenuTweak);audio_play_sound(sfxMenuTweak,1,false);
             break;
-        //Window Size
+        //Friendly Mode toggle
         case 3:
+            global.frModeEnabled = !global.frModeEnabled;
+            audio_stop_sound(sfxMenuTweak);audio_play_sound(sfxMenuTweak,1,false);
+            break;
+        //Window Size
+        case 4:
             break;
         //Set Controls
-        case 4:
+        case 5:
             audio_stop_sound(sfxMenuAccept);audio_play_sound(sfxMenuAccept,1,false);
             currentConfig=0;currentMenu=3;
             break;
-        case 5:
+        case 6:
         //Save Config
             audio_stop_sound(sfxMenuStart);audio_play_sound(sfxMenuStart,1,false);
             saveOptions();
-            mpos=0;currentMenu-=1;
+            mpos=1;currentMenu-=1;
             break;
         //Back
-        case 6:
+        case 7:
             audio_stop_sound(sfxMenuCancel);audio_play_sound(sfxMenuCancel,1,false);
-            mpos=0;currentMenu-=1;global.bgmVol=prevBGMVol;global.sfxVol=prevSFXVol;objMain.windowSize=prevWindowSize;window_set_size(256*objMain.windowSize,256*objMain.windowSize);
+            mpos=1;currentMenu-=1;global.bgmVol=prevBGMVol;global.sfxVol=prevSFXVol;objMain.windowSize=prevWindowSize;window_set_size(256*objMain.windowSize,256*objMain.windowSize);
             global.keyUp = prevKeyUp;global.keyDown = prevKeyDown;global.keyLeft = prevKeyLeft;global.keyRight = prevKeyRight;global.keyAction1 = prevKeyAction1;global.keyAction2 = prevKeyAction2;global.keyAction3 = prevKeyAction3;global.keyPause = prevKeyPause;
             break;
         //Edge case handling

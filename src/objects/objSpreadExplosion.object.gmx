@@ -6,7 +6,7 @@
   <depth>0</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
-  <maskName>&lt;undefined&gt;</maskName>
+  <maskName>sprSpreadExplosion</maskName>
   <events>
     <event eventtype="0" enumb="0">
       <action>
@@ -25,26 +25,13 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///Declare some variables
-myID = instance_number(objOption);
-enabled = true; //Disable use until the player acquires this ability
-shootDelayTimer=0;
-shootCounter=0;
-shootCounterMaxWithoutDouble=2;
-shootCounterMaxWithDouble=1;
-shootCounterMax=shootCounterMaxWithoutDouble;
-shootDoubleDelayTimer=0;
-shootDoubleCounter=0;
-shootDoubleCounterMax=1;
-laserCooldownTimer=0;
-//For lasers with shoot limits
-shootLaserDelayTimer=0;
-shootLaserCounter=0;
-shootLaserCounterMax=2;
-
-missileDelayTimer=0;
-missileCounter=0;
-missileCounterMax=2;
+            <string>///Initialize, including image alpha
+imgSpeed=0.3;
+bulletStrength = 1;
+imgIndex=1;
+animationReverse = false;
+image_alpha=0.74;
+playedSound=false;
 </string>
           </argument>
         </arguments>
@@ -67,63 +54,37 @@ missileCounterMax=2;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///Basic movement code
-image_speed=0.17 * objMain.deltaTime;
-
-if (global.state == states.gameMode || global.state == states.cutscene)
+            <string>if (!playedSound)
 {
-    //Trail behind the player, even when inactive (to prevent them from zooming in when they get enabled)
-    //(GRV-Style Option Movement code is in the objPlayer Step event)
-    switch(myID)
+    with (objPlayer)
     {
-    case 1:
-        x = objPlayer.prevX[9];
-        y = objPlayer.prevY[9];
-        break;
-    case 2:
-        x = objPlayer.prevX[19];
-        y = objPlayer.prevY[19];
-        break;
-    case 3:
-        x = objPlayer.prevX[29];
-        y = objPlayer.prevY[29];
-        break;
-    case 4:
-        x = objPlayer.prevX[39];
-        y = objPlayer.prevY[39];
-        break;
-    default: break;
+        if (other.parentGun==id)
+        {
+            other.playedSound=true;
+            audio_stop_sound(sfxSpreadBomb);
+            audio_play_sound(sfxSpreadBomb,0,false);
+        }
     }
-
 }
-</string>
-          </argument>
-        </arguments>
-      </action>
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>///Let's shooting!
 
-if (global.state == states.gameMode || global.state == states.cutscene)
-{    
-    if (enabled &amp;&amp; !objPlayer.dead)
-    {
-        shootingScript();
-    }
+if (imgIndex&gt;3.8)
+{
+    animationReverse = true;
+}
+
+if (!animationReverse)
+{
+    imgIndex+=imgSpeed*objMain.deltaTime;
+}
+else{
+    imgIndex-=imgSpeed*objMain.deltaTime;
+}
+
+image_index=floor(imgIndex-1);
+
+if (imgIndex&lt;=0)
+{
+    instance_destroy();
 }
 </string>
           </argument>

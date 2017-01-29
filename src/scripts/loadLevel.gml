@@ -8,6 +8,31 @@ It reads through the whole text document and parses/stores each piece in global 
 spawns all the sprites on the map, then tells objMain that we have finished "switchingMaps".
 */
 
+for (var i=0; i < 6;i++)
+    {
+        var objToFind = "null";
+    
+        switch(i)
+        {
+            case 0: objToFind="objEnemyParent"; break;
+            case 1: objToFind="objBean"; break;
+            case 2: objToFind="objLion"; break;
+            case 3: objToFind="objDee01"; break;
+            case 4: objToFind="objCapsule"; break;
+            default: break;
+        }
+    if (objToFind != "null")
+        {
+            objToFind = asset_get_index(objToFind);
+            for (j = 0; j < instance_number(objToFind); j++)
+            {
+                thisEnemy = instance_find(objToFind,j);
+                thisEnemy.silentKill=false;
+            }
+        }
+}
+
+
 if objMain.extFiles=true
 {
     dir = program_directory + "maps\";
