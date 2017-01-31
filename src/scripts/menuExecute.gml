@@ -11,16 +11,27 @@ if currentMenu==1
             global.state = states.equipScreen;
             objMain.shieldSelect = 0;
             objMain.menuProgressedLast = 0;
+            objMain.currPlayers = 1;
+            instance_destroy();
+            break;
+        //Co-Op Mode (2 Players)
+        case 1:
+            //Jump to the equip screen state
+            //objMain's Step Event and Draw Event control the entire state
+            global.state = states.equipScreen;
+            objMain.shieldSelect = 0;
+            objMain.menuProgressedLast = 0;
+            objMain.currPlayers = 2;
             instance_destroy();
             break;
         //Options
-        case 1:
+        case 2:
             audio_stop_sound(sfxMenuAccept);audio_play_sound(sfxMenuAccept,1,false);
             mpos=0;currentMenu+=1;prevBGMVol=global.bgmVol;prevSFXVol=global.sfxVol;prevWindowSize=objMain.windowSize;
             prevKeyUp = global.keyUp;prevKeyDown = global.keyDown;prevKeyLeft = global.keyLeft;prevKeyRight = global.keyRight;prevKeyAction1 = global.keyAction1;prevKeyAction2 = global.keyAction2;prevKeyAction3 = global.keyAction3;prevKeyPause = global.keyPause;
             break;
         //Quit
-        case 2:
+        case 3:
             game_end();break;
         //Edge case handling
         default: break;
@@ -63,8 +74,25 @@ else if currentMenu==2
         //Back
         case 7:
             audio_stop_sound(sfxMenuCancel);audio_play_sound(sfxMenuCancel,1,false);
-            mpos=1;currentMenu-=1;global.bgmVol=prevBGMVol;global.sfxVol=prevSFXVol;objMain.windowSize=prevWindowSize;window_set_size(256*objMain.windowSize,256*objMain.windowSize);
-            global.keyUp = prevKeyUp;global.keyDown = prevKeyDown;global.keyLeft = prevKeyLeft;global.keyRight = prevKeyRight;global.keyAction1 = prevKeyAction1;global.keyAction2 = prevKeyAction2;global.keyAction3 = prevKeyAction3;global.keyPause = prevKeyPause;
+            mpos=1;currentMenu-=1;global.bgmVol=prevBGMVol;global.sfxVol=prevSFXVol;objMain.windowSize=prevWindowSize;window_set_size(256*objMain.windowSize,256*objMain.windowSize); playerConfig = 1;
+            global.keyUp = prevKeyUp;
+            global.keyDown = prevKeyDown;
+            global.keyLeft = prevKeyLeft;
+            global.keyRight = prevKeyRight;
+            global.keyAction1 = prevKeyAction1;
+            global.keyAction2 = prevKeyAction2;
+            global.keyAction3 = prevKeyAction3;
+            global.keyPause = prevKeyPause;
+            
+            global.keyP2Up = prevKeyP2Up;
+            global.keyP2Down = prevKeyP2Down;
+            global.keyP2Left = prevKeyP2Left;
+            global.keyP2Right = prevKeyP2Right;
+            global.keyP2Action1 = prevKeyP2Action1;
+            global.keyP2Action2 = prevKeyP2Action2;
+            global.keyP2Action3 = prevKeyP2Action3;
+            global.keyP2Pause = prevKeyP2Pause;
+            
             break;
         //Edge case handling
         default: break;

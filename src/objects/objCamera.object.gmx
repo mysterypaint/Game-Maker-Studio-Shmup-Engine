@@ -150,14 +150,14 @@ if (debug)
     }
     
     //Based on the camera movement input, move the camera itself by camMoveSpeed (Defined in objCamera's Create Event)
-    switch(movingVert)
+    switch(movingVert &amp;&amp; (objMain.currPlayers&lt;=1))
     {
     case 1: y-=camMoveSpeed;break; //up
     case 2: y+=camMoveSpeed;break; //down
     default: break;
     }
     
-    switch(movingHoriz)
+    switch(movingHoriz &amp;&amp; (objMain.currPlayers&lt;=1))
     {
     case 1: x-=camMoveSpeed;break; //left
     case 2: x+=camMoveSpeed;break; //right
@@ -421,6 +421,44 @@ if global.state!=4
 {
 
 
+    if (instance_exists(objPlayer2))
+    {
+        if (!objPlayer2.dead)
+        {
+        
+        draw_sprite(sprPlayer2,objPlayer2.image_index,objPlayer2.x,objPlayer2.y-1);
+        draw_sprite(sprPlayerFlame2,objPlayer2.flameImgInd,objPlayer2.x-16,objPlayer2.y);
+        }
+        else
+        {
+            with(objPlayer2)
+                {
+                if (deadTimer&gt;4*deadTimerMult+deadWaitTime){image_index=4;}
+                if (deadTimer&gt;3*deadTimerMult+deadWaitTime &amp;&amp; deadTimer&lt;=4*deadTimerMult+deadWaitTime){image_index=3;}
+                if (deadTimer&gt;2*deadTimerMult+deadWaitTime &amp;&amp; deadTimer&lt;=3*deadTimerMult+deadWaitTime){image_index=2;}
+                if (deadTimer&gt;1*deadTimerMult+deadWaitTime &amp;&amp; deadTimer&lt;=2*deadTimerMult+deadWaitTime){image_index=1;}
+                if (deadTimer&gt;deadWaitTime &amp;&amp; deadTimer&lt;=1*deadTimerMult+deadWaitTime){image_index=0;}
+                }
+                
+                if (objPlayer2.deadTimer&gt;objPlayer2.deadWaitTime)
+                {
+                    draw_sprite(sprPlayerExplode,objPlayer2.image_index,objPlayer2.x,objPlayer2.y-1);
+                }
+        }
+        
+        if (objCamera.debug)
+            {
+            draw_set_alpha(0.4);
+            draw_sprite(sprPlayerCapsuleHitbox,0,objPlayer2.x,objPlayer2.y);
+            draw_set_alpha(0.7);
+            draw_sprite(sprPlayerHitbox,0,objPlayer2.x,objPlayer2.y);
+            draw_set_alpha(1);
+            }
+        }
+    
+        
+        
+        
 if (instance_exists(objPlayer))
 {
     if (!objPlayer.dead)
@@ -455,6 +493,15 @@ if (instance_exists(objPlayer))
         draw_set_alpha(1);
         }
     }
+
+
+
+
+
+
+    
+    
+    
 }
 </string>
           </argument>
@@ -513,7 +560,7 @@ if (global.state != states.startRoom)
     var shieldRatio = ((objPlayer.HP-1)/(objPlayer.HPMax-1+enlargeShield))/2; //Divide by two because the sprite is twice as large
     
     {
-        draw_sprite_ext(sprForceField,objPlayer.forceFrame,objPlayer.x+objPlayer.hsp,objPlayer.y+objPlayer.vsp,shieldRatio,shieldRatio,0,forceColor,0.6);
+        draw_sprite_ext(sprForceField,objPlayer.forceFrame,objPlayer.x+objCamera.scrollX,objPlayer.y+objCamera.scrollY,shieldRatio,shieldRatio,0,forceColor,0.45);
     }
     
     drawSprites(objEnemyBullet,sprEnemyBullet);
@@ -691,86 +738,14 @@ if (global.state==states.gameMode ||
     global.state==states.startRoom ||
     global.state==states.paused)
 {
-    for(var i=0;i&lt;7;i++)
+    if (objMain.currPlayers&lt;=1)
     {
-        //Handle the boxes themselves
-        if (i+1 == objPlayer.powerupSlot)
-        {
-        //original y pos was 212
-        draw_sprite(sprPowerupHUD,1,objCamera.x+16+(32*i),objCamera.y+228);
-        }
-        else
-        {draw_sprite(sprPowerupHUD,0,objCamera.x+16+(32*i),objCamera.y+228);}
+        singlePlayerPowerupHUD();
     }
-    
-    //Handle the actual text in the boxes
-    draw_enable_alphablend(true);
-    var currColor = c_white;
-    
-    //Determine which text to draw onto the screen
-    var currSpeed = 2;
-    var currMissile = 3;
-    var currDouble = 4;
-    var currLaser = 5;
-    var currOption = 6;
-    var currQuestion = 7;
-    var currExclamation = 8;
-    
-    switch(objMain.missileType)
+    else
     {
-        case 2: currMissile=9; //2-way
-            break;
-        case 3: currMissile=12; //Spread Bomb
-            break;
-        case 4: currMissile=15; //Photon Torpedo
-            break;
-        default:
-            break;
+        multiPlayerPowerupHUD();
     }
-    switch(objMain.doubleType)
-    {
-        case 2: currDouble=10; //Tailgun
-            break;
-        case 3: currDouble=13; //Vertical
-            break;
-        case 4: currDouble=16; //Back Double
-            break;
-        default:
-            break;
-    }
-    switch(objMain.laserType)
-    {
-        case 2: currLaser = 11; //Ripple
-            break;
-        case 3: currLaser = 14; //C.Laser
-            break;
-        case 4: currLaser = 17; //Twin Laser
-            break;
-        default:
-            break;
-    }
-    switch(objMain.optionType)
-    {
-        default:
-            break;
-    }
-
-    //Speedup
-    currColor = hudDetermineColor(1); if (objPlayer.playerSpeed &lt; objPlayer.playerSpeedMax) draw_sprite_ext( sprPowerupHUD, currSpeed, objCamera.x+16+(32*0),objCamera.y+228, 1, 1, 0, currColor, 1);
-    //Missile
-    currColor = hudDetermineColor(2); if (!objPlayer.hasMissile) draw_sprite_ext( sprPowerupHUD, currMissile, objCamera.x+16+(32*1),objCamera.y+228, 1, 1, 0, currColor, 1);
-    //Double
-    currColor = hudDetermineColor(3); if (!objPlayer.hasDouble) draw_sprite_ext( sprPowerupHUD, currDouble, objCamera.x+16+(32*2),objCamera.y+228, 1, 1, 0, currColor, 1);
-    //Laser
-    currColor = hudDetermineColor(4); if (!objPlayer.hasLaser) draw_sprite_ext( sprPowerupHUD, currLaser, objCamera.x+16+(32*3),objCamera.y+228, 1, 1, 0, currColor, 1);
-    //Option
-    currColor = hudDetermineColor(5); if (objPlayer.numOfOpts&lt;objPlayer.optsMax) draw_sprite_ext( sprPowerupHUD, currOption, objCamera.x+16+(32*4),objCamera.y+228, 1, 1, 0, currColor, 1);
-    //Question
-    currColor = hudDetermineColor(6); if (!objPlayer.hasQuestion) draw_sprite_ext( sprPowerupHUD, currQuestion, objCamera.x+16+(32*5),objCamera.y+228, 1, 1, 0, currColor, 1);
-    //Exclamation
-    currColor = hudDetermineColor(7); if (!objPlayer.hasExclamation) draw_sprite_ext( sprPowerupHUD, currExclamation, objCamera.x+16+(32*6),objCamera.y+228, 1, 1, 0, currColor, 1);
-    
-    
 }
 </string>
           </argument>
@@ -795,6 +770,10 @@ if (global.state==states.gameMode ||
             <string>///Draw the upper HUD
 draw_enable_alphablend(true);
 draw_set_color(c_white);
+
+var playersText = "1P";
+if (objMain.currPlayers&gt;1) {playersText = "CO";}
+
 //Calculate the spacing between "P1" and the score location
 var dynamicPlayerScoreSpacing="";
 var lenPlayerScore = string_length(string(global.playerScore));
@@ -813,8 +792,15 @@ for(var i=0; i&lt;13-lenHighScore;i++)
 
 //Finally, draw the score onto the screen
 
-draw_text(objCamera.x,objCamera.y+4,"1P" + dynamicPlayerScoreSpacing + string(global.playerScore));
-draw_text(objCamera.x+(8*16),objCamera.y+4,"HI" + dynamicHighScoreSpacing + string(global.highScore));
+draw_text(objCamera.x, objCamera.y+4, playersText + dynamicPlayerScoreSpacing + string(global.playerScore));
+if (objMain.currPlayers&lt;=1)
+{
+    draw_text(objCamera.x+(8*16), objCamera.y+4, "HI" + dynamicHighScoreSpacing + string(global.highScore));
+}
+else
+{
+    draw_text(objCamera.x+(8*16), objCamera.y+4, "HI" + dynamicHighScoreSpacing + string(global.highCoScore));
+}
 
 //Next, draw the lives
 var livesDispNum = global.playerLives; //The number of lives to show on the screen

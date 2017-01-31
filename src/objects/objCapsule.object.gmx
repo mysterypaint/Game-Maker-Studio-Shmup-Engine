@@ -30,24 +30,7 @@
 //Animation speed
 image_speed = 0.2 * objMain.deltaTime;
 
-if place_meeting(x,y,objPlayerCapsuleHitbox)
-{
-    audio_stop_sound(sfxCapsuleGet);
-    audio_play_sound(sfxCapsuleGet,0,false);
-    
-    with(objPlayer)
-    {
-        powerupSlot+=1;
-        if (powerupSlot&gt;7)
-        {
-            powerupSlot=1;
-        }
-    }
-
-    global.playerScore+=500; //I've always been a fan of the risk+reward from this : )
-
-    instance_destroy();
-}
+//Collision handled in objPlayerCapsuleHitbox
 </string>
           </argument>
         </arguments>

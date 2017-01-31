@@ -64,17 +64,19 @@ sineX = x + 4 * sin(2 * pi * global.tick / 150);
 currentMenu=0; //Keeps track of which menu we're on
 currentConfig=0; //Keeps track of where we are in the button configuration screen
 configCount=0; //Counts how many buttons were set on the config screen
+playerConfig = 1; //The player we're about to Set Controls for
 
 menu[0] = "Start";
-menu[1] = "Options";
-menu[2] = "Quit";
+menu[1] = "Co-Op Start";
+menu[2] = "Options";
+menu[3] = "Quit";
 
 menu2[0] = "BGM Vol: " + string(global.bgmVol);
 menu2[1] = "SFX Vol: " + string(global.sfxVol);
 menu2[2] = "GRV Options: " + string(global.grVOptEnabled);
 menu2[3] = "Friendly Mode: " + string(global.frModeEnabled);
 menu2[4] = "Window Size: " + string(objMain.windowSize) + "x";
-menu2[5] = "Set Config";
+menu2[5] = "Set Config: Player " + string(playerConfig);
 menu2[6] = "Apply Changes";
 menu2[7] = "Back";
 
@@ -86,6 +88,9 @@ blinkTimer=0;
 holdLength=20;
 holdTimer=0;
 
+
+//Remember our previous settings in case the user cancels the Options Menu without Apply(ing) Changes.
+
 prevBGMVol=0;
 prevSFXVol=0;
 prevWindowSize=0;
@@ -95,7 +100,17 @@ prevKeyLeft = global.keyLeft;
 prevKeyRight = global.keyRight;
 prevKeyAction1 = global.keyAction1;
 prevKeyAction2 = global.keyAction2;
+prevKeyAction3 = global.keyAction3;
 prevKeyPause = global.keyPause;
+
+prevKeyP2Up = global.keyP2Up;
+prevKeyP2Down = global.keyP2Down;
+prevKeyP2Left = global.keyP2Left;
+prevKeyP2Right = global.keyP2Right;
+prevKeyP2Action1 = global.keyP2Action1;
+prevKeyP2Action2 = global.keyP2Action2;
+prevKeyP2Action3 = global.keyP2Action3;
+prevKeyP2Pause = global.keyP2Pause;
 
 moveYPressed=0;
 holdYTimer=20;
@@ -121,10 +136,64 @@ holdYTimer=20;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>sineX = x + 4 * sin(2 * pi * global.tick / 150);
+            <string>///Listen to game controller input - Step Event
+with (objMain)
+{
+    wasAxis = false;
+    if (abs(lastInputP1GamePad) &gt; 0.1 || (abs(lastInputP1GamePad) &gt; 0 &amp;&amp; abs(lastInputP1GamePad) &lt; 0.1)) {lastInputP1GamePadActual = lastInputP1GamePad;}
+    if (abs(lastInputP1GamePad) &gt; 0.1 || (abs(lastInputP1GamePad) &gt; 0 &amp;&amp; abs(lastInputP1GamePad) &lt; 0.1)) {lastInputP2GamePadActual = lastInputP2GamePad;}
+    
+    lastInputP1GamePad = 0;
+    lastInputP2GamePad = 0;
+    
+    for (i=gp_face1; i&lt;gp_axisrv; i++)
+    {
+        if gamepad_button_check(p1HasController, i)
+        {
+            lastInputP1GamePad = i;
+            exit;
+        }
+    }
+    
+    for (i=gp_face1; i&lt;gp_axisrv; i++)
+    {
+        if gamepad_button_check(p2HasController, i)
+        {
+            lastInputP2GamePad = i;
+            exit;
+        }
+    }
+    
+    if (abs(gamepad_axis_value(p1HasController,gp_axislh)) &gt; 0.5 || abs(gamepad_axis_value(p1HasController,gp_axislv)) &gt; 0.5)
+    {lastInputP1GamePad = gamepad_axis_value(p1HasController,gp_axislv); wasAxis=true;}
+    
+    if (abs(gamepad_axis_value(p2HasController,gp_axislh)) &gt; 0.5 || abs(gamepad_axis_value(p2HasController,gp_axislv)) &gt; 0.5)
+    {lastInputP2GamePad = gamepad_axis_value(p2HasController,gp_axislv); wasAxis=true;}
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Handle the menu
 
-
-//Handle the menu
+//For the cursor floating movement
+sineX = x + 4 * sin(2 * pi * global.tick / 150);
 
 //Declare some controller inputs
 var pushConfirm;
@@ -139,16 +208,12 @@ moveYPressed += max(keyboard_check_pressed(ord('S')),keyboard_check_pressed(vk_d
 moveY -= max(keyboard_check(ord('W')),keyboard_check(vk_up),0);
 moveY += max(keyboard_check(ord('S')),keyboard_check(vk_down),0);
 
-
-
 var moveX=0;
 var moveXPressed=0;
 moveX -= max(keyboard_check(ord('A')),keyboard_check(vk_left),0);
 moveX += max(keyboard_check(ord('D')),keyboard_check(vk_right),0);
 moveXPressed -= max(keyboard_check_pressed(ord('A')),keyboard_check_pressed(vk_left),0);
 moveXPressed += max(keyboard_check_pressed(ord('D')),keyboard_check_pressed(vk_right),0);
-
-
 
 if currentMenu!=0 &amp;&amp; currentMenu!=3
 {
@@ -200,24 +265,53 @@ if !(keyboard_check(vk_alt) &amp;&amp; keyboard_check(vk_enter))   //Prevent men
             holdTimer=holdLength;holdYTimer=holdLength;
             if currentMenu!=0 &amp;&amp; currentMenu!=3 {audio_stop_sound(sfxMenuCancel);audio_play_sound(sfxMenuCancel,1,false);}
             if currentMenu==1{pressStartText=true;blinkTimer=18;}
-            if currentMenu==2{mpos=0;currentMenu-=1;global.bgmVol=prevBGMVol;global.sfxVol=prevSFXVol;objMain.windowSize=prevWindowSize;window_set_size(256*objMain.windowSize,256*objMain.windowSize);
-                                global.keyUp = prevKeyUp;global.keyDown = prevKeyDown;global.keyLeft = prevKeyLeft;global.keyRight = prevKeyRight;global.keyAction1 = prevKeyAction1;global.keyAction2 = prevKeyAction2;global.keyAction3 = prevKeyAction3;global.keyPause = prevKeyPause;}
+            if currentMenu==2
+                {
+                    mpos=0;
+                    currentMenu-=1;
+                    //Remember the state of the menu in case we cancel without saving the changes we made.
+                    global.bgmVol=prevBGMVol;
+                    global.sfxVol=prevSFXVol;
+                    objMain.windowSize=prevWindowSize;
+                    window_set_size(256*objMain.windowSize,256*objMain.windowSize);
+                    global.keyUp = prevKeyUp;
+                    global.keyDown = prevKeyDown;
+                    global.keyLeft = prevKeyLeft;
+                    global.keyRight = prevKeyRight;
+                    global.keyAction1 = prevKeyAction1;
+                    global.keyAction2 = prevKeyAction2;
+                    global.keyAction3 = prevKeyAction3;
+                    global.keyPause = prevKeyPause;
+                    
+                    global.keyP2Up = prevKeyP2Up;
+                    global.keyP2Down = prevKeyP2Down;
+                    global.keyP2Left = prevKeyP2Left;
+                    global.keyP2Right = prevKeyP2Right;
+                    global.keyP2Action1 = prevKeyP2Action1;
+                    global.keyP2Action2 = prevKeyP2Action2;
+                    global.keyP2Action3 = prevKeyP2Action3;
+                    global.keyP2Pause = prevKeyP2Pause;
+                }
             else if currentMenu!=0 &amp;&amp; currentMenu!=3{currentMenu--;mpos=0;} //just in case i add other menus
         }
     }
 
 
-if currentMenu==2
+if currentMenu==2 //Options Menu
 {
     var grVOptText = "Off";
     var frModeText = "Off";
     if (global.grVOptEnabled) {grVOptText = "On";}
     if (global.frModeEnabled) {frModeText = "On";}
+    
+    //Update the menu to account for any changed values
     menu2[0] = "BGM Vol: " + string(global.bgmVol);
     menu2[1] = "SFX Vol: " + string(global.sfxVol);
     menu2[2] = "GRV Options: " + grVOptText;
     menu2[3] = "Friendly Mode: " + frModeText;
     menu2[4] = "Window Size: " + string(objMain.windowSize) + "x";
+    menu2[5] = "Set Config: Player " + string(playerConfig);
+    
     if moveY==0
     {
         if mpos==0
@@ -326,7 +420,7 @@ if currentMenu==2
         }
         if mpos==4
         {
-            //handle windowSize
+            //Handle windowSize
             if moveXPressed&lt;0
                 {
                     if objMain.windowSize&gt;1
@@ -334,7 +428,7 @@ if currentMenu==2
                     with(objMain)
                         {
                         audio_stop_sound(sfxMenuTweak);audio_play_sound(sfxMenuTweak,1,false);
-                        windowSize-=1;
+                        windowSize--;
                         window_set_size(256*windowSize,256*windowSize);
                         timer = 10;
                         }
@@ -347,35 +441,67 @@ if currentMenu==2
                     with(objMain)
                         {
                         audio_stop_sound(sfxMenuTweak);audio_play_sound(sfxMenuTweak,1,false);
-                        windowSize+=1;
+                        windowSize++;
                         window_set_size(256*windowSize,256*windowSize);
                         timer = 10;
                         }
                     }
                 }
         }
+        
+        if mpos==5
+        {
+            //Handle current player for Set(ting) Controls
+            if moveXPressed&lt;0
+            {
+                audio_stop_sound(sfxMenuTweak);audio_play_sound(sfxMenuTweak,1,false);
+                playerConfig++;
+            }
+            else if moveXPressed&gt;0
+            {
+                audio_stop_sound(sfxMenuTweak);audio_play_sound(sfxMenuTweak,1,false);
+                playerConfig--;
+            }
+            if (playerConfig&lt;1){playerConfig=objMain.maxPlayers;}
+            if (playerConfig&gt;objMain.maxPlayers){playerConfig=1;}
+        }
     }
 }
 
 if currentMenu==3&amp;&amp;keyboard_check_pressed(vk_escape)
 {
-    //Panic-Quit the custom controls menu.
+    //Panic-Quit the Set Controls menu.
     audio_stop_sound(sfxMenuCancel);audio_play_sound(sfxMenuCancel,1,false);
-    currentConfig=0; mpos = 4; currentMenu=2; configCount=0;
-    global.keyUp = prevKeyUp;global.keyDown = prevKeyDown;global.keyLeft = prevKeyLeft;global.keyRight = prevKeyRight;global.keyAction1 = prevKeyAction1;global.keyAction2 = prevKeyAction2;global.keyAction3 = prevKeyAction3;global.keyPause = prevKeyPause;
+    currentConfig=0; mpos = 4; currentMenu=2; configCount=0; playerConfig = 1;
+    global.keyUp = prevKeyUp;
+    global.keyDown = prevKeyDown;
+    global.keyLeft = prevKeyLeft;
+    global.keyRight = prevKeyRight;
+    global.keyAction1 = prevKeyAction1;
+    global.keyAction2 = prevKeyAction2;
+    global.keyAction3 = prevKeyAction3;
+    global.keyPause = prevKeyPause;
+
+    global.keyP2Up = prevKeyP2Up;
+    global.keyP2Down = prevKeyP2Down;
+    global.keyP2Left = prevKeyP2Left;
+    global.keyP2Right = prevKeyP2Right;
+    global.keyP2Action1 = prevKeyP2Action1;
+    global.keyP2Action2 = prevKeyP2Action2;
+    global.keyP2Action3 = prevKeyP2Action3;
+    global.keyP2Pause = prevKeyP2Pause;
 }
 
-
+//Update volume levels depending on our config
 if audio_sound_get_gain(global.currentSong) != (global.bgmVol/100)
-   {
-   audio_sound_gain(global.currentSong, (global.bgmVol/100), 0);
-   }
+{
+    audio_sound_gain(global.currentSong, (global.bgmVol/100), 0);
+}
 
+audio_group_set_gain(sfxMenu, (global.sfxVol/100), 0);
+audio_group_set_gain(sfxInGame, (global.sfxVol/100), 0);
 
-   audio_group_set_gain(sfxMenu, (global.sfxVol/100), 0);
-   audio_group_set_gain(sfxInGame, (global.sfxVol/100), 0);
-
-
+//Keep track of how long we held our directional inputs for more comfortable menu navigation
 if holdTimer&gt;0
 {
 holdTimer--;
@@ -412,9 +538,6 @@ draw_enable_alphablend(false);
 draw_sprite(sprTitleLogo, 0, x, y);
 draw_enable_alphablend(true);
 
-//Draw our title
-//draw_set_halign(fa_left);
-//draw_set_valign(fa_middle);
 draw_set_color($ff33cc);
 draw_set_alpha(1);
 //draw_text(0,0,string(mpos));
@@ -423,14 +546,14 @@ if pressStartText==false &amp;&amp; currentMenu!=3
 {
     var m;
     
-    if currentMenu==1
+    if currentMenu==1 //Main Menu
     {
         for (m=0; m &lt; array_length_1d(menu); m++;)
         {
         draw_text(x+space,(y+m*space)+64,string(menu[m]));
         }
     }
-    if currentMenu==2
+    if currentMenu==2 //Options Menu
     {
         for (m=0; m &lt; array_length_1d(menu2); m++;)
         {
@@ -495,25 +618,62 @@ else if currentMenu==0
     
 }
 
-if currentMenu==3
+if currentMenu==3 //Set Controls Menu (Could probably be more dynamic, but it works for this case.)
 {
     numConfigOptions=8; //Keep track of how many button configs should be visible so we can hide irrelevant controls.
     if (global.grVOptEnabled){numConfigOptions=9;}
-    setControls();
-    draw_text(x,y+(8*9),"Up: " + string(global.keyUp));
-    draw_text(x,y+(8*10),"Left: " + string(global.keyLeft));
-    draw_text(x,y+(8*11),"Down: " + string(global.keyDown));
-    draw_text(x,y+(8*12),"Right: " + string(global.keyRight));
-    draw_text(x,y+(8*13),"Shoot / Cancel: " + string(global.keyAction1));
-    draw_text(x,y+(8*14),"Powerup / Confirm: " + string(global.keyAction2));
+
+    setControls(playerConfig);
+    
+    draw_text(x,y+(8*7),"Player " + string(playerConfig) + " Controls");
+    
+    switch(playerConfig)
+    {
+        case 1: //Set Controls text for Player 1 and Default
+        default:
+            draw_text(x,y+(8*9),"Up: " + string(global.keyUp));
+            draw_text(x,y+(8*10),"Left: " + string(global.keyLeft));
+            draw_text(x,y+(8*11),"Down: " + string(global.keyDown));
+            draw_text(x,y+(8*12),"Right: " + string(global.keyRight));
+            draw_text(x,y+(8*13),"Shoot / Cancel: " + string(global.keyAction1));
+            draw_text(x,y+(8*14),"Powerup / Confirm: " + string(global.keyAction2));
+            break;
+        case 2: //Set Controls text for Player 2
+            draw_text(x,y+(8*9),"Up: " + string(global.keyP2Up));
+            draw_text(x,y+(8*10),"Left: " + string(global.keyP2Left));
+            draw_text(x,y+(8*11),"Down: " + string(global.keyP2Down));
+            draw_text(x,y+(8*12),"Right: " + string(global.keyP2Right));
+            draw_text(x,y+(8*13),"Shoot / Cancel: " + string(global.keyP2Action1));
+            draw_text(x,y+(8*14),"Powerup / Confirm: " + string(global.keyP2Action2));
+            break;
+    }
     if (global.grVOptEnabled)
     {
-    draw_text(x,y+(8*15),"Option: " + string(global.keyAction3));
-    draw_text(x,y+(8*16),"Pause: " + string(global.keyPause));
+        switch(playerConfig)
+        {
+            case 1: //Set Controls text for Player 1 and Default
+            default:
+                draw_text(x,y+(8*15),"Option: " + string(global.keyAction3));
+                draw_text(x,y+(8*16),"Pause: " + string(global.keyPause));
+                break;
+            case 2: //Set Controls text for Player 2
+                draw_text(x,y+(8*15),"Option: " + string(global.keyP2Action3));
+                draw_text(x,y+(8*16),"Pause: " + string(global.keyP2Pause));
+                break;
+        }
     }
     else
     {
-    draw_text(x,y+(8*15),"Pause: " + string(global.keyPause));
+        switch(playerConfig)
+        {
+            case 1: //Set Controls text for Player 1 and Default
+            default:
+                draw_text(x,y+(8*15),"Pause: " + string(global.keyPause));
+                break;
+            case 2: //Set Controls text for Player 2
+                draw_text(x,y+(8*15),"Pause: " + string(global.keyP2Pause));
+                break;
+        }
     }
     
     draw_set_color(c_gray);

@@ -91,9 +91,11 @@
       <sprite>sprites\sprMissile</sprite>
       <sprite>sprites\sprOption</sprite>
       <sprite>sprites\sprPlayer</sprite>
+      <sprite>sprites\sprPlayer2</sprite>
       <sprite>sprites\sprPlayerCapsuleHitbox</sprite>
       <sprite>sprites\sprPlayerExplode</sprite>
       <sprite>sprites\sprPlayerFlame</sprite>
+      <sprite>sprites\sprPlayerFlame2</sprite>
       <sprite>sprites\sprPlayerHitbox</sprite>
       <sprite>sprites\sprRippleLaser</sprite>
       <sprite>sprites\sprSpreadExplosion</sprite>
@@ -139,12 +141,15 @@
       <script>scripts\spawnBoss1.gml</script>
     </scripts>
     <script>scripts\menuExecute.gml</script>
+    <script>scripts\multiPlayerPowerupHUD.gml</script>
     <script>scripts\resetRoom.gml</script>
     <scripts name="Save Handling">
       <script>scripts\saveOptions.gml</script>
     </scripts>
     <script>scripts\setControls.gml</script>
     <script>scripts\shootingScript.gml</script>
+    <script>scripts\shootSound.gml</script>
+    <script>scripts\singlePlayerPowerupHUD.gml</script>
   </scripts>
   <objects name="objects">
     <objects name="Enemies">
@@ -173,6 +178,8 @@
       <object>objects\objMissile</object>
       <object>objects\objOption</object>
       <object>objects\objPlayer</object>
+      <object>objects\objPlayer1</object>
+      <object>objects\objPlayer2</object>
       <object>objects\objPlayerCapsuleHitbox</object>
       <object>objects\objSpreadExplosion</object>
     </objects>

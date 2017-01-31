@@ -33,7 +33,7 @@ length = 1;
 laserEnd = false;
 cycImgIndex = 0;
 bulletStrength = 3;
-playedSound = false; //Specifically for Twin and Ripple Laser
+playedSFX = false; //Specifically for Twin and Ripple Laser
 rippleTimeAlive = 0;
 rippleActivateTime = 14;
 if (objMain.laserType==4)
@@ -144,7 +144,7 @@ if ((global.state==states.cutscene || global.state == states.gameMode) &amp;&amp
     
     if (!laserEnd)
     {
-        if (keyboard_check(global.keyAction1) &amp;&amp; timeAlive&gt;0) &amp;&amp;
+        if (objMain.keyP1Action1 &amp;&amp; timeAlive&gt;0) &amp;&amp; //TODO: Fix for Player 2
             (self.x+objCamera.scrollX+xSpeed+length&lt;objCamera.x+256 &amp;&amp;
                 !(placeMeeting(0,0,"solid") &amp;&amp; placeMeeting(0,0,"solid"))
             )
@@ -233,14 +233,9 @@ if ((global.state==states.cutscene || global.state == states.gameMode) &amp;&amp
 
 if ((global.state==states.cutscene || global.state == states.gameMode) &amp;&amp; objMain.laserType==4)
 {
-    if (!playedSound)
+    if (!playedSFX)
     {
-        if (parentGun == objPlayer.id)
-        {
-            audio_stop_sound(sfxLaser);
-            audio_play_sound(sfxLaser,2,false);
-            playedSound = true;
-        }
+        shootSound(sfxLaser,2,false);
         xSpeed = 6;
     }
     y+=ySpeed+objCamera.scrollY;
@@ -277,14 +272,9 @@ if ((global.state==states.cutscene || global.state == states.gameMode) &amp;&amp
 
 if ((global.state==states.cutscene || global.state == states.gameMode) &amp;&amp; objMain.laserType==2)
 {
-    if (!playedSound)
+    if (!playedSFX)
     {
-        if (parentGun == objPlayer.id)
-        {
-            audio_stop_sound(sfxRippleLaser);
-            audio_play_sound(sfxRippleLaser,2,false);
-            playedSound = true;
-        }
+        shootSound(sfxLaser,2,false);
         xSpeed = 6;
     }
 

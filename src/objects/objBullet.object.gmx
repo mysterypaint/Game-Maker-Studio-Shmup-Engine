@@ -99,15 +99,7 @@ with (parentGun)
     
     if (!playedSFX)
     {
-        with (parentGun)
-        {
-            if (object_get_name(object_index)=="objPlayer")
-            {
-            audio_stop_sound(sfxBulletShot);
-            audio_play_sound(sfxBulletShot,2,false);
-            other.playedSFX = true;
-            }
-        }
+        shootSound(sfxBulletShot,2,false);
     }
 }
 </string>

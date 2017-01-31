@@ -25,7 +25,8 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>bulletStrength = 1;
+            <string>///Initialize some variables
+bulletStrength = 1;
 image_speed = 0;
 
 if objMain.doubleType == 1
@@ -41,7 +42,7 @@ else if (objMain.doubleType == 3)
     bulletXSpeed = 0;
 }
 
-playedSound = false;
+playedSFX = false;
 
 bulletYSpeed = -6;
 </string>
@@ -95,14 +96,9 @@ with (parentGun)
             <kind>1</kind>
             <string>if (global.state == states.gameMode || global.state == states.cutscene)
 {
-    if (!playedSound)
+    if (!playedSFX)
     {
-        if (parentGun == objPlayer.id)
-        {
-            audio_stop_sound(sfxBulletShot);
-            audio_play_sound(sfxBulletShot,2,false);
-            playedSound = true;
-        }
+        shootSound(sfxBulletShot,2,false);
     }
     
     self.x+=objCamera.scrollX+bulletXSpeed;

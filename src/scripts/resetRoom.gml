@@ -13,12 +13,29 @@ if (powerupSlot>=1){powerupSlot=1;} //Give the player a free capsule on revival 
         objPlayer.cc2=0;
         objPlayer.callD = 0;
         objPlayer.HP = 1;
-
         //Remove all powerups
-        playerSpeed = 1;
-        hasMissile = false;
-        hasDouble = false;
-        hasLaser = false;
+        objPlayer.playerSpeed = 1;
+        objPlayer.hasMissile = false;
+        objPlayer.hasDouble = false;
+        objPlayer.hasLaser = false;
+        if instance_exists(objPlayer2)
+        {
+            objPlayer2.konDone = false;
+            objPlayer2.konCode = false;
+            objPlayer2.fun = false;
+            objPlayer2.dead = false;
+            objPlayer2.shipTurning = 0;
+            objPlayer2.cc1=0;
+            objPlayer2.cc2=0;
+            objPlayer2.callD = 0;
+            objPlayer2.HP = 1;
+            //Remove all powerups
+            objPlayer2.playerSpeed = 1;
+            objPlayer2.hasMissile = false;
+            objPlayer2.hasDouble = false;
+            objPlayer2.hasLaser = false;
+        }
+        
         with (objOption)
            {
             instance_destroy();
@@ -98,5 +115,11 @@ if (powerupSlot>=1){powerupSlot=1;} //Give the player a free capsule on revival 
         objMain.y = objCamera.y;
         objPlayer.x = objCamera.x + 128;
         objPlayer.y = 128;
+        if instance_exists(objPlayer2)
+        {
+            objPlayer2.x = objCamera.x + 128;
+            objPlayer2.y = 128+32;
+            objPlayer.y = 128-32;
+        }
         
         objMain.cleaningRoom = false; //Turn off the flag since we're all done maintaining the room

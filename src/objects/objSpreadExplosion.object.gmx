@@ -31,7 +31,7 @@ bulletStrength = 1;
 imgIndex=1;
 animationReverse = false;
 image_alpha=0.74;
-playedSound=false;
+playedSFX=false;
 </string>
           </argument>
         </arguments>
@@ -54,17 +54,9 @@ playedSound=false;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if (!playedSound)
+            <string>if (!playedSFX)
 {
-    with (objPlayer)
-    {
-        if (other.parentGun==id)
-        {
-            other.playedSound=true;
-            audio_stop_sound(sfxSpreadBomb);
-            audio_play_sound(sfxSpreadBomb,0,false);
-        }
-    }
+    shootSound(sfxSpreadBomb,2,false);
 }
 
 if (imgIndex&gt;3.8)

@@ -160,15 +160,7 @@ if (global.state == states.gameMode)
         
         if (!playedSFX)
         {
-            with (parentGun)
-            {
-                if (object_get_name(object_index)=="objPlayer")
-                {
-                audio_stop_sound(sfxMissile);
-                audio_play_sound(sfxMissile,2,false);
-                other.playedSFX = true;
-                }
-            }
+            shootSound(sfxMissile,2,false);
         }
     }
 }
@@ -240,15 +232,7 @@ if (global.state == states.gameMode)
         
         if (!playedSFX)
         {
-            with (parentGun)
-            {
-                if (object_get_name(object_index)=="objPlayer")
-                {
-                audio_stop_sound(sfxMissile);
-                audio_play_sound(sfxMissile,2,false);
-                other.playedSFX = true;
-                }
-            }
+            shootSound(sfxMissile,2,false);
         }
     }
 }
@@ -314,15 +298,7 @@ if (global.state == states.gameMode)
         
         if (!playedSFX)
         {
-            with (parentGun)
-            {
-                if (object_get_name(object_index)=="objPlayer")
-                {
-                audio_stop_sound(sfxMissile);
-                audio_play_sound(sfxMissile,2,false);
-                other.playedSFX = true;
-                }
-            }
+            shootSound(sfxMissile,2,false);
         }
     }
 }
@@ -387,15 +363,7 @@ if (global.state == states.gameMode)
         
         if (!playedSFX)
         {
-            with (parentGun)
-            {
-                if (object_get_name(object_index)=="objPlayer")
-                {
-                audio_stop_sound(sfxMissile);
-                audio_play_sound(sfxMissile,2,false);
-                other.playedSFX = true;
-                }
-            }
+            shootSound(sfxMissile,2,false);
         }
     }
 }

@@ -4,15 +4,24 @@
 with(objMain)
 {
     //Only remember the last key if our input was a valid one
-    if (keyboard_check_pressed(global.keyUp)||
-        keyboard_check_pressed(global.keyDown)||
-        keyboard_check_pressed(global.keyLeft)||
-        keyboard_check_pressed(global.keyRight)||
-        keyboard_check_pressed(global.keyPause)||
-        keyboard_check_pressed(global.keyAction1)|| //Shoot button
-        keyboard_check_pressed(global.keyAction2)|| //Equip button
-        (keyboard_check_pressed(global.keyAction3) && global.grVOptEnabled))  //Option button (Only valid if the Option button is enabled in the title screen menu)
-        {lk = keyboard_lastkey;}
+    if (objMain.keyP1UpPressed ||
+        objMain.keyP1DownPressed ||
+        objMain.keyP1LeftPressed ||
+        objMain.keyP1RightPressed ||
+        objMain.keyP1PausePressed ||
+        objMain.keyP1Action1Pressed || //Shoot button
+        objMain.keyP1Action2Pressed || //Equip button
+        (objMain.keyP1Action3Pressed && global.grVOptEnabled))  //Option button (Only valid if the Option button is enabled in the title screen menu)
+        {
+            if (objMain.lastInputP1GamePad>1)
+            {
+                lk = objMain.lastInputP1GamePad;
+            }
+            else
+            {
+                lk = keyboard_lastkey;
+            }
+        }
 
     if (!objPlayer.fun)
     {
