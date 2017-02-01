@@ -78,7 +78,7 @@ threshold = 0.8; //Stick sensitvity
             <string>///Declare variables and configure controls
 // Define global variables
 
-waitTime=1; //Timer for displaying the credits as the game boots up.
+waitTime=300; //Timer for displaying the credits as the game boots up.
             //Recommended to set to approximately 300 for public builds
 
 debugEnabled = true;
@@ -1022,12 +1022,15 @@ if (global.state==states.equipScreen)
     //Move around the menu if we press Cancel, but add a delay between presses.
     if (keyP1Action1Pressed &amp;&amp; shieldSelect&gt;0 &amp;&amp; equipBackTimer&lt;=0 &amp;&amp; equipChangeTimer&lt;=0)
     {
-        audio_stop_sound(sfxMenuCancel);
-        audio_play_sound(sfxMenuCancel,0,false);
-        equipBackTimer=15;
-        menuProgressedLast=2;
+        if (p2ShieldSelect&lt;=1 &amp;&amp; objMain.currPlayers&gt;1)
+        {
+            audio_stop_sound(sfxMenuCancel);
+            audio_play_sound(sfxMenuCancel,0,false);
+            equipBackTimer=15;
+            menuProgressedLast=2;
+        }
     }
-    if ((keyP2Action1Pressed &amp;&amp; p2ShieldSelect&gt;0 &amp;&amp; p2EquipBackTimer&lt;=0 &amp;&amp; p2EquipChangeTimer&lt;=0) &amp;&amp; objMain.currPlayers&gt;1)
+    if ((keyP2Action1Pressed &amp;&amp; p2ShieldSelect&gt;0 &amp;&amp; p2EquipBackTimer&lt;=0 &amp;&amp; p2EquipChangeTimer&lt;=0) &amp;&amp; objMain.currPlayers&gt;1 &amp;&amp; (p2ShieldSelect&lt;=1 || shieldSelect&lt;=1))
     {
         audio_stop_sound(sfxMenuCancel);
         audio_play_sound(sfxMenuCancel,0,false);
@@ -1212,12 +1215,12 @@ if (global.state==states.equipScreen)
     {
         //Friendly Mode is taken care of in the gamestates script in the Step Event of objMain
         instance_create(-256,0,objCamera);
-        player1 = instance_create(objCamera.x+128,128,objPlayer1);
+        player1 = instance_create(objCamera.x+128-64,128,objPlayer1);
         var thisHitbox = instance_create(objPlayer.x,objPlayer.y,objPlayerCapsuleHitbox);
         thisHitbox.myPlayer = player1.id;
         if (objMain.currPlayers&gt;1)
         {
-            player2 = instance_create(objCamera.x+128,128,objPlayer2);
+            player2 = instance_create(objCamera.x+128-64,128+32,objPlayer2);
             player1.y = 128-32;
             thisHitbox2 = instance_create(objPlayer2.x,objPlayer2.y,objPlayerCapsuleHitbox);
             thisHitbox2.myPlayer = player2.id;

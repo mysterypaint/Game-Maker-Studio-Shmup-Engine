@@ -26,6 +26,7 @@ if currentMenu==1
             objMain.p2ShieldSelect = 0;
             objMain.p2MenuProgressedLast = 0;
             objMain.currPlayers = 2;
+            global.playerLives = 5;
             instance_destroy();
             break;
         //Options
