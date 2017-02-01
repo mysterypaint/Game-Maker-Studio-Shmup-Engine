@@ -2,6 +2,11 @@
 
 invincibilityFrames = 100; //How long we'll be invincible for upon room reset
 
+flyingIn = -((x-objCamera.x) + 48);
+
+movingVert=0;
+movingHoriz=0;
+
 if (global.frModeEnabled)
 {
     HP=11;HPMax=11;

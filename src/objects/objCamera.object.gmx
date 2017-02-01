@@ -439,10 +439,10 @@ if global.state!=4
         }
         if (!objPlayer2.dead)
         {
-            if (objPlayer2.invincibilityFrames&lt;=0 || objPlayer2.playerVisible)
+            if (objPlayer2.invincibilityFrames&lt;=0 || objPlayer2.playerVisible || objPlayer2.flyingIn&lt;0)
             {
-                draw_sprite(sprPlayer2,objPlayer2.image_index,objPlayer2.x,objPlayer2.y-1);
-                draw_sprite(sprPlayerFlame2,objPlayer2.flameImgInd,objPlayer2.x-16,objPlayer2.y);
+                draw_sprite(sprPlayer2,objPlayer2.image_index,objPlayer2.x+objPlayer2.flyingIn,objPlayer2.y-1);
+                draw_sprite(sprPlayerFlame2,objPlayer2.flameImgInd,objPlayer2.x-16+objPlayer2.flyingIn,objPlayer2.y);
             }
         }
         else
@@ -486,10 +486,10 @@ if global.state!=4
             
             if (!objPlayer1.dead)
             {
-                if (objPlayer1.invincibilityFrames&lt;=0 || objPlayer1.playerVisible)
+                if (objPlayer1.invincibilityFrames&lt;=0 || objPlayer1.playerVisible || objPlayer1.flyingIn&lt;0)
                 {
-                    draw_sprite(sprPlayer,objPlayer1.image_index,objPlayer1.x,objPlayer1.y-1);
-                    draw_sprite(sprPlayerFlame,objPlayer1.flameImgInd,objPlayer1.x-16,objPlayer1.y);
+                    draw_sprite(sprPlayer,objPlayer1.image_index,objPlayer1.x+objPlayer1.flyingIn,objPlayer1.y-1);
+                    draw_sprite(sprPlayerFlame,objPlayer1.flameImgInd,objPlayer1.x-16+objPlayer1.flyingIn,objPlayer1.y);
                 }
             }
         }

@@ -27,6 +27,8 @@
             <kind>1</kind>
             <string>///Inherit events
 event_inherited();
+movingVert=0;
+movingHoriz=0;
 </string>
           </argument>
         </arguments>
@@ -55,175 +57,189 @@ var movingHoriz;
 
 if (HP&lt;=0) {dead = true;}
 
-//Explode ship if dead
-if (dead)
+if (flyingIn&gt;=0)
 {
-    //if global.state&gt;3{global.state = 2;} //Force un-pause the game if we're paused for some reason
-
-    if (!explode)
+    //Explode ship if dead
+    if (dead)
     {
-        audio_stop_sound(sfxDie);
-        audio_play_sound(sfxDie,0,false);
-        deadTimer = 4*deadTimerMult+deadWaitTime;
-        explode = true;
-    }
-    if deadTimer&gt;-1 {deadTimer--;}
-    if deadTimer&lt;=-1
-    {
-        global.playerLives--;
-        if (global.playerLives&gt;=0)
+        //if global.state&gt;3{global.state = 2;} //Force un-pause the game if we're paused for some reason
+    
+        if (!explode)
         {
-            if instance_exists(objPlayer2)
+            audio_stop_sound(sfxDie);
+            audio_play_sound(sfxDie,0,false);
+            deadTimer = 4*deadTimerMult+deadWaitTime;
+            explode = true;
+        }
+        if deadTimer&gt;-1 {deadTimer--;}
+        if deadTimer&lt;=-1
+        {
+            global.playerLives--;
+            if (global.playerLives&gt;=0)
             {
-                if (objPlayer2.dead)
+                if instance_exists(objPlayer2)
+                {
+                    if (objPlayer2.dead)
+                    {
+                        resetRoom(); //Reset the room to how it originally was (the player still remembers how far they got in the level though)
+                        global.state = states.startRoom;
+                        objMain.startRoomTimer = objMain.startRoomTimerLength;
+                    }
+                    else
+                    {
+                        resetPlayer();
+                    }
+                }
+                else
                 {
                     resetRoom(); //Reset the room to how it originally was (the player still remembers how far they got in the level though)
                     global.state = states.startRoom;
                     objMain.startRoomTimer = objMain.startRoomTimerLength;
                 }
-                else
-                {
-                    resetPlayer();
-                }
+                //Switch back to "START" screen
+                deadTimer=0;
+                explode = false;
             }
             else
             {
-                resetRoom(); //Reset the room to how it originally was (the player still remembers how far they got in the level though)
-                global.state = states.startRoom;
-                objMain.startRoomTimer = objMain.startRoomTimerLength;
+                powerupSlot = 0; //Reset our powerbar HUD
+                with (objOption)
+                {
+                    if (myPlayer == other.id)
+                    {
+                        instance_destroy(); //Delete all Options we own
+                    }
+                }
             }
-            //Switch back to "START" screen
-            deadTimer=0;
-            explode = false;
+        } //Timer hit zero. Now, we switch back to the START screen.
+    }
+        //Account for camera scrolling before we move the player at all
+        //Player and capsule-grabbing hitbox will keep scrolling with the camera even if they're dead
+        
+        if global.state != states.startRoom
+        {
+            x+=objCamera.scrollX;
+            y+=objCamera.scrollY;
+        }
+    
+    if (!dead &amp;&amp; (global.state == states.gameMode || global.state == states.cutscene)) //Check if the player is still alive
+    {    
+        //----Handle player movement
+        //Check if we're moving vertically. Cancel out Up+Down
+        if objMain.keyP1Up &amp;&amp; !objMain.keyP1Down
+        {
+        movingVert=1;
+        }
+        else if objMain.keyP1Down &amp;&amp; !objMain.keyP1Up
+        {
+        movingVert=-1;
         }
         else
         {
-            powerupSlot = 0; //Reset our powerbar HUD
-            with (objOption)
+        movingVert=0;
+        }
+        
+        //Do the same for horizontal movement, separately.
+        if objMain.keyP1Left &amp;&amp; !objMain.keyP1Right
+        {
+        movingHoriz=-1;
+        }
+        else if objMain.keyP1Right &amp;&amp; !objMain.keyP1Left
+        {
+        movingHoriz=1;
+        }
+        else
+        {
+        movingHoriz=0;
+        }
+    
+        //----Now that we know which direction to move in, check wall collisions and move the player
+        touchingWall = false; //We're not touching a wall unless we detect that we are, which will change before we move the player
+        
+        //Determine diagonal movement
+        var halveMovement = 1;
+        if (movingHoriz!=0 &amp;&amp; movingVert !=0)
+        {
+            halveMovement = 2; //Divide our speed in half if we're moving diagonally
+                                //Otherwise, just divide by 1, leaving the speed untouched
+        }
+        halveMovement=1;
+        
+        hsp = playerSpeed*movingHoriz/halveMovement;
+        vsp = -(playerSpeed*movingVert/halveMovement);
+        
+        //Kill if the player hits a wall or enemy bullet within the level
+        
+        if (x&gt;=0 &amp;&amp; y&gt;=0 &amp;&amp; x&lt;=global.mapWidth*global.tileWidth &amp;&amp; y&lt;=global.mapHeight * global.tileHeight)
+        {
+            if ((placeMeeting(hsp,0,"solid") || placeMeeting(0,vsp,"solid")) &amp;&amp; invincibilityFrames&lt;=0)
             {
-                if (myPlayer == other.id)
+                if (!objCamera.debug)
                 {
-                    instance_destroy(); //Delete all Options we own
+                    if HP&gt;1
+                    {
+                        audio_stop_sound(sfxBarrierWeaken);
+                        audio_play_sound(sfxBarrierWeaken,0,false);
+                    }
+                    HP--;
                 }
             }
         }
-    } //Timer hit zero. Now, we switch back to the START screen.
+        
+        //Check for camera walls and move the player, vertical and horizontal handled separately
+        //Horizontal Collision
+        if (x+hsp &lt;= objCamera.x+objCamera.leftBound)
+        {
+            //Left collision
+            while(x-1 &gt; objCamera.x+objCamera.leftBound)
+            {
+                x-=1;
+            }
+            hsp = 0;
+        }
+        if (x+hsp &gt;= objCamera.x+objCamera.viewportWidth-objCamera.rightBound)
+        {
+            //Right collision
+            while(x+1 &lt; objCamera.x+objCamera.viewportWidth-objCamera.rightBound)
+            {
+                x+=1;
+            }
+            hsp = 0;
+        }
+        
+        //Vertical Collision
+        if (y+vsp &lt;= objCamera.y+objCamera.upperBound)
+        {
+            //Ceiling collision
+            while(y-1 &gt; objCamera.y+objCamera.upperBound)
+            {
+                y-=1;
+            }
+            vsp = 0; touchingWall=true;
+        }
+        if (y+vsp &gt;= objCamera.y+objCamera.viewportHeight-objCamera.lowerBound)
+        {
+            //Floor collision
+            while(y+1 &lt; objCamera.y+objCamera.viewportHeight-objCamera.lowerBound)
+            {
+                y+=1;
+            }
+            vsp = 0;
+        }
+        x += hsp;
+        y += vsp;
+    }
 }
-    //Account for camera scrolling before we move the player at all
-    //Player and capsule-grabbing hitbox will keep scrolling with the camera even if they're dead
-    
-    if global.state != states.startRoom
+else
+{
+    //Make the player fly into the screen
+    if (global.state==states.gameMode)
     {
-        x+=objCamera.scrollX;
-        y+=objCamera.scrollY;
+        if (flyingIn+9)&lt;=0
+        {flyingIn+=9;} else {flyingIn=0;}
+        movingVert=0;
+        movingHoriz=0;
     }
-
-if (!dead &amp;&amp; (global.state == states.gameMode || global.state == states.cutscene)) //Check if the player is still alive
-{    
-    //----Handle player movement
-    //Check if we're moving vertically. Cancel out Up+Down
-    if objMain.keyP1Up &amp;&amp; !objMain.keyP1Down
-    {
-    movingVert=1;
-    }
-    else if objMain.keyP1Down &amp;&amp; !objMain.keyP1Up
-    {
-    movingVert=-1;
-    }
-    else
-    {
-    movingVert=0;
-    }
-    
-    //Do the same for horizontal movement, separately.
-    if objMain.keyP1Left &amp;&amp; !objMain.keyP1Right
-    {
-    movingHoriz=-1;
-    }
-    else if objMain.keyP1Right &amp;&amp; !objMain.keyP1Left
-    {
-    movingHoriz=1;
-    }
-    else
-    {
-    movingHoriz=0;
-    }
-
-    //----Now that we know which direction to move in, check wall collisions and move the player
-    touchingWall = false; //We're not touching a wall unless we detect that we are, which will change before we move the player
-    
-    //Determine diagonal movement
-    var halveMovement = 1;
-    if (movingHoriz!=0 &amp;&amp; movingVert !=0)
-    {
-        halveMovement = 2; //Divide our speed in half if we're moving diagonally
-                            //Otherwise, just divide by 1, leaving the speed untouched
-    }
-    halveMovement=1;
-    
-    hsp = playerSpeed*movingHoriz/halveMovement;
-    vsp = -(playerSpeed*movingVert/halveMovement);
-    
-    //Kill if the player hits a wall or enemy bullet within the level
-    
-    if (x&gt;=0 &amp;&amp; y&gt;=0 &amp;&amp; x&lt;=global.mapWidth*global.tileWidth &amp;&amp; y&lt;=global.mapHeight * global.tileHeight)
-    {
-        if ((placeMeeting(hsp,0,"solid") || placeMeeting(0,vsp,"solid")) &amp;&amp; invincibilityFrames&lt;=0)
-        {
-            if (!objCamera.debug)
-            {
-                if HP&gt;1
-                {
-                    audio_stop_sound(sfxBarrierWeaken);
-                    audio_play_sound(sfxBarrierWeaken,0,false);
-                }
-                HP--;
-            }
-        }
-    }
-    
-    //Check for camera walls and move the player, vertical and horizontal handled separately
-    //Horizontal Collision
-    if (x+hsp &lt;= objCamera.x+objCamera.leftBound)
-    {
-        //Left collision
-        while(x-1 &gt; objCamera.x+objCamera.leftBound)
-        {
-            x-=1;
-        }
-        hsp = 0;
-    }
-    if (x+hsp &gt;= objCamera.x+objCamera.viewportWidth-objCamera.rightBound)
-    {
-        //Right collision
-        while(x+1 &lt; objCamera.x+objCamera.viewportWidth-objCamera.rightBound)
-        {
-            x+=1;
-        }
-        hsp = 0;
-    }
-    
-    //Vertical Collision
-    if (y+vsp &lt;= objCamera.y+objCamera.upperBound)
-    {
-        //Ceiling collision
-        while(y-1 &gt; objCamera.y+objCamera.upperBound)
-        {
-            y-=1;
-        }
-        vsp = 0; touchingWall=true;
-    }
-    if (y+vsp &gt;= objCamera.y+objCamera.viewportHeight-objCamera.lowerBound)
-    {
-        //Floor collision
-        while(y+1 &lt; objCamera.y+objCamera.viewportHeight-objCamera.lowerBound)
-        {
-            y+=1;
-        }
-        vsp = 0;
-    }
-    x += hsp;
-    y += vsp;
 }
 </string>
           </argument>
@@ -277,7 +293,6 @@ for (var i=0; i&lt;instance_number(objPlayerCapsuleHitbox); i++)
             <kind>1</kind>
             <string>///Handle powerups
 //The HUD itself is drawn in objCamera's Draw Event
-
 if (objCamera.debug)
 {
     if keyboard_check_pressed(ord('T'))
@@ -368,119 +383,122 @@ else
 //Mega crash only needs one frame, then it's disabled again
 hasExclamation = false;
 
-if objMain.keyP1Action2 &amp;&amp; !dead &amp;&amp; (objCamera.debug || global.state=states.gameMode)  //Attempt to give powerup after pressing equip button
+if (flyingIn&gt;=0)
 {
-    switch(powerupSlot) //Check the value of our powerup's position and, depending what it is, try giving a powerup
+    if objMain.keyP1Action2 &amp;&amp; !dead &amp;&amp; (objCamera.debug || global.state=states.gameMode)  //Attempt to give powerup after pressing equip button
     {
-        case 1: //Speedup
-            if (playerSpeed&lt;playerSpeedMax)
-            {
-            playerSpeed+=1;
-            powerupSlot = 0; audio_stop_sound(sfxMenuAccept); audio_play_sound(sfxMenuAccept,0,false);
-            }
-            break;
-        case 2: //Missile
-            if (!hasMissile)
-            {
-            hasMissile = true;
-            powerupSlot = 0; audio_stop_sound(sfxMenuAccept); audio_play_sound(sfxMenuAccept,0,false);
-            }
-            break;
-        case 3: //Double
-            if (!hasDouble)
-            {
-            hasDouble = true;
-            hasLaser = false;
-            powerupSlot = 0; audio_stop_sound(sfxMenuAccept); audio_play_sound(sfxMenuAccept,0,false);
-            }
-            break;
-        case 4: //Laser
-            if (!hasLaser)
-            {
-            hasLaser = true;
-            hasDouble = false;
-            powerupSlot = 0; audio_stop_sound(sfxMenuAccept); audio_play_sound(sfxMenuAccept,0,false);
-            }
-            break;
-        case 5: //Option
-            if (instance_number(objOption)&gt;=4 &amp;&amp; instance_exists(objPlayer2))
-            {
-                if (powerupSlot != objPlayer2.powerupSlot) //Prevent stealing if the other player ran this code simultaneously, to prevent bugs
+        switch(powerupSlot) //Check the value of our powerup's position and, depending what it is, try giving a powerup
+        {
+            case 1: //Speedup
+                if (playerSpeed&lt;playerSpeedMax)
                 {
-                    if (numOfOpts&lt;optsMax)  //Make sure this player hasn't already maxed out their Options
+                playerSpeed+=1;
+                powerupSlot = 0; audio_stop_sound(sfxMenuAccept); audio_play_sound(sfxMenuAccept,0,false);
+                }
+                break;
+            case 2: //Missile
+                if (!hasMissile)
+                {
+                hasMissile = true;
+                powerupSlot = 0; audio_stop_sound(sfxMenuAccept); audio_play_sound(sfxMenuAccept,0,false);
+                }
+                break;
+            case 3: //Double
+                if (!hasDouble)
+                {
+                hasDouble = true;
+                hasLaser = false;
+                powerupSlot = 0; audio_stop_sound(sfxMenuAccept); audio_play_sound(sfxMenuAccept,0,false);
+                }
+                break;
+            case 4: //Laser
+                if (!hasLaser)
+                {
+                hasLaser = true;
+                hasDouble = false;
+                powerupSlot = 0; audio_stop_sound(sfxMenuAccept); audio_play_sound(sfxMenuAccept,0,false);
+                }
+                break;
+            case 5: //Option
+                if (instance_number(objOption)&gt;=4 &amp;&amp; instance_exists(objPlayer2))
+                {
+                    if (powerupSlot != objPlayer2.powerupSlot) //Prevent stealing if the other player ran this code simultaneously, to prevent bugs
                     {
-                        var highestID = 0;      //Keeps track of the farthest option the other player has. Used for comparing with the other ones.
-                        var farthestOption = 0; //Keeps track of the farthest option the other player has. Stores the actual ID of the farthest option.
-                        
-                        for (var i=0; i&lt;instance_number(objOption); i++) //Loop through every Option that exists in the room
+                        if (numOfOpts&lt;optsMax)  //Make sure this player hasn't already maxed out their Options
                         {
-                            thisOption = instance_find(objOption,i); //Get the ID of the Option we're looking at at the moment
-                            if (thisOption.myPlayer!=id) //Check if we already own that Option
+                            var highestID = 0;      //Keeps track of the farthest option the other player has. Used for comparing with the other ones.
+                            var farthestOption = 0; //Keeps track of the farthest option the other player has. Stores the actual ID of the farthest option.
+                            
+                            for (var i=0; i&lt;instance_number(objOption); i++) //Loop through every Option that exists in the room
                             {
-                                if (thisOption.myID &gt; highestID) //If we don't, check if it's the farthest one the other player has.
-                                {farthestOption = thisOption.id; highestID = thisOption.myID;}  //If it is, remember this Option and how far away it was, then check all the other ones.
+                                thisOption = instance_find(objOption,i); //Get the ID of the Option we're looking at at the moment
+                                if (thisOption.myPlayer!=id) //Check if we already own that Option
+                                {
+                                    if (thisOption.myID &gt; highestID) //If we don't, check if it's the farthest one the other player has.
+                                    {farthestOption = thisOption.id; highestID = thisOption.myID;}  //If it is, remember this Option and how far away it was, then check all the other ones.
+                                }
                             }
+                            farthestOption.myPlayer = id; //Once we found the other player's farthest option, we re-assign the option to ourself, and then break out of the loop.
+                            numOfOpts++;                 //Then, we increment this ship's personal Options counter
+                            objPlayer2.numOfOpts = optsMax - numOfOpts; //Therefore, the other option should have exactly "Max Options minus our options"
+                            farthestOption.myID = numOfOpts;            //We'll change this Option's previous distance to the new ship (our) Option count, so the other player can use this next time.
+                            powerupSlot = 0; audio_stop_sound(sfxMenuAccept); audio_play_sound(sfxMenuAccept,0,false);
                         }
-                        farthestOption.myPlayer = id; //Once we found the other player's farthest option, we re-assign the option to ourself, and then break out of the loop.
-                        numOfOpts++;                 //Then, we increment this ship's personal Options counter
-                        objPlayer2.numOfOpts = optsMax - numOfOpts; //Therefore, the other option should have exactly "Max Options minus our options"
-                        farthestOption.myID = numOfOpts;            //We'll change this Option's previous distance to the new ship (our) Option count, so the other player can use this next time.
+                    }
+                }
+                else if (instance_number(objOption)&lt;4)
+                {
+                    //Give an option
+                    numOfOpts+=1;
+                    thisOption = instance_create(-5000,-5000,objOption); //Spawn a new Option far away
+                    thisOption.myPlayer = id
+                    thisOption.myID = numOfOpts;
+                    powerupSlot = 0; audio_stop_sound(sfxMenuAccept); audio_play_sound(sfxMenuAccept,0,false);
+                }
+                break;
+            case 6: //Question
+                if (!hasQuestion)
+                {
+                    if (objMain.shieldType==0) //Standard Shield
+                    {
+                        hasQuestion = true;
+                        shield1 = instance_create(objCamera.x+288,objCamera.y-32,objFrontShield);
+                        shield1.xDest = 16;
+                        shield1.yDest = -8;
+                        shield1.originParent = id;
+                        shield2 = instance_create(objCamera.x+288,objCamera.y+objCamera.viewportHeight+32,objFrontShield);
+                        shield2.xDest = 16;
+                        shield2.yDest = 8;
+                        shield2.originParent = id;
+                        powerupSlot = 0; audio_stop_sound(sfxMenuAccept); audio_play_sound(sfxMenuAccept,0,false);
+                    }
+                    else if (objMain.shieldType==1) //Force Field
+                    {
+                        hasQuestion = true;
+                        if (global.frModeEnabled)
+                        {
+                            HP = 11;
+                            HPMax = 11; //HP Max is for objCamera to know how to properly scale the Force Field image
+                        }
+                        else
+                        {
+                            HP = 6;
+                            HPMax = 6;
+                        }
                         powerupSlot = 0; audio_stop_sound(sfxMenuAccept); audio_play_sound(sfxMenuAccept,0,false);
                     }
                 }
-            }
-            else if (instance_number(objOption)&lt;4)
-            {
-                //Give an option
-                numOfOpts+=1;
-                thisOption = instance_create(-5000,-5000,objOption); //Spawn a new Option far away
-                thisOption.myPlayer = id
-                thisOption.myID = numOfOpts;
-                powerupSlot = 0; audio_stop_sound(sfxMenuAccept); audio_play_sound(sfxMenuAccept,0,false);
-            }
-            break;
-        case 6: //Question
-            if (!hasQuestion)
-            {
-                if (objMain.shieldType==0) //Standard Shield
+                break;
+            case 7: //Exclamation
+                if (!hasExclamation)
                 {
-                    hasQuestion = true;
-                    shield1 = instance_create(objCamera.x+288,objCamera.y-32,objFrontShield);
-                    shield1.xDest = 16;
-                    shield1.yDest = -8;
-                    shield1.originParent = id;
-                    shield2 = instance_create(objCamera.x+288,objCamera.y+objCamera.viewportHeight+32,objFrontShield);
-                    shield2.xDest = 16;
-                    shield2.yDest = 8;
-                    shield2.originParent = id;
-                    powerupSlot = 0; audio_stop_sound(sfxMenuAccept); audio_play_sound(sfxMenuAccept,0,false);
+                hasExclamation = true;
+                excTimer = 10;
+                powerupSlot = 0; audio_stop_sound(sfxMCrash); audio_play_sound(sfxMCrash,0,false);
                 }
-                else if (objMain.shieldType==1) //Force Field
-                {
-                    hasQuestion = true;
-                    if (global.frModeEnabled)
-                    {
-                        HP = 11;
-                        HPMax = 11; //HP Max is for objCamera to know how to properly scale the Force Field image
-                    }
-                    else
-                    {
-                        HP = 6;
-                        HPMax = 6;
-                    }
-                    powerupSlot = 0; audio_stop_sound(sfxMenuAccept); audio_play_sound(sfxMenuAccept,0,false);
-                }
-            }
-            break;
-        case 7: //Exclamation
-            if (!hasExclamation)
-            {
-            hasExclamation = true;
-            excTimer = 10;
-            powerupSlot = 0; audio_stop_sound(sfxMCrash); audio_play_sound(sfxMCrash,0,false);
-            }
-            break;
-        default: break;
+                break;
+            default: break;
+        }
     }
 }
 
@@ -513,129 +531,132 @@ if (global.state==states.gameMode)
           <argument>
             <kind>1</kind>
             <string>///Handle ship animations and Options movement
-if (!dead &amp;&amp; (global.state == states.gameMode || global.state == states.cutscene)) //Check if the player is still alive
+if (flyingIn&gt;=0)
 {
-    if (invincibilityFrames&gt;0){invincibilityFrames--;}
-    
-    //Set the ship back to neutral position if our player isn't moving vertically or is touching a wall.
-    //shipTurning is the ship-tilting animation
-    
-    if ((touchingWall) || (movingVert==0))
+    if (!dead &amp;&amp; (global.state == states.gameMode || global.state == states.cutscene)) //Check if the player is still alive
     {
-        if(shipTurning&gt;0){if shipTurning-playerSpeed&gt;0{shipTurning-=playerSpeed;}else{shipTurning=0;}}
-        else if(shipTurning&lt;0){if shipTurning+playerSpeed&lt;0{shipTurning+=playerSpeed;}else{shipTurning=0;}}
-    }
-    
-
-    //Now we'll let the ship tilt its animation as it moves, but only if it isn't touching a wall (e.g. Camera's screen boundary)
-    if(!touchingWall)
-    {
-        if (movingVert==-1) //Handle downward animation first
+        if (invincibilityFrames&gt;0){invincibilityFrames--;}
+        
+        //Set the ship back to neutral position if our player isn't moving vertically or is touching a wall.
+        //shipTurning is the ship-tilting animation
+        
+        if ((touchingWall) || (movingVert==0))
         {
-            if (shipTurning-playerSpeed&lt;0)
+            if(shipTurning&gt;0){if shipTurning-playerSpeed&gt;0{shipTurning-=playerSpeed;}else{shipTurning=0;}}
+            else if(shipTurning&lt;0){if shipTurning+playerSpeed&lt;0{shipTurning+=playerSpeed;}else{shipTurning=0;}}
+        }
+        
+    
+        //Now we'll let the ship tilt its animation as it moves, but only if it isn't touching a wall (e.g. Camera's screen boundary)
+        if(!touchingWall)
+        {
+            if (movingVert==-1) //Handle downward animation first
             {
-            shipTurning-=playerSpeed;
+                if (shipTurning-playerSpeed&lt;0)
+                {
+                shipTurning-=playerSpeed;
+                }
+                else
+                {shipTurning=0;}
             }
-            else
-            {shipTurning=0;}
-        }
-        else if (movingVert==1)                //Now, handle the upward animation
-        {
-            if (shipTurning+playerSpeed&gt;0)
+            else if (movingVert==1)                //Now, handle the upward animation
             {
-            shipTurning+=playerSpeed;
-            }
-            else
-            {shipTurning=0;}   
-        }
-    }
-
-    //Cap values
-    if (shipTurning&lt;-8*turnMult){shipTurning=-8*turnMult;}
-    if (shipTurning&gt;8*turnMult){shipTurning=8*turnMult;}
-    
-    //Handle ship animations
-    if (shipTurning &lt;-4*turnMult){image_index=4;} //Downmost
-    else if (shipTurning&gt;=-4*turnMult &amp;&amp; shipTurning &lt;0){image_index=3;} //Slight Down
-    else if (shipTurning&gt;0 &amp;&amp; shipTurning &lt;=4*turnMult){image_index=1;} //Slight Up
-    else if (shipTurning&gt;4*turnMult){image_index=2;} //Upmost 
-    else {image_index=0;} //Every other case is neutral position
-
-
-    if (objMain.keyP1Right || 
-        objMain.keyP1Left || 
-        objMain.keyP1Up || 
-        objMain.keyP1Down) //If the player is moving at all...
-    {
-
-    //GRV-Style Option Movement code
-    if (objMain.keyP1Action3 &amp;&amp; global.grVOptEnabled) //Are we pushing the Option button and is the feature enabled?
-    {
-        if (hsp!=0)
-        {
-        for (var i = 39; i &gt;= 0; i--;)  //Shift all 40 frames of x/y ghost trailing by however the player moved
-           {
-           prevX[i] += hsp;
-           }
-        }
-        if (vsp!=0)
-        {
-        for (var i = 39; i &gt;= 0; i--;)  //Shift all 40 frames of x/y ghost trailing by however the player moved
-           {
-            prevY[i] += vsp;
+                if (shipTurning+playerSpeed&gt;0)
+                {
+                shipTurning+=playerSpeed;
+                }
+                else
+                {shipTurning=0;}   
             }
         }
-    }
-    else //If not, we should keep track of the player's x/y positions for the past 40 frames of the game in the two arrays prevX and prevY, constantly.
-    {
-        //Shift all the X/Y previous positions down the bank
-        for (var i = 39; i &gt; 0; i--;)
-           {
-           prevX[i] = prevX[i-1];
-           prevY[i] = prevY[i-1];
-           }
-        //Finally, store X/Y in the first position
-        prevX[0] = x+hsp;
-        prevY[0] = y+vsp;
+    
+        //Cap values
+        if (shipTurning&lt;-8*turnMult){shipTurning=-8*turnMult;}
+        if (shipTurning&gt;8*turnMult){shipTurning=8*turnMult;}
+        
+        //Handle ship animations
+        if (shipTurning &lt;-4*turnMult){image_index=4;} //Downmost
+        else if (shipTurning&gt;=-4*turnMult &amp;&amp; shipTurning &lt;0){image_index=3;} //Slight Down
+        else if (shipTurning&gt;0 &amp;&amp; shipTurning &lt;=4*turnMult){image_index=1;} //Slight Up
+        else if (shipTurning&gt;4*turnMult){image_index=2;} //Upmost 
+        else {image_index=0;} //Every other case is neutral position
+    
+    
+        if (objMain.keyP1Right || 
+            objMain.keyP1Left || 
+            objMain.keyP1Up || 
+            objMain.keyP1Down) //If the player is moving at all...
+        {
+    
+        //GRV-Style Option Movement code
+        if (objMain.keyP1Action3 &amp;&amp; global.grVOptEnabled) //Are we pushing the Option button and is the feature enabled?
+        {
+            if (hsp!=0)
+            {
+            for (var i = 39; i &gt;= 0; i--;)  //Shift all 40 frames of x/y ghost trailing by however the player moved
+               {
+               prevX[i] += hsp;
+               }
+            }
+            if (vsp!=0)
+            {
+            for (var i = 39; i &gt;= 0; i--;)  //Shift all 40 frames of x/y ghost trailing by however the player moved
+               {
+                prevY[i] += vsp;
+                }
+            }
         }
-    }
-
+        else //If not, we should keep track of the player's x/y positions for the past 40 frames of the game in the two arrays prevX and prevY, constantly.
+        {
+            //Shift all the X/Y previous positions down the bank
+            for (var i = 39; i &gt; 0; i--;)
+               {
+               prevX[i] = prevX[i-1];
+               prevY[i] = prevY[i-1];
+               }
+            //Finally, store X/Y in the first position
+            prevX[0] = x+hsp;
+            prevY[0] = y+vsp;
+            }
+        }
     
-    //Regardless we're moving or not, update every single X/Y ghost position with the camera scrolling
-    for (var i = 39; i &gt;= 0; i--;)
-       {
-       prevX[i] += objCamera.scrollX;
-       prevY[i] += objCamera.scrollY;
-       }
-
+        
+        //Regardless we're moving or not, update every single X/Y ghost position with the camera scrolling
+        for (var i = 39; i &gt;= 0; i--;)
+           {
+           prevX[i] += objCamera.scrollX;
+           prevY[i] += objCamera.scrollY;
+           }
     
-    //Handle the flame burning animation index at the end of the ship, based on our player's speed
-    
-    var flameImgOut=0; //Temporary variable for storing animation index before actually outputting it to the screen
-    
-    if (global.tick%flameSpeed==0) //Hop between animation frames (lazily using a boolean) so the fire looks more lively
-    {
-        flameIn = !flameIn;
-    }
-    
-    switch(playerSpeed) //Determine the first frame of the flame animation, depending on the player's speed
-    {
-        case 1: flameImgOut=0; break; //In the event that the playerSpeed is 1, start our animation on frame 0
-        case 2: flameImgOut=2; break; //etc...
-        case 3: flameImgOut=2; break;
-        case 4: flameImgOut=4; break;
-        case 5: flameImgOut=4; break;
-        default: flameImgOut=4; break; //In the event our player speed is some weird value, default to frame 4
-    }
-    
-    flameImgOut+=flameIn;
-    
-    flameImgInd=flameImgOut; //Finally, we store the flame animation, which is then drawn in objCamera's Draw event
-    
-    //Force Field animation (the rest is handled in objCamera's Draw Event)
-    if (global.tick%forceFrameSpeed==0)
-    {
-        forceFrame = (!forceFrame) * objMain.deltaTime; //Multiply by deltaTime to account for game pausing
+        
+        //Handle the flame burning animation index at the end of the ship, based on our player's speed
+        
+        var flameImgOut=0; //Temporary variable for storing animation index before actually outputting it to the screen
+        
+        if (global.tick%flameSpeed==0) //Hop between animation frames (lazily using a boolean) so the fire looks more lively
+        {
+            flameIn = !flameIn;
+        }
+        
+        switch(playerSpeed) //Determine the first frame of the flame animation, depending on the player's speed
+        {
+            case 1: flameImgOut=0; break; //In the event that the playerSpeed is 1, start our animation on frame 0
+            case 2: flameImgOut=2; break; //etc...
+            case 3: flameImgOut=2; break;
+            case 4: flameImgOut=4; break;
+            case 5: flameImgOut=4; break;
+            default: flameImgOut=4; break; //In the event our player speed is some weird value, default to frame 4
+        }
+        
+        flameImgOut+=flameIn;
+        
+        flameImgInd=flameImgOut; //Finally, we store the flame animation, which is then drawn in objCamera's Draw event
+        
+        //Force Field animation (the rest is handled in objCamera's Draw Event)
+        if (global.tick%forceFrameSpeed==0)
+        {
+            forceFrame = (!forceFrame) * objMain.deltaTime; //Multiply by deltaTime to account for game pausing
+        }
     }
 }
 </string>
@@ -659,9 +680,12 @@ if (!dead &amp;&amp; (global.state == states.gameMode || global.state == states.
           <argument>
             <kind>1</kind>
             <string>///Let's shooting!
-if (!dead &amp;&amp; (global.state == states.gameMode || global.state == states.cutscene)) //Check if the player is still alive
+if (flyingIn&gt;=0)
 {
-    shootingScript(id);
+    if (!dead &amp;&amp; (global.state == states.gameMode || global.state == states.cutscene)) //Check if the player is still alive
+    {
+        shootingScript(id);
+    }
 }
 </string>
           </argument>
