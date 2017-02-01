@@ -168,7 +168,7 @@ if (!dead &amp;&amp; (global.state == states.gameMode || global.state == states.
     
     if (x&gt;=0 &amp;&amp; y&gt;=0 &amp;&amp; x&lt;=global.mapWidth*global.tileWidth &amp;&amp; y&lt;=global.mapHeight * global.tileHeight)
     {
-        if (placeMeeting(hsp,0,"solid") || placeMeeting(0,vsp,"solid"))
+        if ((placeMeeting(hsp,0,"solid") || placeMeeting(0,vsp,"solid")) &amp;&amp; invincibilityFrames&lt;=0)
         {
             if (!objCamera.debug)
             {

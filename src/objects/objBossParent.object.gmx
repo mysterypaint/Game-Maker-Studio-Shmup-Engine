@@ -125,7 +125,7 @@ else
 {
     if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
     {
-        if (!objCamera.debug)
+        if (!objCamera.debug) &amp;&amp; other.invincibilityFrames&lt;=0
         {
             if other.HP&gt;1
             {

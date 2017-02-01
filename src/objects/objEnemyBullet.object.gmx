@@ -152,7 +152,7 @@ if (objPlayer.excTimer&gt;0)
           <argument>
             <kind>1</kind>
             <string>///Deal damage and destroy the colliding instance
-if (!objCamera.debug)
+if (!objCamera.debug) &amp;&amp; other.invincibilityFrames&lt;=0
 {
     if other.HP&gt;1
     {
@@ -160,8 +160,8 @@ if (!objCamera.debug)
         audio_play_sound(sfxBarrierWeaken,0,false);
     }
     other.HP--;
-    instance_destroy();
 }
+instance_destroy();
 </string>
           </argument>
         </arguments>

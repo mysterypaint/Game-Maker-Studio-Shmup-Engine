@@ -224,7 +224,7 @@ if (!dead &amp;&amp; (global.state == states.gameMode || global.state == states.
     
     if (x&gt;=0 &amp;&amp; y&gt;=0 &amp;&amp; x&lt;=global.mapWidth*global.tileWidth &amp;&amp; y&lt;=global.mapHeight * global.tileHeight)
     {
-        if (placeMeeting(hsp,0,"solid") || placeMeeting(0,vsp,"solid"))
+        if ((placeMeeting(hsp,0,"solid") || placeMeeting(0,vsp,"solid")) &amp;&amp; invincibilityFrames&lt;=0)
         {
             if (!objCamera.debug)
             {
@@ -605,7 +605,7 @@ if objMain.keyP2Action2Pressed &amp;&amp; !dead &amp;&amp; (objCamera.debug || g
         case 6: //Question
             if (!hasQuestion)
             {
-                if (objMain.shieldType==0) //Standard Shield
+                if (objMain.p2ShieldType==0) //Standard Shield
                 {
                     hasQuestion = true;
                     shield1 = instance_create(objCamera.x+288,objCamera.y-32,objFrontShield);
@@ -618,7 +618,7 @@ if objMain.keyP2Action2Pressed &amp;&amp; !dead &amp;&amp; (objCamera.debug || g
                     shield2.originParent = id;
                     powerupSlot = 0; audio_stop_sound(sfxMenuAccept); audio_play_sound(sfxMenuAccept,0,false);
                 }
-                else if (objMain.shieldType==1) //Force Field
+                else if (objMain.p2ShieldType==1) //Force Field
                 {
                     hasQuestion = true;
                     if (global.frModeEnabled)
@@ -638,9 +638,9 @@ if objMain.keyP2Action2Pressed &amp;&amp; !dead &amp;&amp; (objCamera.debug || g
         case 7: //Exclamation
             if (!hasExclamation)
             {
-            hasExclamation = true;
-            excTimer = 10;
-            powerupSlot = 0; audio_stop_sound(sfxMCrash); audio_play_sound(sfxMCrash,0,false);
+                hasExclamation = true;
+                excTimer = 10;
+                powerupSlot = 0; audio_stop_sound(sfxMCrash); audio_play_sound(sfxMCrash,0,false);
             }
             break;
         default: break;

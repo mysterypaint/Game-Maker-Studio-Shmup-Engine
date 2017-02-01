@@ -234,7 +234,7 @@ if instance_exists(objBossBarrier)
 
 if (isLeftmost)
 {
-    if (!other.dead)
+    if (!other.dead &amp;&amp; other.invincibilityFrames&lt;=0)
     {
         if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4 &amp;&amp; hitTimer&lt;=0)
         {

@@ -458,7 +458,7 @@
     <option_textureGroup_count>5</option_textureGroup_count>
     <option_textureGroups0>Default</option_textureGroups0>
     <option_textureGroups1>MainMenu</option_textureGroups1>
-    <option_textureGroups2>Level1</option_textureGroups2>
+    <option_textureGroups2>GameMode</option_textureGroups2>
     <option_textureGroups3>SprFont</option_textureGroups3>
     <option_textureGroups4>SkyTextures</option_textureGroups4>
     <option_tizen_app_id>http://yourdomain/MainTemplate</option_tizen_app_id>
