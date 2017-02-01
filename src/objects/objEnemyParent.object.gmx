@@ -25,6 +25,48 @@
         <arguments>
           <argument>
             <kind>1</kind>
+            <string>///Determine a target player to look at.
+var player1 = findPlayer(objPlayer1);
+
+if (instance_exists(objPlayer2))
+{
+    var player2 = findPlayer(objPlayer2);
+    
+    switch(irandom(objMain.currPlayers))
+    {
+        default:
+        case 0:
+            target = player1;
+            break;
+        case 1:
+            target = player2;
+            break;
+    }
+}
+else
+{
+    target = player1;
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
             <string>///This obj is a generic enemy parent
 //Smaller enemies like objLion should use this, but
 //Unless you want bosses to behave exactly like the other enemies do,
@@ -174,6 +216,35 @@ else
         <arguments>
           <argument>
             <kind>1</kind>
+            <string>///Always look at the player
+
+with (target)
+{
+    if (!dead)
+    {
+        other.direction = point_direction(other.x, other.y, x, y);
+    }
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
             <string>///Mega Crash
 if (objPlayer.excTimer&gt;0)
 {
@@ -235,7 +306,7 @@ if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4 &amp;&amp; hit
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if (!objPlayer.dead)
+            <string>if (!other.dead)
 {
     if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4 &amp;&amp; hitTimer&lt;=0)
     {
@@ -243,12 +314,12 @@ if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4 &amp;&amp; hit
         hitTimer = hitTimerSet;
         if (!objCamera.debug)
         {
-            if objPlayer.HP&gt;1
+            if other.HP&gt;1
             {
                 audio_stop_sound(sfxBarrierWeaken);
                 audio_play_sound(sfxBarrierWeaken,0,false);
             }
-            objPlayer.HP--;
+            other.HP--;
         }
     }
 }

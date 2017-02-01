@@ -21,5 +21,6 @@
   <height>4</height>
   <frames>
     <frame index="0">images\sprEquipHighlight_0.png</frame>
+    <frame index="1">images\sprEquipHighlight_1.png</frame>
   </frames>
 </sprite>

@@ -27,7 +27,7 @@
             <kind>1</kind>
             <string>///Declare some variables
 myID = instance_number(objOption);
-myPlayer = 1; //Which player did I come from?
+myPlayer = objPlayer1.id; //Which player did I come from?
 
 enabled = true; //Disable use until the player acquires this ability
 shootDelayTimer=0;
@@ -79,20 +79,20 @@ if (global.state == states.gameMode || global.state == states.cutscene)
     switch(myID)
     {
     case 1:
-        x = objPlayer.prevX[9];
-        y = objPlayer.prevY[9];
+        x = myPlayer.prevX[9];
+        y = myPlayer.prevY[9];
         break;
     case 2:
-        x = objPlayer.prevX[19];
-        y = objPlayer.prevY[19];
+        x = myPlayer.prevX[19];
+        y = myPlayer.prevY[19];
         break;
     case 3:
-        x = objPlayer.prevX[29];
-        y = objPlayer.prevY[29];
+        x = myPlayer.prevX[29];
+        y = myPlayer.prevY[29];
         break;
     case 4:
-        x = objPlayer.prevX[39];
-        y = objPlayer.prevY[39];
+        x = myPlayer.prevX[39];
+        y = myPlayer.prevY[39];
         break;
     default: break;
     }
@@ -122,16 +122,9 @@ if (global.state == states.gameMode || global.state == states.cutscene)
 
 if (global.state == states.gameMode || global.state == states.cutscene)
 {    
-    if (enabled &amp;&amp; !objPlayer.dead)
+    if (enabled &amp;&amp; !myPlayer.dead)
     {
-        if (myPlayer==2)
-        {
-            shootingScript(myPlayer,objPlayer2);
-        }
-        else
-        {
-            shootingScript(myPlayer,objPlayer1);
-        }
+        shootingScript(myPlayer);
     }
 }
 </string>

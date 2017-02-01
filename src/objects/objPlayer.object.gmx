@@ -25,43 +25,11 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///Code optimization attempt for in-game gameplay
-//You can read more about this here: http://www.yoyogames.com/blog/23
-
-draw_texture_flush();
-draw_sprite(sprPlayer, 0, 0, 0);
-draw_sprite(sprPlayerHitbox, 0, 0, 0);
-draw_sprite(sprPlayerCapsuleHitbox, 0, 0, 0);
-draw_sprite(sprOption, 0, 0, 0);
-draw_sprite(sprLaser, 0, 0, 0);
-draw_sprite(sprFrontShield, 0, 0, 0);
-draw_sprite(sprFont, 0, 0, 0);
-draw_sprite(sprDouble, 0, 0, 0);
-draw_sprite(sprBullet, 0, 0, 0);
-draw_sprite(tileset0, 0, 0, 0);
-draw_sprite(sprSpreadExplosion, 0, 0, 0);
-draw_sprite(sprCapsule, 0, 0, 0);
-</string>
-          </argument>
-        </arguments>
-      </action>
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
             <string>///Initialize some variables
+invincibilityFrames = 0; //How long we're invincible for. The resetPlayer() script resets this.
+invBlinkRate = 3;
+playerVisible = true;
+
 shootDelayTimer=0;
 shootCounter=0;
 shootCounterMaxWithoutDouble=2;
@@ -132,6 +100,42 @@ for (var i = 39; i &gt; 0; i--;)
        prevX[i] = x;
        prevY[i] = y;
        }
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Code optimization attempt for in-game gameplay
+//You can read more about this here: http://www.yoyogames.com/blog/23
+
+draw_texture_flush();
+draw_sprite(sprPlayer, 0, 0, 0);
+draw_sprite(sprPlayerHitbox, 0, 0, 0);
+draw_sprite(sprPlayerCapsuleHitbox, 0, 0, 0);
+draw_sprite(sprOption, 0, 0, 0);
+draw_sprite(sprLaser, 0, 0, 0);
+draw_sprite(sprFrontShield, 0, 0, 0);
+draw_sprite(sprFont, 0, 0, 0);
+draw_sprite(sprDouble, 0, 0, 0);
+draw_sprite(sprBullet, 0, 0, 0);
+draw_sprite(tileset0, 0, 0, 0);
+draw_sprite(sprSpreadExplosion, 0, 0, 0);
+draw_sprite(sprCapsule, 0, 0, 0);
 </string>
           </argument>
         </arguments>

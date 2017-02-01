@@ -48,6 +48,48 @@ myID = 0;
           </argument>
         </arguments>
       </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Determine a target player to look at.
+var player1 = findPlayer(objPlayer1);
+
+if (instance_exists(objPlayer2))
+{
+    var player2 = findPlayer(objPlayer2);
+    
+    switch(irandom(objMain.currPlayers))
+    {
+        default:
+        case 1:
+            target = player1;
+            break;
+        case 2:
+            target = player2;
+            break;
+    }
+}
+else
+{
+    target = player1;
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
     </event>
     <event eventtype="1" enumb="0">
       <action>
@@ -72,8 +114,9 @@ myID = 0;
     {
         global.playerScore += 2500;
         
-        if (instance_exists(objPlayer) &amp;&amp; !objPlayer.dead)
+        if (validateWin())
         {
+            //Only trigger if we've successfully beaten the boss (at least one player is still alive)
             global.currentMap = "beatBoss1";
             objMain.mapSwitchTimer = 250;
             audio_stop_sound(global.currentSong);
@@ -222,9 +265,12 @@ event_inherited();
           <argument>
             <kind>1</kind>
             <string>///Always look at the player
-if instance_exists(objPlayer)
+with (target)
 {
-direction = point_direction(x, y, objPlayer.x, objPlayer.y);
+    if (!dead)
+    {
+        other.direction = point_direction(other.x, other.y, x, y);
+    }
 }
 </string>
           </argument>

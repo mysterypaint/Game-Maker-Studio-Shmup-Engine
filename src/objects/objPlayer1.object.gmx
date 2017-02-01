@@ -62,7 +62,7 @@ if (dead)
 
     if (!explode)
     {
-        audio_stop_all();
+        audio_stop_sound(sfxDie);
         audio_play_sound(sfxDie,0,false);
         deadTimer = 4*deadTimerMult+deadWaitTime;
         explode = true;
@@ -73,41 +73,40 @@ if (dead)
         global.playerLives--;
         if (global.playerLives&gt;=0)
         {
-            resetRoom(); //Reset the room to how it originally was (the player still remembers how far they got in the level though)
-            //Switch back to "START" screen
-            deadTimer=0;
-            explode = false;
-            global.state = states.startRoom;
-            objMain.startRoomTimer = objMain.startRoomTimerLength;
-        }
-        else
-        {
-        var gameOverString = "Game Over!";
-        if ((global.playerScore &gt;= global.highScore &amp;&amp; (objMain.currPlayers&lt;=1)) || (global.playerScore &gt;= global.highCoScore &amp;&amp; (objMain.currPlayers&gt;=2)))
-        {
-            gameOverString += "##New highscore for ";
+            if instance_exists(objPlayer2)
             {
-                if objMain.currPlayers&lt;=1
+                if (objPlayer2.dead)
                 {
-                    gameOverString += "Single Player!#Your Score: " + string(global.highScore);
-                    ini_open("sav");
-                    ini_write_string("Game Data","HiScore",string(global.highScore));
-                    ini_close();
+                    resetRoom(); //Reset the room to how it originally was (the player still remembers how far they got in the level though)
+                    global.state = states.startRoom;
+                    objMain.startRoomTimer = objMain.startRoomTimerLength;
                 }
                 else
                 {
-                    gameOverString += "Multiplayer Co-Op!#Your Score: " + string(global.highCoScore);
-                    ini_open("sav");
-                    ini_write_string("Game Data","HiCoScore",string(global.highCoScore));
-                    ini_close();
+                    resetPlayer();
                 }
-            }   
+            }
+            else
+            {
+                resetRoom(); //Reset the room to how it originally was (the player still remembers how far they got in the level though)
+                global.state = states.startRoom;
+                objMain.startRoomTimer = objMain.startRoomTimerLength;
+            }
+            //Switch back to "START" screen
+            deadTimer=0;
+            explode = false;
         }
-        show_message(gameOverString);
-            global.playerLives = 2;
-            global.konCodeLimit = 3;
-            global.playerScore = 0;
-            game_restart();}
+        else
+        {
+            powerupSlot = 0; //Reset our powerbar HUD
+            with (objOption)
+            {
+                if (myPlayer == other.id)
+                {
+                    instance_destroy(); //Delete all Options we own
+                }
+            }
+        }
     } //Timer hit zero. Now, we switch back to the START screen.
 }
     //Account for camera scrolling before we move the player at all
@@ -250,10 +249,10 @@ if (!dead &amp;&amp; (global.state == states.gameMode || global.state == states.
 for (var i=0; i&lt;instance_number(objPlayerCapsuleHitbox); i++)
 {
     thisHitbox = instance_find(objPlayerCapsuleHitbox, i);
-    if (thisHitbox.myPlayer==1)
+    if (thisHitbox.myPlayer==id)
     {
-        thisHitbox.x = x;
-        thisHitbox.y = y;
+        thisHitbox.x = x-1;
+        thisHitbox.y = y-1;
     }
 }
 </string>
@@ -284,6 +283,10 @@ if (objCamera.debug)
     if keyboard_check_pressed(ord('T'))
     {
         powerupSlot+=1; //Give us a powerup capsule if we press T on the keyboard
+    }
+    if keyboard_check_pressed(ord('C')) &amp;&amp; instance_exists(objPlayer2)
+    {
+        objPlayer2.powerupSlot+=1; //Give us a powerup capsule if we press T on the keyboard
     }
     if (keyboard_check_pressed(ord('U')))
     {
@@ -317,7 +320,8 @@ if (konCode &amp;&amp; !konDone &amp;&amp; (konCodeLimit&gt;0 || callD&gt;0))
     hasLaser = true;
     while(numOfOpts&lt;optsMax) //Continue to give the player an Option until they've hit the max
     {
-        instance_create(-5000,-5000,objOption); //Spawn a new Option far away
+        thisOption = instance_create(-5000,-5000,objOption); //Spawn a new Option far away
+        thisOption.myPlayer = id;
         numOfOpts+=1;
     }
     
@@ -399,10 +403,40 @@ if objMain.keyP1Action2 &amp;&amp; !dead &amp;&amp; (objCamera.debug || global.s
             }
             break;
         case 5: //Option
-            if (numOfOpts&lt;optsMax)
+            if (instance_number(objOption)&gt;=4 &amp;&amp; instance_exists(objPlayer2))
             {
-            numOfOpts+=1;instance_create(-5000,-5000,objOption); //Spawn a new Option far away
-            powerupSlot = 0; audio_stop_sound(sfxMenuAccept); audio_play_sound(sfxMenuAccept,0,false);
+                if (powerupSlot != objPlayer2.powerupSlot) //Prevent stealing if the other player ran this code simultaneously, to prevent bugs
+                {
+                    if (numOfOpts&lt;optsMax)  //Make sure this player hasn't already maxed out their Options
+                    {
+                        var highestID = 0;      //Keeps track of the farthest option the other player has. Used for comparing with the other ones.
+                        var farthestOption = 0; //Keeps track of the farthest option the other player has. Stores the actual ID of the farthest option.
+                        
+                        for (var i=0; i&lt;instance_number(objOption); i++) //Loop through every Option that exists in the room
+                        {
+                            thisOption = instance_find(objOption,i); //Get the ID of the Option we're looking at at the moment
+                            if (thisOption.myPlayer!=id) //Check if we already own that Option
+                            {
+                                if (thisOption.myID &gt; highestID) //If we don't, check if it's the farthest one the other player has.
+                                {farthestOption = thisOption.id; highestID = thisOption.myID;}  //If it is, remember this Option and how far away it was, then check all the other ones.
+                            }
+                        }
+                        farthestOption.myPlayer = id; //Once we found the other player's farthest option, we re-assign the option to ourself, and then break out of the loop.
+                        numOfOpts++;                 //Then, we increment this ship's personal Options counter
+                        objPlayer2.numOfOpts = optsMax - numOfOpts; //Therefore, the other option should have exactly "Max Options minus our options"
+                        farthestOption.myID = numOfOpts;            //We'll change this Option's previous distance to the new ship (our) Option count, so the other player can use this next time.
+                        powerupSlot = 0; audio_stop_sound(sfxMenuAccept); audio_play_sound(sfxMenuAccept,0,false);
+                    }
+                }
+            }
+            else if (instance_number(objOption)&lt;4)
+            {
+                //Give an option
+                numOfOpts+=1;
+                thisOption = instance_create(-5000,-5000,objOption); //Spawn a new Option far away
+                thisOption.myPlayer = id
+                thisOption.myID = numOfOpts;
+                powerupSlot = 0; audio_stop_sound(sfxMenuAccept); audio_play_sound(sfxMenuAccept,0,false);
             }
             break;
         case 6: //Question
@@ -414,9 +448,11 @@ if objMain.keyP1Action2 &amp;&amp; !dead &amp;&amp; (objCamera.debug || global.s
                     shield1 = instance_create(objCamera.x+288,objCamera.y-32,objFrontShield);
                     shield1.xDest = 16;
                     shield1.yDest = -8;
+                    shield1.originParent = id;
                     shield2 = instance_create(objCamera.x+288,objCamera.y+objCamera.viewportHeight+32,objFrontShield);
                     shield2.xDest = 16;
                     shield2.yDest = 8;
+                    shield2.originParent = id;
                     powerupSlot = 0; audio_stop_sound(sfxMenuAccept); audio_play_sound(sfxMenuAccept,0,false);
                 }
                 else if (objMain.shieldType==1) //Force Field
@@ -479,6 +515,8 @@ if (global.state==states.gameMode)
             <string>///Handle ship animations and Options movement
 if (!dead &amp;&amp; (global.state == states.gameMode || global.state == states.cutscene)) //Check if the player is still alive
 {
+    if (invincibilityFrames&gt;0){invincibilityFrames--;}
+    
     //Set the ship back to neutral position if our player isn't moving vertically or is touching a wall.
     //shipTurning is the ship-tilting animation
     
@@ -623,7 +661,7 @@ if (!dead &amp;&amp; (global.state == states.gameMode || global.state == states.
             <string>///Let's shooting!
 if (!dead &amp;&amp; (global.state == states.gameMode || global.state == states.cutscene)) //Check if the player is still alive
 {
-    shootingScript(1,self);
+    shootingScript(id);
 }
 </string>
           </argument>

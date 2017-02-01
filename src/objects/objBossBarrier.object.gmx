@@ -38,6 +38,48 @@ hitTimerSet = 10;
           </argument>
         </arguments>
       </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Determine a target player to look at.
+var player1 = findPlayer(objPlayer1);
+
+if (instance_exists(objPlayer2))
+{
+    var player2 = findPlayer(objPlayer2);
+    
+    switch(irandom(objMain.currPlayers))
+    {
+        default:
+        case 1:
+            target = player1;
+            break;
+        case 2:
+            target = player2;
+            break;
+    }
+}
+else
+{
+    target = player1;
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
     </event>
     <event eventtype="1" enumb="0">
       <action>
@@ -106,9 +148,12 @@ if (!silentKill)
           <argument>
             <kind>1</kind>
             <string>///Always look at the player
-if instance_exists(objPlayer)
+with (target)
 {
-direction = point_direction(x, y, objPlayer.x, objPlayer.y);
+    if (!dead)
+    {
+        other.direction = point_direction(other.x, other.y, x, y);
+    }
 }
 </string>
           </argument>
@@ -273,7 +318,7 @@ if (compareBarrierGroup())
             <string>///Handle colissions
 if (active &amp;&amp; !objBossParent.dead)
 {
-    if (!objPlayer.dead)
+    if (!other.dead)
     {
         if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4 &amp;&amp; hitTimer&lt;=0)
         {
@@ -285,7 +330,7 @@ if (active &amp;&amp; !objBossParent.dead)
         }
     }
 }
-if (!objBossParent.dead &amp;&amp; objPlayer.HP&gt;1)
+if (!objBossParent.dead &amp;&amp; other.HP&gt;1)
 {
     audio_stop_sound(sfxBarrierWeaken);
     audio_play_sound(sfxBarrierWeaken,0,false);
@@ -294,7 +339,7 @@ if (!objCamera.debug)
 {
     audio_stop_sound(sfxBarrierWeaken);
     audio_play_sound(sfxBarrierWeaken,0,false);
-    objPlayer.HP--;
+    other.HP--;
 }
 </string>
           </argument>

@@ -121,18 +121,18 @@ else
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if (!objPlayer.dead)
+            <string>if (!other.dead)
 {
     if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4)
     {
         if (!objCamera.debug)
         {
-            if objPlayer.HP&gt;1
+            if other.HP&gt;1
             {
                 audio_stop_sound(sfxBarrierWeaken);
                 audio_play_sound(sfxBarrierWeaken,0,false);
             }
-            objPlayer.HP--;
+            other.HP--;
         }
     }
 }

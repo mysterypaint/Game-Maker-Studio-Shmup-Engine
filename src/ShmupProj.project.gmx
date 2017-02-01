@@ -124,6 +124,7 @@
     <script>scripts\__README.gml</script>
     <script>scripts\changeBGM.gml</script>
     <script>scripts\compareBarrierGroup.gml</script>
+    <script>scripts\drawForceField.gml</script>
     <script>scripts\drawLaser.gml</script>
     <script>scripts\drawSprites.gml</script>
     <script>scripts\handleBGM.gml</script>
@@ -142,6 +143,7 @@
     </scripts>
     <script>scripts\menuExecute.gml</script>
     <script>scripts\multiPlayerPowerupHUD.gml</script>
+    <script>scripts\resetPlayer.gml</script>
     <script>scripts\resetRoom.gml</script>
     <scripts name="Save Handling">
       <script>scripts\saveOptions.gml</script>
@@ -150,6 +152,9 @@
     <script>scripts\shootingScript.gml</script>
     <script>scripts\shootSound.gml</script>
     <script>scripts\singlePlayerPowerupHUD.gml</script>
+    <script>scripts\handleGameOver.gml</script>
+    <script>scripts\validateWin.gml</script>
+    <script>scripts\findPlayer.gml</script>
   </scripts>
   <objects name="objects">
     <objects name="Enemies">

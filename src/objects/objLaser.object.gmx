@@ -36,24 +36,13 @@ bulletStrength = 3;
 playedSFX = false; //Specifically for Twin and Ripple Laser
 rippleTimeAlive = 0;
 rippleActivateTime = 14;
-if (objMain.laserType==4)
-{
-    mask_index = sprTwinLaser;
-}
-else if (objMain.laserType==2)
-{
-    mask_index = sprRippleLaser;
-    image_yscale = 16/48;
-    xScaleMod = 1;
-    yScaleMod = 0;
-}
-else
-{
-    if !audio_is_playing(sfxLaser)
-    {
-        audio_play_sound(sfxLaser,2,false);
-    }
-}
+originParent = objPlayer1; //Keep track of what the true owner of this laser is (shootingScript() tells this laser who that is)
+laserType=1;    //Defined in shootingScript();
+
+xScaleMod = 1;
+yScaleMod = 0;
+
+init = false; //Bool for first frame after the create event
 </string>
           </argument>
         </arguments>
@@ -77,7 +66,7 @@ else
           <argument>
             <kind>1</kind>
             <string>///For Ripple/Twin, decrement the shoot counter of the gun it came from
-if (objMain.laserType==2 || objMain.laserType==4)
+if (laserType==2 || laserType==4)
 {
     with (parentGun)
     {
@@ -108,35 +97,49 @@ if (objMain.laserType==2 || objMain.laserType==4)
             <kind>1</kind>
             <string>///Standard and Cyclone
 
-if ((global.state==states.cutscene || global.state == states.gameMode) &amp;&amp; (objMain.laserType==1 || objMain.laserType==3))
+if ((global.state==states.cutscene || global.state == states.gameMode) &amp;&amp; (laserType==1 || laserType==3))
 {
+    if (!init)
+    {
+        if !audio_is_playing(sfxLaser)
+        {
+            audio_play_sound(sfxLaser,2,false);
+        }
+        init=true;
+    }
     if (global.tick%3==0)
     {
     cycImgIndex=!cycImgIndex; //lol bool animation
     }
     
     y+=ySpeed+objCamera.scrollY;
+    x += originParent.hsp+objCamera.scrollX;
     
+    //Change the shooting button depending on who shot the bullet (Player 1 or Player 2)
+    var originKeyAction1 = objMain.keyP1Action1;
+    if instance_exists(objPlayer2)
+    {
+        if (originParent==objPlayer2.id){originKeyAction1 = objMain.keyP2Action1;}
+    }
     with (parentGun)
         {
-            other.x += objPlayer.hsp+objCamera.scrollX;
 
             switch(myID)
             { //Find out which turret this laser came from so we can set x/y position directly
             case 0:
-                other.y = y-1 + objPlayer.vsp+objCamera.scrollY;
+                other.y = y-1 + vsp+objCamera.scrollY;
                 break;
             case 1:            
-                other.y = objPlayer.prevY[9]-1;
+                other.y = myPlayer.prevY[9]-1;
                 break;
             case 2:            
-                other.y = objPlayer.prevY[19]-1;
+                other.y = myPlayer.prevY[19]-1;
                 break;
             case 3:            
-                other.y = objPlayer.prevY[29]-1;
+                other.y = myPlayer.prevY[29]-1;
                 break;
             case 4:            
-                other.y = objPlayer.prevY[39]-1;
+                other.y = myPlayer.prevY[39]-1;
                 break;
             default: break;
             }
@@ -144,7 +147,7 @@ if ((global.state==states.cutscene || global.state == states.gameMode) &amp;&amp
     
     if (!laserEnd)
     {
-        if (objMain.keyP1Action1 &amp;&amp; timeAlive&gt;0) &amp;&amp; //TODO: Fix for Player 2
+        if (originKeyAction1 &amp;&amp; timeAlive&gt;0) &amp;&amp; //TODO: Fix for Player 2
             (self.x+objCamera.scrollX+xSpeed+length&lt;objCamera.x+256 &amp;&amp;
                 !(placeMeeting(0,0,"solid") &amp;&amp; placeMeeting(0,0,"solid"))
             )
@@ -158,16 +161,16 @@ if ((global.state==states.cutscene || global.state == states.gameMode) &amp;&amp
                     other.x = x+objCamera.scrollX;
                     break;
                 case 1:
-                    other.x = objPlayer.prevX[9];
+                    other.x = myPlayer.prevX[9];
                     break;
                 case 2:
-                    other.x = objPlayer.prevX[19];
+                    other.x = myPlayer.prevX[19];
                     break;
                 case 3:
-                    other.x = objPlayer.prevX[29];
+                    other.x = myPlayer.prevX[29];
                     break;
                 case 4:
-                    other.x = objPlayer.prevX[39];
+                    other.x = myPlayer.prevX[39];
                     break;
                 default: break;
                 }
@@ -231,8 +234,9 @@ if ((global.state==states.cutscene || global.state == states.gameMode) &amp;&amp
             <kind>1</kind>
             <string>///Twin Laser
 
-if ((global.state==states.cutscene || global.state == states.gameMode) &amp;&amp; objMain.laserType==4)
+if ((global.state==states.cutscene || global.state == states.gameMode) &amp;&amp; laserType==4)
 {
+    if (!init){mask_index = sprTwinLaser;init=true;}
     if (!playedSFX)
     {
         shootSound(sfxLaser,2,false);
@@ -270,11 +274,12 @@ if ((global.state==states.cutscene || global.state == states.gameMode) &amp;&amp
             <kind>1</kind>
             <string>///Ripple Laser
 
-if ((global.state==states.cutscene || global.state == states.gameMode) &amp;&amp; objMain.laserType==2)
+if ((global.state==states.cutscene || global.state == states.gameMode) &amp;&amp; laserType==2)
 {
+    if (!init){init=true;}
     if (!playedSFX)
     {
-        shootSound(sfxLaser,2,false);
+        shootSound(sfxRippleLaser,2,false);
         xSpeed = 6;
     }
 

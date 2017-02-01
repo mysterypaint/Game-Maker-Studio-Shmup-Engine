@@ -34,6 +34,8 @@ imgSpeed=0.2;
 bulletStrength = 3;
 landedGround = false;
 silentKill = false;
+myID = 0;
+missileType = 1; //Set by shootingScript()
 
 playedSFX = false;
 vsp = 3;
@@ -67,7 +69,7 @@ afterFromShip = false; //animation flag for Photon Torpedo
             <string>///As our missile is being destroyed, decrement the shoot counter of the gun it came from
 with (parentGun)
 {
-    if (objMain.missileType==3)
+    if (other.missileType==3)
     {
         missileCounter-=2;
     }
@@ -99,7 +101,7 @@ with (parentGun)
             <string>///Create a Spread Bomb Explosion
 if (global.state == states.gameMode)
 {
-    if (objMain.missileType==3 &amp;&amp; !silentKill)
+    if (missileType==3 &amp;&amp; !silentKill)
     {
         var thisExplosion = instance_create(x,y,objSpreadExplosion);
         thisExplosion.parentGun = parentGun;
@@ -131,7 +133,7 @@ if (global.state == states.gameMode)
 
 if (global.state == states.gameMode)
 {
-    if objMain.missileType == 1
+    if missileType == 1
     {
         landedGround = false;
         
@@ -188,7 +190,7 @@ if (global.state == states.gameMode)
 
 if (global.state == states.gameMode)
 {
-    if (objMain.missileType == 2)
+    if (missileType == 2)
     {
         //Animate
         if (imgIndex&lt;sprite_get_number(sprMissile)-1)
@@ -259,7 +261,7 @@ if (global.state == states.gameMode)
             <string>///Spread Bomb
 if (global.state == states.gameMode)
 {
-    if (objMain.missileType == 3)
+    if (missileType == 3)
     {
         //Animate
         if (imgIndex&lt;sprite_get_number(sprMissile)-1)
@@ -325,7 +327,7 @@ if (global.state == states.gameMode)
             <string>///Photon Torpedo
 if (global.state == states.gameMode)
 {
-    if objMain.missileType == 4
+    if (missileType == 4)
     {
         landedGround = false;
         

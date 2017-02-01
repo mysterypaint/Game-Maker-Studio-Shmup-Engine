@@ -78,7 +78,7 @@ threshold = 0.8; //Stick sensitvity
             <string>///Declare variables and configure controls
 // Define global variables
 
-waitTime=300; //Timer for displaying the credits as the game boots up.
+waitTime=1; //Timer for displaying the credits as the game boots up.
             //Recommended to set to approximately 300 for public builds
 
 debugEnabled = true;
@@ -125,8 +125,19 @@ equipChangeTimer = 0;
 equipTypeBlinkShow = true;
 equipShieldBlinkShow = false;
 equipBackTimer = 0;
-frModeFlicker = false;
-glFlicker = false;
+frModeFlicker = false; //Displays notice about Friendly Mode on equip screen
+glFlicker = false; //Displays "Good luck!" on the equip screen
+glTimer = 0;        //Timer for above.
+
+//Player 2 Equip Menu Stuff
+p2ShieldSelect = 0;
+p2EquipTypePos = 1;
+p2EquipShieldPos = 0;
+p2EquipChangeTimer = 0;
+p2EquipTypeBlinkShow = true;
+p2EquipShieldBlinkShow = false;
+p2EquipBackTimer = 0;
+p2MenuProgressedLast = 1;
 
 //Keep track of player's arsenal
 missileType = 1;
@@ -717,72 +728,6 @@ for (var i=0; i&lt;10; i++)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///Check for global controller inputs
-controller1 = 0;
-if p1HasController&gt;0
-{
-    controller1 = p1HasController;
-}
-
-controller2 = 0;
-if p2HasController&gt;0
-{
-    controller2 = p2HasController;
-}
-
-keyP1Up = max(keyboard_check(global.keyUp) &amp;&amp; global.keyUp != -1,gamepad_button_check(controller1,global.keyUp) &amp;&amp; global.keyUp != -1,stickUpHeld[controller1]);
-keyP1UpPressed = (keyboard_check_pressed(global.keyUp) &amp;&amp; global.keyUp != -1) || stickUpPressed[controller1];
-keyP1Down = max(keyboard_check(global.keyDown) &amp;&amp; global.keyDown != -1,gamepad_button_check(controller1,global.keyDown) &amp;&amp; global.keyDown != -1,stickDownHeld[controller1]);
-keyP1DownPressed = (keyboard_check_pressed(global.keyDown) &amp;&amp; global.keyDown != -1) || stickDownPressed[controller1];
-keyP1Left = max(keyboard_check(global.keyLeft) &amp;&amp; global.keyLeft != -1,gamepad_button_check(controller1,global.keyLeft) &amp;&amp; global.keyLeft != -1,stickLeftHeld[controller1]);
-keyP1LeftPressed = (keyboard_check_pressed(global.keyLeft) &amp;&amp; global.keyLeft != -1) || stickLeftPressed[controller1];
-keyP1Right = max(keyboard_check(global.keyRight) &amp;&amp; global.keyRight != -1,gamepad_button_check(controller1,global.keyRight) &amp;&amp; global.keyRight != -1,stickRightHeld[controller1]);
-keyP1RightPressed = (keyboard_check_pressed(global.keyRight) &amp;&amp; global.keyRight != -1) || stickRightPressed[controller1];
-keyP1Action1 = max(keyboard_check(global.keyAction1) &amp;&amp; global.keyAction1 != -1,gamepad_button_check(controller1,global.keyAction1));
-keyP1Action1Pressed = max(keyboard_check_pressed(global.keyAction1) &amp;&amp; global.keyAction1 != -1,gamepad_button_check(controller1,global.keyAction1));
-keyP1Action2 = max(keyboard_check(global.keyAction2) &amp;&amp; global.keyAction2 != -1,gamepad_button_check(controller1,global.keyAction2));
-keyP1Action2Pressed = max(keyboard_check_pressed(global.keyAction2) &amp;&amp; global.keyAction2 != -1,gamepad_button_check(controller1,global.keyAction2));
-keyP1Action3 = max(keyboard_check(global.keyAction3) &amp;&amp; global.keyAction3 != -1,gamepad_button_check(controller1,global.keyAction3));
-keyP1Action3Pressed = max(keyboard_check_pressed(global.keyAction3) &amp;&amp; global.keyAction3 != -1,gamepad_button_check(controller1,global.keyAction3));
-keyP1Pause = max(keyboard_check(global.keyPause) &amp;&amp; global.keyPause != -1,gamepad_button_check(controller1,global.keyPause));
-keyP1PausePressed = max(keyboard_check_pressed(global.keyPause) &amp;&amp; global.keyPause != -1,gamepad_button_check(controller1,global.keyPause));
-
-keyP2Up = max(keyboard_check(global.keyP2Up) &amp;&amp; global.keyP2Up != -1,gamepad_button_check(controller2,global.keyP2Up) &amp;&amp; global.keyP2Up != -1,stickUpHeld[controller2]);
-keyP2UpPressed = (keyboard_check_pressed(global.keyP2Up) &amp;&amp; global.keyP2Up != -1) || stickUpPressed[controller2];
-keyP2Down = max(keyboard_check(global.keyP2Down) &amp;&amp; global.keyP2Down != -1,gamepad_button_check(controller2,global.keyP2Down) &amp;&amp; global.keyP2Down != -1,stickDownHeld[controller2]);
-keyP2DownPressed = (keyboard_check_pressed(global.keyP2Down) &amp;&amp; global.keyP2Down != -1) || stickDownPressed[controller2];
-keyP2Left = max(keyboard_check(global.keyP2Left) &amp;&amp; global.keyP2Left != -1,gamepad_button_check(controller2,global.keyP2Left) &amp;&amp; global.keyP2Left != -1,stickLeftHeld[controller2]);
-keyP2LeftPressed = (keyboard_check_pressed(global.keyP2Left) &amp;&amp; global.keyP2Left != -1) || stickLeftPressed[controller2];
-keyP2Right = max(keyboard_check(global.keyP2Right) &amp;&amp; global.keyP2Right != -1,gamepad_button_check(controller2,global.keyP2Right) &amp;&amp; global.keyP2Right != -1,stickRightHeld[controller2]);
-keyP2RightPressed = (keyboard_check_pressed(global.keyP2Right) &amp;&amp; global.keyP2Right != -1) || stickRightPressed[controller2];
-keyP2Action1 = max(keyboard_check(global.keyP2Action1) &amp;&amp; global.keyP2Action1 != -1,gamepad_button_check(controller2,global.keyP2Action1));
-keyP2Action1Pressed = max(keyboard_check_pressed(global.keyP2Action1) &amp;&amp; global.keyP2Action1 != -1,gamepad_button_check(controller2,global.keyP2Action1));
-keyP2Action2 = max(keyboard_check(global.keyP2Action2) &amp;&amp; global.keyP2Action2 != -1,gamepad_button_check(controller2,global.keyP2Action2));
-keyP2Action2Pressed = max(keyboard_check_pressed(global.keyP2Action2) &amp;&amp; global.keyP2Action2 != -1,gamepad_button_check(controller2,global.keyP2Action2));
-keyP2Action3 = max(keyboard_check(global.keyP2Action3) &amp;&amp; global.keyP2Action3 != -1,gamepad_button_check(controller2,global.keyP2Action3));
-keyP2Action3Pressed = max(keyboard_check_pressed(global.keyP2Action3) &amp;&amp; global.keyP2Action3 != -1,gamepad_button_check(controller2,global.keyP2Action3));
-keyP2Pause = max(keyboard_check(global.keyP2Pause) &amp;&amp; global.keyP2Pause != -1,gamepad_button_check(controller2,global.keyP2Pause));
-keyP2PausePressed = max(keyboard_check_pressed(global.keyP2Pause) &amp;&amp; global.keyP2Pause != -1,gamepad_button_check(controller2,global.keyP2Pause));
-</string>
-          </argument>
-        </arguments>
-      </action>
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
             <string>///Handle game states and window re-sizing
 switch(global.state) //Game mode handling
 {
@@ -808,7 +753,21 @@ switch(global.state) //Game mode handling
     case states.gameMode: // game mode
     case states.cutscene: // cutscene mode
         handleBGM();
-
+        //Only trigger Game Over if both players are dead (If there's only one player, just do it)
+        if (global.playerLives&lt;0)
+        {
+            if instance_exists(objPlayer2)
+            {
+                if (objPlayer2.dead &amp;&amp; objPlayer1.dead)
+                {
+                    handleGameOver();
+                }
+            }
+            else
+            {
+                handleGameOver();
+            }
+        }
         //Handle pausing
         if ((objMain.keyP1PausePressed || objMain.keyP2PausePressed) &amp;&amp; global.pauseTimer&lt;=0)
         {
@@ -1007,11 +966,22 @@ if (global.state==states.equipScreen)
     var keyUp = -keyP1UpPressed;
     var keyDown = keyP1DownPressed;
     var moveY = keyUp+keyDown;
+    
+    
+    var p2KeyLeft = -keyP2LeftPressed;
+    var p2KeyRight = keyP2RightPressed;
+    var p2MoveX = p2KeyLeft+p2KeyRight;
+    var p2KeyUp = -keyP2UpPressed;
+    var p2KeyDown = keyP2DownPressed;
+    var p2MoveY = p2KeyUp+p2KeyDown;
+    
     var gameStart = false;
     
     //Adds a delay between button presses, but also controls the green rectangles blinking in the Draw Event    
     if equipChangeTimer&gt;1{equipChangeTimer--;}
     if equipBackTimer&gt;1{equipBackTimer--;}
+    if p2EquipChangeTimer&gt;1{p2EquipChangeTimer--;}
+    if p2EquipBackTimer&gt;1{p2EquipBackTimer--;}
 
     //Wrap around the menu if we go out of bounds
     if (equipChangeTimer==1 || equipBackTimer==1)
@@ -1021,6 +991,14 @@ if (global.state==states.equipScreen)
         menuProgressedLast = 0;
         equipChangeTimer=0;
         equipBackTimer=0;
+    }
+    if (p2EquipChangeTimer==1 || p2EquipBackTimer==1)
+    {
+        if (p2MenuProgressedLast==1){p2ShieldSelect++;}
+        if (p2MenuProgressedLast==2){p2ShieldSelect--;}
+        p2MenuProgressedLast = 0;
+        p2EquipChangeTimer=0;
+        p2EquipBackTimer=0;
     }
     
     //Move around the menu if we press Confirm/Start, but add a delay between presses.
@@ -1032,6 +1010,14 @@ if (global.state==states.equipScreen)
         equipChangeTimer=50;
         menuProgressedLast=1;
     }
+    if (((keyP2Action2Pressed || keyP2PausePressed) &amp;&amp; p2EquipChangeTimer&lt;=0 &amp;&amp; p2EquipBackTimer&lt;=0 &amp;&amp; p2ShieldSelect&lt;2) &amp;&amp; objMain.currPlayers &gt;1)
+    {
+        audio_stop_sound(sfxMenuAccept);
+        audio_stop_sound(sfxMenuCancel);
+        audio_play_sound(sfxMenuAccept,0,false);
+        p2EquipChangeTimer=50;
+        p2MenuProgressedLast=1;
+    }
     
     //Move around the menu if we press Cancel, but add a delay between presses.
     if (keyP1Action1Pressed &amp;&amp; shieldSelect&gt;0 &amp;&amp; equipBackTimer&lt;=0 &amp;&amp; equipChangeTimer&lt;=0)
@@ -1041,9 +1027,18 @@ if (global.state==states.equipScreen)
         equipBackTimer=15;
         menuProgressedLast=2;
     }
+    if ((keyP2Action1Pressed &amp;&amp; p2ShieldSelect&gt;0 &amp;&amp; p2EquipBackTimer&lt;=0 &amp;&amp; p2EquipChangeTimer&lt;=0) &amp;&amp; objMain.currPlayers&gt;1)
+    {
+        audio_stop_sound(sfxMenuCancel);
+        audio_play_sound(sfxMenuCancel,0,false);
+        p2EquipBackTimer=15;
+        p2MenuProgressedLast=2;
+    }
     
     if (typeSelect)
     {
+    
+        //Handle player 1
         if (shieldSelect==0)
         {
             if (equipChangeTimer&lt;=0)
@@ -1117,29 +1112,115 @@ if (global.state==states.equipScreen)
                 if (equipShieldPos==1){shieldType = 1;} //Force Field
             }
         }
+            
+        //Handle player 2
+        if (p2ShieldSelect==0 &amp;&amp; objMain.currPlayers &gt;1)
+        {
+            if (p2EquipChangeTimer&lt;=0)
+            {
+                if (p2MoveY==1) {audio_stop_sound(sfxMenuTweak); audio_play_sound(sfxMenuTweak,0,false); p2EquipTypePos++;}
+                if (p2MoveY==-1) {audio_stop_sound(sfxMenuTweak); audio_play_sound(sfxMenuTweak,0,false); p2EquipTypePos--;}
+            }
+            
+            if (p2EquipTypePos&lt;1){p2EquipTypePos=4;}
+            if (p2EquipTypePos&gt;4){p2EquipTypePos=1;}
+        
+            switch(p2EquipTypePos)
+            {
+                case 1:
+                    p2MissileType = 1;
+                    p2DoubleType = 1;
+                    p2LaserType = 1;
+                    p2OptionType = 1;
+                    break;
+                case 2:
+                    p2MissileType = 2;    // 2-way
+                    p2DoubleType = 2;     // Tail gun
+                    p2LaserType = 2;      // Ripple
+                    p2OptionType = 2;     // Option
+                    break;
+                case 3:
+                    p2MissileType = 3;    // Spread Bomb
+                    p2DoubleType = 3;     // Vertical
+                    p2LaserType = 3;      // C.Laser
+                    p2OptionType = 3;     // Option
+                    break;
+                case 4:
+                    p2MissileType = 4;    // Photon Torpedo
+                    p2DoubleType = 4;     // Back Double
+                    p2LaserType = 4;      // Twin Laser
+                    p2OptionType = 4;     // Option
+                    break;
+                default:
+                    break;
+            }
+        }
+        if (p2ShieldSelect==1 &amp;&amp; objMain.currPlayers &gt;1)
+        {
+            //Autopilot into Force Field if we have Friendly Mode enabled
+            if (global.frModeEnabled)
+            {
+                if (p2EquipChangeTimer&lt;=0)
+                {
+                    p2MenuProgressedLast=1;
+                    p2EquipShieldPos = 1;
+                    p2ShieldType = 1;
+                    audio_stop_sound(sfxMenuAccept);
+                    audio_stop_sound(sfxMenuCancel);
+                    audio_play_sound(sfxMenuAccept,0,false);
+                    p2EquipChangeTimer=50;
+                }
+            }
+            else
+            {
+                if (p2EquipChangeTimer&lt;=0)
+                {
+                    if (p2MoveX==1) {audio_stop_sound(sfxMenuTweak); audio_play_sound(sfxMenuTweak,0,false); p2EquipShieldPos++;}
+                    if (p2MoveX==-1) {audio_stop_sound(sfxMenuTweak); audio_play_sound(sfxMenuTweak,0,false); p2EquipShieldPos--;}
+                }
+                //Wrap around
+                if (p2EquipShieldPos&gt;1) {p2EquipShieldPos = 0;}
+                if (p2EquipShieldPos&lt;0) {p2EquipShieldPos = 1;}
+                
+                //Finally, assign the shield type
+                if (p2EquipShieldPos==0){p2ShieldType = 0;} //Shield
+                if (p2EquipShieldPos==1){p2ShieldType = 1;} //Force Field
+            }
+        }
     }
     
     
     //If we've hit the end of the menu, start the game
-    
-    //Separated with "gameStart" flag because there will be two different menus that can be filled out at different times.
-    //This is a WIP.
     if (typeSelect &amp;&amp; shieldSelect&gt;1 &amp;&amp; equipChangeTimer&lt;=0)
-    {gameStart=true;}
+    {
+        if (objMain.currPlayers&lt;=1)
+        {
+            if (glTimer&lt;=0){glTimer=75;}
+        }
+        else
+        {
+            if (shieldSelect&gt;1 &amp;&amp; equipChangeTimer&lt;=0) &amp;&amp; (p2ShieldSelect&gt;1 &amp;&amp; p2EquipChangeTimer&lt;=0) //Wait for both players
+            {
+                if (glTimer&lt;=0){glTimer=75;}
+            }
+        }
+        
+        if (glTimer==1){gameStart=true;}
+    }
     
     if (gameStart)
     {
         //Friendly Mode is taken care of in the gamestates script in the Step Event of objMain
         instance_create(-256,0,objCamera);
-        instance_create(objCamera.x+128,128,objPlayer1);
+        player1 = instance_create(objCamera.x+128,128,objPlayer1);
         var thisHitbox = instance_create(objPlayer.x,objPlayer.y,objPlayerCapsuleHitbox);
-        thisHitbox.myPlayer = 1;
+        thisHitbox.myPlayer = player1.id;
         if (objMain.currPlayers&gt;1)
         {
-            instance_create(objCamera.x+128,128,objPlayer2);
-            objPlayer.y = 128-32;
+            player2 = instance_create(objCamera.x+128,128,objPlayer2);
+            player1.y = 128-32;
             thisHitbox2 = instance_create(objPlayer2.x,objPlayer2.y,objPlayerCapsuleHitbox);
-            thisHitbox2.myPlayer = 2;
+            thisHitbox2.myPlayer = player2.id;
         }
         audio_group_unload(sfxMenu);
         audio_group_load(sfxInGame);
@@ -1153,6 +1234,72 @@ if (global.state==states.equipScreen)
         objMain.startRoomTimer = objMain.startRoomTimerLength;
     }
 }
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Check for global controller inputs
+controller1 = 0;
+if p1HasController&gt;0
+{
+    controller1 = p1HasController;
+}
+
+controller2 = 0;
+if p2HasController&gt;0
+{
+    controller2 = p2HasController;
+}
+
+keyP1Up = max(keyboard_check(global.keyUp) &amp;&amp; global.keyUp != -1,gamepad_button_check(controller1,global.keyUp) &amp;&amp; global.keyUp != -1,stickUpHeld[controller1]);
+keyP1UpPressed = (keyboard_check_pressed(global.keyUp) &amp;&amp; global.keyUp != -1) || stickUpPressed[controller1];
+keyP1Down = max(keyboard_check(global.keyDown) &amp;&amp; global.keyDown != -1,gamepad_button_check(controller1,global.keyDown) &amp;&amp; global.keyDown != -1,stickDownHeld[controller1]);
+keyP1DownPressed = (keyboard_check_pressed(global.keyDown) &amp;&amp; global.keyDown != -1) || stickDownPressed[controller1];
+keyP1Left = max(keyboard_check(global.keyLeft) &amp;&amp; global.keyLeft != -1,gamepad_button_check(controller1,global.keyLeft) &amp;&amp; global.keyLeft != -1,stickLeftHeld[controller1]);
+keyP1LeftPressed = (keyboard_check_pressed(global.keyLeft) &amp;&amp; global.keyLeft != -1) || stickLeftPressed[controller1];
+keyP1Right = max(keyboard_check(global.keyRight) &amp;&amp; global.keyRight != -1,gamepad_button_check(controller1,global.keyRight) &amp;&amp; global.keyRight != -1,stickRightHeld[controller1]);
+keyP1RightPressed = (keyboard_check_pressed(global.keyRight) &amp;&amp; global.keyRight != -1) || stickRightPressed[controller1];
+keyP1Action1 = max(keyboard_check(global.keyAction1) &amp;&amp; global.keyAction1 != -1,gamepad_button_check(controller1,global.keyAction1));
+keyP1Action1Pressed = max(keyboard_check_pressed(global.keyAction1) &amp;&amp; global.keyAction1 != -1,gamepad_button_check(controller1,global.keyAction1));
+keyP1Action2 = max(keyboard_check(global.keyAction2) &amp;&amp; global.keyAction2 != -1,gamepad_button_check(controller1,global.keyAction2));
+keyP1Action2Pressed = max(keyboard_check_pressed(global.keyAction2) &amp;&amp; global.keyAction2 != -1,gamepad_button_check(controller1,global.keyAction2));
+keyP1Action3 = max(keyboard_check(global.keyAction3) &amp;&amp; global.keyAction3 != -1,gamepad_button_check(controller1,global.keyAction3));
+keyP1Action3Pressed = max(keyboard_check_pressed(global.keyAction3) &amp;&amp; global.keyAction3 != -1,gamepad_button_check(controller1,global.keyAction3));
+keyP1Pause = max(keyboard_check(global.keyPause) &amp;&amp; global.keyPause != -1,gamepad_button_check(controller1,global.keyPause));
+keyP1PausePressed = max(keyboard_check_pressed(global.keyPause) &amp;&amp; global.keyPause != -1,gamepad_button_check(controller1,global.keyPause));
+
+keyP2Up = max(keyboard_check(global.keyP2Up) &amp;&amp; global.keyP2Up != -1,gamepad_button_check(controller2,global.keyP2Up) &amp;&amp; global.keyP2Up != -1,stickUpHeld[controller2]);
+keyP2UpPressed = (keyboard_check_pressed(global.keyP2Up) &amp;&amp; global.keyP2Up != -1) || stickUpPressed[controller2];
+keyP2Down = max(keyboard_check(global.keyP2Down) &amp;&amp; global.keyP2Down != -1,gamepad_button_check(controller2,global.keyP2Down) &amp;&amp; global.keyP2Down != -1,stickDownHeld[controller2]);
+keyP2DownPressed = (keyboard_check_pressed(global.keyP2Down) &amp;&amp; global.keyP2Down != -1) || stickDownPressed[controller2];
+keyP2Left = max(keyboard_check(global.keyP2Left) &amp;&amp; global.keyP2Left != -1,gamepad_button_check(controller2,global.keyP2Left) &amp;&amp; global.keyP2Left != -1,stickLeftHeld[controller2]);
+keyP2LeftPressed = (keyboard_check_pressed(global.keyP2Left) &amp;&amp; global.keyP2Left != -1) || stickLeftPressed[controller2];
+keyP2Right = max(keyboard_check(global.keyP2Right) &amp;&amp; global.keyP2Right != -1,gamepad_button_check(controller2,global.keyP2Right) &amp;&amp; global.keyP2Right != -1,stickRightHeld[controller2]);
+keyP2RightPressed = (keyboard_check_pressed(global.keyP2Right) &amp;&amp; global.keyP2Right != -1) || stickRightPressed[controller2];
+keyP2Action1 = max(keyboard_check(global.keyP2Action1) &amp;&amp; global.keyP2Action1 != -1,gamepad_button_check(controller2,global.keyP2Action1));
+keyP2Action1Pressed = max(keyboard_check_pressed(global.keyP2Action1) &amp;&amp; global.keyP2Action1 != -1,gamepad_button_check(controller2,global.keyP2Action1));
+keyP2Action2 = max(keyboard_check(global.keyP2Action2) &amp;&amp; global.keyP2Action2 != -1,gamepad_button_check(controller2,global.keyP2Action2));
+keyP2Action2Pressed = max(keyboard_check_pressed(global.keyP2Action2) &amp;&amp; global.keyP2Action2 != -1,gamepad_button_check(controller2,global.keyP2Action2));
+keyP2Action3 = max(keyboard_check(global.keyP2Action3) &amp;&amp; global.keyP2Action3 != -1,gamepad_button_check(controller2,global.keyP2Action3));
+keyP2Action3Pressed = max(keyboard_check_pressed(global.keyP2Action3) &amp;&amp; global.keyP2Action3 != -1,gamepad_button_check(controller2,global.keyP2Action3));
+keyP2Pause = max(keyboard_check(global.keyP2Pause) &amp;&amp; global.keyP2Pause != -1,gamepad_button_check(controller2,global.keyP2Pause));
+keyP2PausePressed = max(keyboard_check_pressed(global.keyP2Pause) &amp;&amp; global.keyP2Pause != -1,gamepad_button_check(controller2,global.keyP2Pause));
 </string>
           </argument>
         </arguments>
@@ -1228,68 +1375,6 @@ case "gamepad lost":                           // Gamepad has been removed or ot
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///Handle Intro and set font
-draw_enable_alphablend(false);
-
-if global.tick==5||global.tick==6
-{
-draw_set_color(c_white);
-draw_rectangle(-8,128,290,140,false);
-}
-else if global.tick==8||global.tick==9
-{
-draw_set_color(c_gray);
-draw_rectangle(-8,40,290,42,false);
-}
-
-draw_set_font(global.font);
-
-if global.tick&lt;=waitTime+10
-{
-    draw_set_color(c_white);
-    draw_set_alpha(1);
-    draw_text(8*5,8*12,"    Gradius Engine#     v1.4 Preview##          by##     mysterypaint#");
-}
-
-//Fade out on top of the text
-draw_enable_alphablend(true);
-draw_set_color(c_black);
-
-if global.tick&lt;=15 || (global.tick &gt;waitTime+5 &amp;&amp; global.tick &lt;=waitTime+10)
-{
-    draw_set_alpha(0.8);
-    draw_rectangle(-1,16,257,257,false);
-}
-else if (global.tick&gt;15 &amp;&amp; global.tick&lt;=20) || (global.tick&gt;waitTime &amp;&amp; global.tick&lt;=waitTime+5)
-{
-draw_set_alpha(0.4);
-draw_rectangle(-1,16,257,257,false);
-}
-else if global.tick&gt;20 &amp;&amp; global.tick&lt;=waitTime
-{
-draw_set_alpha(0);
-draw_rectangle(-1,16,257,257,false);
-}
-</string>
-          </argument>
-        </arguments>
-      </action>
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
             <string>///Handle item equip screen
 
 if (global.state==states.equipScreen)
@@ -1302,10 +1387,8 @@ if (global.state==states.equipScreen)
     draw_rectangle(-32,-32,500,500,false);
     draw_background(weaponSelect,0,0);
     draw_enable_alphablend(true);
-    draw_set_color(c_white);
     
-    draw_text(0,0,keyP1UpPressed);
-    
+    //Player 1
     if (equipChangeTimer%5==0)
     {
     equipTypeBlinkShow = !equipTypeBlinkShow;
@@ -1314,12 +1397,19 @@ if (global.state==states.equipScreen)
     
     if (global.tick%90==0)
     {
-        frModeFlicker = !frModeFlicker;
+        frModeFlicker = !frModeFlicker; //Friendly Mode text on Equip Screen
+    }
+    
+    //Player 2
+    if (p2EquipChangeTimer%5==0)
+    {
+        p2EquipTypeBlinkShow = !p2EquipTypeBlinkShow;
+        p2EquipShieldBlinkShow = !p2EquipShieldBlinkShow;
     }
     
     if (global.tick%8==0)
     {
-        glFlicker = !glFlicker;
+        glFlicker = !glFlicker; //Good Luck! Text on the Equip Screen
     }
     
     //All the code from here to the bottom draws the green, rectangular boxes on the Equip Type Mode screen
@@ -1359,9 +1449,74 @@ if (global.state==states.equipScreen)
             draw_set_color(c_yellow);
             draw_text(0,8*28,"Friendly Mode: Auto-Force Field");
         }
+        
+        if (equipTypePos==p2EquipTypePos &amp;&amp; currPlayers&gt;1)
+        {
+            draw_set_color($88E0A0);   
+        }
+        else
+        {draw_set_color(c_red);}
+        
+        if ((p2EquipTypeBlinkShow || p2EquipChangeTimer&lt;=0  || p2ShieldSelect!=0) &amp;&amp; objMain.currPlayers &gt;1)
+        {
+            draw_sprite(sprEquipHighlight,1,14,26+(p2EquipTypePos*32));                           //Top-Left
+            draw_sprite_ext(sprEquipHighlight,1,241,26+(p2EquipTypePos*32),-1,1,0,c_white,1);     //Top-Right
+            draw_sprite_ext(sprEquipHighlight,1,14,54+(p2EquipTypePos*32),1,-1,0,c_white,1);      //Bottom-Left
+            draw_sprite_ext(sprEquipHighlight,1,241,54+(p2EquipTypePos*32),-1,-1,0,c_white,1);    //Bottom-Right
+            
+            if (equipTypePos!=p2EquipTypePos || ((equipChangeTimer&gt;0 &amp;&amp; !equipTypeBlinkShow) &amp;&amp; shieldSelect&lt;1))
+            {
+                draw_set_color(c_red);
+            }
+            else
+            {draw_set_color($88E0A0);}
+                draw_rectangle(16,24+(p2EquipTypePos*32),238,24+(p2EquipTypePos*32),false);     //Upper
+                draw_rectangle(13,27+(p2EquipTypePos*32),13,52+(p2EquipTypePos*32),false);      //Left
+                draw_rectangle(241,27+(p2EquipTypePos*32),241,52+(p2EquipTypePos*32),false);    //Right
+                draw_rectangle(16,55+(p2EquipTypePos*32),238,55+(p2EquipTypePos*32),false);     //Lower
+            
+        }
+
+        if (equipShieldPos==p2EquipShieldPos &amp;&amp; currPlayers&gt;1)
+        {
+            draw_set_color($88E0A0);   
+        }
+        else
+        {draw_set_color(c_red);}
+        
+        if ((p2EquipShieldBlinkShow || p2EquipChangeTimer&lt;=0 || p2ShieldSelect!=1) &amp;&amp; objMain.currPlayers &gt;1)
+        {
+        draw_sprite(sprEquipHighlight,1,153+(p2EquipShieldPos*48),188);                         //Top-Left
+        draw_sprite_ext(sprEquipHighlight,1,183+(p2EquipShieldPos*48),188,-1,1,0,c_white,1);    //Top-Right
+        draw_sprite_ext(sprEquipHighlight,1,153+(p2EquipShieldPos*48),214,1,-1,0,c_white,1);    //Bottom-Left
+        draw_sprite_ext(sprEquipHighlight,1,183+(p2EquipShieldPos*48),214,-1,-1,0,c_white,1);   //Bottom-Right
+        if (equipShieldPos!=p2EquipShieldPos || ((equipChangeTimer&gt;0 &amp;&amp; !equipShieldBlinkShow) &amp;&amp; shieldSelect==1))
+            {
+                draw_set_color(c_red);
+            }
+            else
+            {draw_set_color($88E0A0);}
+        draw_rectangle(155+(p2EquipShieldPos*48),186,180+(p2EquipShieldPos*48),186,false);     //Upper
+        draw_rectangle(152+(p2EquipShieldPos*48),190,152+(p2EquipShieldPos*48),211,false);     //Left
+        draw_rectangle(183+(p2EquipShieldPos*48),190,183+(p2EquipShieldPos*48),211,false);     //Right
+        draw_rectangle(155+(p2EquipShieldPos*48),215,180+(p2EquipShieldPos*48),215,false);     //Lower
+        }
+        
+        if (global.frModeEnabled &amp;&amp; frModeFlicker)
+        {
+            draw_set_color(c_yellow);
+            draw_text(0,8*29,"Friendly Mode: Auto-Force Field");
+        }
     }
-    
+    draw_set_color($88E0A0);
     if (shieldSelect&gt;1)
+    {draw_text(0,8*28,"PLAYER 1 READY");}
+    
+    draw_set_color(c_red);
+    if ((p2ShieldSelect&gt;1) &amp;&amp; objMain.currPlayers &gt;1)
+    {draw_text(8*16,8*28,"PLAYER 2 READY");}
+      
+    if (glTimer&gt;0)
     {
         draw_set_color(c_black);
         draw_rectangle(0,8*13,300,8*16,false);
@@ -1370,7 +1525,8 @@ if (global.state==states.equipScreen)
             draw_set_color(c_white);
             draw_text((8*11)+4,8*14,"Good luck!");
         }
-    }
+        glTimer--;
+    }    
 }
 </string>
           </argument>
@@ -1422,6 +1578,68 @@ if !instance_exists(objCamera)
     draw_set_color(c_white);
     draw_text(x,y,"Closing the game...");
     }
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Handle Intro and set font
+draw_enable_alphablend(false);
+
+if global.tick==5||global.tick==6
+{
+draw_set_color(c_white);
+draw_rectangle(-8,128,290,140,false);
+}
+else if global.tick==8||global.tick==9
+{
+draw_set_color(c_gray);
+draw_rectangle(-8,40,290,42,false);
+}
+
+draw_set_font(global.font);
+
+if global.tick&lt;=waitTime+10
+{
+    draw_set_color(c_white);
+    draw_set_alpha(1);
+    draw_text(8*5,8*12,"    Gradius Engine#     v1.4 Preview##          by##     mysterypaint#");
+}
+
+//Fade out on top of the text
+draw_enable_alphablend(true);
+draw_set_color(c_black);
+
+if global.tick&lt;=15 || (global.tick &gt;waitTime+5 &amp;&amp; global.tick &lt;=waitTime+10)
+{
+    draw_set_alpha(0.8);
+    draw_rectangle(-1,16,257,257,false);
+}
+else if (global.tick&gt;15 &amp;&amp; global.tick&lt;=20) || (global.tick&gt;waitTime &amp;&amp; global.tick&lt;=waitTime+5)
+{
+draw_set_alpha(0.4);
+draw_rectangle(-1,16,257,257,false);
+}
+else if global.tick&gt;20 &amp;&amp; global.tick&lt;=waitTime
+{
+draw_set_alpha(0);
+draw_rectangle(-1,16,257,257,false);
 }
 </string>
           </argument>

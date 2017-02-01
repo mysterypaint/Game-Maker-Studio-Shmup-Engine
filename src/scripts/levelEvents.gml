@@ -38,7 +38,8 @@ switch(global.currentMap)
             global.prevMap = "map00.oel"; //Set to the same map so we don't accidentally warp back to this map state if we die on the next state
             objCamera.scrollX = 0.3;
             objCamera.y = 0;
-            objPlayer.y = (objPlayer.y%objCamera.viewportHeight);
+            objPlayer1.y = (objPlayer1.y%objCamera.viewportHeight);
+            if instance_exists(objPlayer2){objPlayer2.y = (objPlayer2.y%objCamera.viewportHeight);}
             changeMap("map00.oel",BGM00); //Infinite loop, for demonstration purposes
             objMain.loopCounter++; //Starting from 1, keeps track of how many times we've reached this point of the game (Could be used as a difficulty determinant)
         }

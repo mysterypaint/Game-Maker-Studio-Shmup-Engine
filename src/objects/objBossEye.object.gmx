@@ -234,7 +234,7 @@ if instance_exists(objBossBarrier)
 
 if (isLeftmost)
 {
-    if (!objPlayer.dead)
+    if (!other.dead)
     {
         if (x&lt;=objCamera.x+objCamera.scrollX+objCamera.viewportWidth-4 &amp;&amp; hitTimer&lt;=0)
         {
@@ -242,7 +242,7 @@ if (isLeftmost)
             {
                 HP--;
                 hitTimer = hitTimerSet;
-                if (objPlayer.HP&gt;1)
+                if (other.HP&gt;1)
                 {
                     audio_stop_sound(sfxBarrierWeaken);
                     audio_play_sound(sfxBarrierWeaken,0,false);
@@ -250,7 +250,7 @@ if (isLeftmost)
             }
             if (!objCamera.debug)
             {
-            objPlayer.HP--;
+                other.HP--;
             }
         }
     }

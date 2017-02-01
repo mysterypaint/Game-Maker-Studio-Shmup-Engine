@@ -26,21 +26,10 @@
           <argument>
             <kind>1</kind>
             <string>///Initialize some variables
+doubleType = 1;
+
 bulletStrength = 1;
 image_speed = 0;
-
-if objMain.doubleType == 1
-{
-    bulletXSpeed = 6;
-}
-else if (objMain.doubleType == 2 || objMain.doubleType == 4)
-{
-    bulletXSpeed = -6;
-}
-else if (objMain.doubleType == 3)
-{
-    bulletXSpeed = 0;
-}
 
 playedSFX = false;
 
@@ -103,7 +92,7 @@ with (parentGun)
     
     self.x+=objCamera.scrollX+bulletXSpeed;
     
-    if (objMain.doubleType == 1 || objMain.doubleType == 3 || objMain.doubleType == 4)
+    if (doubleType == 1 || doubleType == 3 || doubleType == 4)
     {
         self.y+=objCamera.scrollY+bulletYSpeed;
     }

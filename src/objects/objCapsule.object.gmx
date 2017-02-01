@@ -25,9 +25,7 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///Handle collision with player
-
-//Animation speed
+            <string>///Animation speed
 image_speed = 0.2 * objMain.deltaTime;
 
 //Collision handled in objPlayerCapsuleHitbox

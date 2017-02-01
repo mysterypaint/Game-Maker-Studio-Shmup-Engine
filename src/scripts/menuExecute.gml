@@ -11,6 +11,8 @@ if currentMenu==1
             global.state = states.equipScreen;
             objMain.shieldSelect = 0;
             objMain.menuProgressedLast = 0;
+            objMain.p2ShieldSelect = 0;
+            objMain.p2MenuProgressedLast = 0;
             objMain.currPlayers = 1;
             instance_destroy();
             break;
@@ -21,6 +23,8 @@ if currentMenu==1
             global.state = states.equipScreen;
             objMain.shieldSelect = 0;
             objMain.menuProgressedLast = 0;
+            objMain.p2ShieldSelect = 0;
+            objMain.p2MenuProgressedLast = 0;
             objMain.currPlayers = 2;
             instance_destroy();
             break;

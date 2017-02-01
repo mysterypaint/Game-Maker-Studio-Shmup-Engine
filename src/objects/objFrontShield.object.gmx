@@ -29,6 +29,7 @@
 HP = 10;
 bulletStrength = 1;
 foundPlayer = false;
+originParent = objPlayer1.id;
 </string>
           </argument>
         </arguments>
@@ -64,9 +65,9 @@ if (global.state == 2 || global.state == 3)
     
     if (!foundPlayer)
     {
-        if point_distance(x, y, objPlayer.x+xDest, objPlayer.y+yDest) &gt; 5
+        if point_distance(x, y, originParent.x+xDest, originParent.y+yDest) &gt; 5
            {
-           move_towards_point(objPlayer.x+xDest, objPlayer.y+yDest, 5);
+           move_towards_point(originParent.x+xDest, originParent.y+yDest, 5);
            }
         else
             {
@@ -75,10 +76,10 @@ if (global.state == 2 || global.state == 3)
     }
     else
     {
-        if (!objPlayer.dead)
+        if (!originParent.dead)
         {
-            x=objPlayer.x+xDest+objPlayer.hsp;
-            y=objPlayer.y+yDest+objPlayer.vsp;
+            x=originParent.x+xDest+originParent.hsp;
+            y=originParent.y+yDest+originParent.vsp;
         }
     }
     

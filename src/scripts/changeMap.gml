@@ -56,7 +56,11 @@ if (objMain.switchingMaps == false && objMain.bgmFadeoutMultiplier<=0)
     
     for (var i = 39; i >= 0; i--;)  //Shift all 40 frames of x/y ghost trailing by however the player moved
     {
-    objPlayer.prevX[i] = -(objCamera.viewportWidth)+(objPlayer.prevX[i]-objCamera.x);
+        objPlayer1.prevX[i] = -(objCamera.viewportWidth)+(objPlayer1.prevX[i]-objCamera.x);
+        if instance_exists(objPlayer2)
+        {
+            objPlayer2.prevX[i] = -(objCamera.viewportWidth)+(objPlayer2.prevX[i]-objCamera.x);
+        }
     }
     
     //Move literally everything besides the camera to the very start of the map
@@ -64,7 +68,7 @@ if (objMain.switchingMaps == false && objMain.bgmFadeoutMultiplier<=0)
     {
         if (instance_id[i] != objCamera)
         {
-        with (instance_id[i]) x = -(objCamera.viewportWidth)+(x-objCamera.x);
+            with (instance_id[i]) {x = -(objCamera.viewportWidth)+(x-objCamera.x);}
         }
     }
     //Now move the camera, too
@@ -74,9 +78,9 @@ if (objMain.switchingMaps == false && objMain.bgmFadeoutMultiplier<=0)
     //But first, remember the state of the previous level before we switch stuff
     if (objMain.rememberBGM)
     {
-    global.prevMap = global.currentMap;
-    objCamera.prevScrollX = objCamera.scrollX;
-    objCamera.prevScrollY = objCamera.scrollY;
+        global.prevMap = global.currentMap;
+        objCamera.prevScrollX = objCamera.scrollX;
+        objCamera.prevScrollY = objCamera.scrollY;
     }
     
     global.currentMap = argument[0];

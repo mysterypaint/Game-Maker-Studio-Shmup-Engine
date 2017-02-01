@@ -27,7 +27,7 @@
             <kind>1</kind>
             <string>///Inherit parent event and declare variables
 event_inherited();
-
+active = false;
 HP = 1;
 image_index = 0;
 image_speed = 0;
@@ -51,6 +51,48 @@ silentKill = false;
 if (enemyType==2)
 {isRed=true;}
 else{isRed=false;}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Determine a target player to look at.
+var player1 = findPlayer(objPlayer1);
+
+if (instance_exists(objPlayer2))
+{
+    var player2 = findPlayer(objPlayer2);
+    
+    switch(irandom(objMain.currPlayers))
+    {
+        default:
+        case 1:
+            target = player1;
+            break;
+        case 2:
+            target = player2;
+            break;
+    }
+}
+else
+{
+    target = player1;
+}
 </string>
           </argument>
         </arguments>
@@ -108,32 +150,13 @@ if (global.state != states.startRoom &amp;&amp; !objMain.cleaningRoom &amp;&amp;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///Take code from parent objEnemy and handle movement
-event_inherited();
-</string>
-          </argument>
-        </arguments>
-      </action>
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
             <string>///Always look at the player
-if instance_exists(objPlayer)
+with (target)
 {
-direction = point_direction(x, y, objPlayer.x, objPlayer.y);
+    if (!dead)
+    {
+        other.direction = point_direction(other.x, other.y, x, y);
+    }
 }
 </string>
           </argument>
@@ -244,6 +267,28 @@ if (active)
 }
 else
 {speed = 0;}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Take code from parent objEnemy and handle movement
+event_inherited();
 </string>
           </argument>
         </arguments>

@@ -3,50 +3,13 @@
 objMain.cleaningRoom = true;
 objMain.bgmFadeoutMultiplier = 1;
 
+audio_stop_all();
+
 if (powerupSlot>=1){powerupSlot=1;} //Give the player a free capsule on revival if they have any capsule on death
-        objPlayer.konDone = false;
-        objPlayer.konCode = false;
-        objPlayer.fun = false;
-        objPlayer.dead = false;
-        objPlayer.shipTurning = 0;
-        objPlayer.cc1=0;
-        objPlayer.cc2=0;
-        objPlayer.callD = 0;
-        objPlayer.HP = 1;
-        //Remove all powerups
-        objPlayer.playerSpeed = 1;
-        objPlayer.hasMissile = false;
-        objPlayer.hasDouble = false;
-        objPlayer.hasLaser = false;
-        if instance_exists(objPlayer2)
-        {
-            objPlayer2.konDone = false;
-            objPlayer2.konCode = false;
-            objPlayer2.fun = false;
-            objPlayer2.dead = false;
-            objPlayer2.shipTurning = 0;
-            objPlayer2.cc1=0;
-            objPlayer2.cc2=0;
-            objPlayer2.callD = 0;
-            objPlayer2.HP = 1;
-            //Remove all powerups
-            objPlayer2.playerSpeed = 1;
-            objPlayer2.hasMissile = false;
-            objPlayer2.hasDouble = false;
-            objPlayer2.hasLaser = false;
-        }
         
-        with (objOption)
-           {
-            instance_destroy();
-           }
-        numOfOpts=0;
-        with (objFrontShield)
-           {
-            instance_destroy();
-           }
-        hasQuestion = false;
-        hasExclamation = false;
+        with(objPlayer1){resetPlayer();}
+        if instance_exists(objPlayer2)
+        {with (objPlayer2){resetPlayer();}}
         
         //Delete all existing temporary particles
         with (objBullet)

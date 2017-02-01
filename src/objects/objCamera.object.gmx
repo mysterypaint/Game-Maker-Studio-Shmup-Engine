@@ -150,18 +150,21 @@ if (debug)
     }
     
     //Based on the camera movement input, move the camera itself by camMoveSpeed (Defined in objCamera's Create Event)
-    switch(movingVert &amp;&amp; (objMain.currPlayers&lt;=1))
+    if (objMain.currPlayers&lt;=1)
     {
-    case 1: y-=camMoveSpeed;break; //up
-    case 2: y+=camMoveSpeed;break; //down
-    default: break;
-    }
-    
-    switch(movingHoriz &amp;&amp; (objMain.currPlayers&lt;=1))
-    {
-    case 1: x-=camMoveSpeed;break; //left
-    case 2: x+=camMoveSpeed;break; //right
-    default: break;
+        switch(movingVert)
+        {
+        case 1: y-=camMoveSpeed;break; //up
+        case 2: y+=camMoveSpeed;break; //down
+        default: break;
+        }
+        
+        switch(movingHoriz)
+        {
+        case 1: x-=camMoveSpeed;break; //left
+        case 2: x+=camMoveSpeed;break; //right
+        default: break;
+        }
     }
 }
 
@@ -364,14 +367,18 @@ if (global.state != states.startRoom)
     }
     
     drawSprites(objBullet,sprBullet);
-
-    if (objMain.doubleType==1 || objMain.doubleType==3 || objMain.doubleType==4)
+    
+    for(var i=0; i&lt;instance_number(objDouble);i++)
     {
-    drawSprites(objDouble,sprDouble);
-    }
-    else if (objMain.doubleType==2)
-    {
-    drawSprites(objDouble,sprBullet);
+        thisDouble = instance_find(objDouble,i);
+        if (thisDouble.doubleType==1 || thisDouble.doubleType==3 || thisDouble.doubleType==4)
+        {
+            draw_sprite_ext(sprDouble,thisDouble.image_index,thisDouble.x,thisDouble.y,thisDouble.image_xscale,thisDouble.image_yscale,0,c_white,1);
+        }
+        else if (thisDouble.doubleType==2)
+        {
+            draw_sprite_ext(sprBullet,thisDouble.image_index,thisDouble.x,thisDouble.y,thisDouble.image_xscale,thisDouble.image_yscale,0,c_white,1);
+        }
     }
 
     drawLaser();
@@ -423,11 +430,20 @@ if global.state!=4
 
     if (instance_exists(objPlayer2))
     {
+        if (global.tick%objPlayer2.invBlinkRate==0)
+        {
+            if (objMain.deltaTime&gt;0)
+            {
+                objPlayer2.playerVisible = !objPlayer2.playerVisible
+            }
+        }
         if (!objPlayer2.dead)
         {
-        
-        draw_sprite(sprPlayer2,objPlayer2.image_index,objPlayer2.x,objPlayer2.y-1);
-        draw_sprite(sprPlayerFlame2,objPlayer2.flameImgInd,objPlayer2.x-16,objPlayer2.y);
+            if (objPlayer2.invincibilityFrames&lt;=0 || objPlayer2.playerVisible)
+            {
+                draw_sprite(sprPlayer2,objPlayer2.image_index,objPlayer2.x,objPlayer2.y-1);
+                draw_sprite(sprPlayerFlame2,objPlayer2.flameImgInd,objPlayer2.x-16,objPlayer2.y);
+            }
         }
         else
         {
@@ -455,52 +471,54 @@ if global.state!=4
             draw_set_alpha(1);
             }
         }
-    
         
-        
-        
-if (instance_exists(objPlayer))
-{
-    if (!objPlayer.dead)
+    if (instance_exists(objPlayer1))
     {
-    
-    draw_sprite(sprPlayer,objPlayer.image_index,objPlayer.x,objPlayer.y-1);
-    draw_sprite(sprPlayerFlame,objPlayer.flameImgInd,objPlayer.x-16,objPlayer.y);
-    }
-    else
-    {
-        with(objPlayer)
+        if (!objPlayer1.dead)
+        {
+            if (global.tick%objPlayer1.invBlinkRate==0)
             {
-            if (deadTimer&gt;4*deadTimerMult+deadWaitTime){image_index=4;}
-            if (deadTimer&gt;3*deadTimerMult+deadWaitTime &amp;&amp; deadTimer&lt;=4*deadTimerMult+deadWaitTime){image_index=3;}
-            if (deadTimer&gt;2*deadTimerMult+deadWaitTime &amp;&amp; deadTimer&lt;=3*deadTimerMult+deadWaitTime){image_index=2;}
-            if (deadTimer&gt;1*deadTimerMult+deadWaitTime &amp;&amp; deadTimer&lt;=2*deadTimerMult+deadWaitTime){image_index=1;}
-            if (deadTimer&gt;deadWaitTime &amp;&amp; deadTimer&lt;=1*deadTimerMult+deadWaitTime){image_index=0;}
+                if (objMain.deltaTime&gt;0)
+                {
+                    objPlayer1.playerVisible = !objPlayer1.playerVisible;
+                }
             }
             
-            if (objPlayer.deadTimer&gt;objPlayer.deadWaitTime)
+            if (!objPlayer1.dead)
             {
-                draw_sprite(sprPlayerExplode,objPlayer.image_index,objPlayer.x,objPlayer.y-1);
+                if (objPlayer1.invincibilityFrames&lt;=0 || objPlayer1.playerVisible)
+                {
+                    draw_sprite(sprPlayer,objPlayer1.image_index,objPlayer1.x,objPlayer1.y-1);
+                    draw_sprite(sprPlayerFlame,objPlayer1.flameImgInd,objPlayer1.x-16,objPlayer1.y);
+                }
+            }
+        }
+        else
+        {
+            with(objPlayer1)
+                {
+                if (deadTimer&gt;4*deadTimerMult+deadWaitTime){image_index=4;}
+                if (deadTimer&gt;3*deadTimerMult+deadWaitTime &amp;&amp; deadTimer&lt;=4*deadTimerMult+deadWaitTime){image_index=3;}
+                if (deadTimer&gt;2*deadTimerMult+deadWaitTime &amp;&amp; deadTimer&lt;=3*deadTimerMult+deadWaitTime){image_index=2;}
+                if (deadTimer&gt;1*deadTimerMult+deadWaitTime &amp;&amp; deadTimer&lt;=2*deadTimerMult+deadWaitTime){image_index=1;}
+                if (deadTimer&gt;deadWaitTime &amp;&amp; deadTimer&lt;=1*deadTimerMult+deadWaitTime){image_index=0;}
+                }
+                
+                if (objPlayer1.deadTimer&gt;objPlayer1.deadWaitTime)
+                {
+                    draw_sprite(sprPlayerExplode,objPlayer1.image_index,objPlayer1.x,objPlayer1.y-1);
+                }
+        }
+        
+        if (objCamera.debug)
+            {
+            draw_set_alpha(0.4);
+            draw_sprite(sprPlayerCapsuleHitbox,0,objPlayer1.x,objPlayer1.y);
+            draw_set_alpha(0.7);
+            draw_sprite(sprPlayerHitbox,0,objPlayer1.x,objPlayer1.y);
+            draw_set_alpha(1);
             }
     }
-    
-    if (objCamera.debug)
-        {
-        draw_set_alpha(0.4);
-        draw_sprite(sprPlayerCapsuleHitbox,0,objPlayerCapsuleHitbox.x,objPlayerCapsuleHitbox.y);
-        draw_set_alpha(0.7);
-        draw_sprite(sprPlayerHitbox,0,objPlayer.x,objPlayer.y);
-        draw_set_alpha(1);
-        }
-    }
-
-
-
-
-
-
-    
-    
     
 }
 </string>
@@ -544,23 +562,10 @@ if (global.state != states.startRoom)
     
         
     //Drawing the Force Field
-    var forceColor = c_blue;
-    var enlargeShield = 0;
-    if (global.frModeEnabled)
+    drawForceField(objPlayer1);
+    if instance_exists(objPlayer2)
     {
-        forceColor = c_green;
-        enlargeShield = -1.5; //The smaller the number, the larger the shield size
-        if objPlayer.HP&lt;4 {forceColor = c_red;}
-    }
-    else
-    {    
-        if objPlayer.HP&lt;3 {forceColor = c_red;}
-    }
-    
-    var shieldRatio = ((objPlayer.HP-1)/(objPlayer.HPMax-1+enlargeShield))/2; //Divide by two because the sprite is twice as large
-    
-    {
-        draw_sprite_ext(sprForceField,objPlayer.forceFrame,objPlayer.x+objCamera.scrollX,objPlayer.y+objCamera.scrollY,shieldRatio,shieldRatio,0,forceColor,0.45);
+        drawForceField(objPlayer2);
     }
     
     drawSprites(objEnemyBullet,sprEnemyBullet);
@@ -956,9 +961,21 @@ if (debug)
     draw_set_alpha(1);
     
     draw_set_color(c_white);
-    draw_text(objCamera.x,objCamera.y+4,"#####FPS: " + string(fps)
-    + "#Total entities: " + string(instance_count)
-    + "#Game Loop: " + string(objMain.loopCounter));
+    
+    draw_text(objCamera.x,objCamera.y+12+16,"#P1: " + string(objPlayer1.numOfOpts));
+    if instance_exists(objPlayer2)
+    {
+        draw_text(objCamera.x,objCamera.y+12+16+8,"#P2: " + string(objPlayer2.numOfOpts));
+    }
+    for (var i=0; i&lt;instance_number(objOption); i++)
+    {
+        var thisOption = instance_find(objOption,i);
+        draw_text(objCamera.x,objCamera.y+32+20+(i*8),"Opt " + string(i) + ": " + string(thisOption.myID));
+    }
+    
+    //draw_text(objCamera.x,objCamera.y+4,"#####FPS: " + string(fps)
+    //+ "#Total entities: " + string(instance_count)
+    //+ "#Game Loop: " + string(objMain.loopCounter));
     
     if global.state == 2
     {
