@@ -1622,7 +1622,7 @@ if global.tick&lt;=waitTime+10
 {
     draw_set_color(c_white);
     draw_set_alpha(1);
-    draw_text(8*5,8*12,"    Gradius Engine#     v1.4 Preview##          by##     mysterypaint#");
+    draw_text(8*5,8*12,"    Gradius Engine#         v1.4##          by##     mysterypaint#");
 }
 
 //Fade out on top of the text
