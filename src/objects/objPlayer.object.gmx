@@ -27,20 +27,35 @@
             <kind>1</kind>
             <string>///Code optimization attempt for in-game gameplay
 //You can read more about this here: http://www.yoyogames.com/blog/23
-
 draw_texture_flush();
 draw_sprite(sprPlayer, 0, 0, 0);
 draw_sprite(sprPlayerHitbox, 0, 0, 0);
 draw_sprite(sprPlayerCapsuleHitbox, 0, 0, 0);
+draw_sprite(sprPlayer2, 0, 0, 0);
 draw_sprite(sprOption, 0, 0, 0);
 draw_sprite(sprLaser, 0, 0, 0);
 draw_sprite(sprFrontShield, 0, 0, 0);
+draw_sprite(sprForceField, 0, 0, 0);
 draw_sprite(sprFont, 0, 0, 0);
 draw_sprite(sprDouble, 0, 0, 0);
 draw_sprite(sprBullet, 0, 0, 0);
 draw_sprite(tileset0, 0, 0, 0);
 draw_sprite(sprSpreadExplosion, 0, 0, 0);
+draw_sprite(sprTwinLaser, 0, 0, 0);
+draw_sprite(sprRippleLaser, 0, 0, 0);
 draw_sprite(sprCapsule, 0, 0, 0);
+draw_sprite(sprPowerupHUD, 0, 0, 0);
+draw_sprite(sprFont, 0, 0, 0);
+
+
+draw_sprite(spr16x16Explosion, 0, 0, 0);
+draw_sprite(sprBean, 0, 0, 0);
+draw_sprite(sprBossEye, 0, 0, 0);
+draw_sprite(sprBossLaser, 0, 0, 0);
+draw_sprite(sprDee01, 0, 0, 0);
+draw_sprite(sprEnemyBullet, 0, 0, 0);
+draw_sprite(sprLion, 0, 0, 0);
+draw_sprite(sprBossBarrier, 0, 0, 0);
 </string>
           </argument>
         </arguments>

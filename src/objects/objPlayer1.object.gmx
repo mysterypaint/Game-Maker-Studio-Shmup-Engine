@@ -66,6 +66,7 @@ if (flyingIn&gt;=0)
     
         if (!explode)
         {
+            if (objMain.currPlayers&lt;=1){audio_stop_all();}
             audio_stop_sound(sfxDie);
             audio_play_sound(sfxDie,0,false);
             deadTimer = 4*deadTimerMult+deadWaitTime;
@@ -81,6 +82,7 @@ if (flyingIn&gt;=0)
                 {
                     if (objPlayer2.dead)
                     {
+                        audio_stop_all();
                         resetRoom(); //Reset the room to how it originally was (the player still remembers how far they got in the level though)
                         global.state = states.startRoom;
                         objMain.startRoomTimer = objMain.startRoomTimerLength;
@@ -113,14 +115,7 @@ if (flyingIn&gt;=0)
             }
         } //Timer hit zero. Now, we switch back to the START screen.
     }
-        //Account for camera scrolling before we move the player at all
-        //Player and capsule-grabbing hitbox will keep scrolling with the camera even if they're dead
-        
-        if global.state != states.startRoom
-        {
-            x+=objCamera.scrollX;
-            y+=objCamera.scrollY;
-        }
+
     
     if (!dead &amp;&amp; (global.state == states.gameMode || global.state == states.cutscene)) //Check if the player is still alive
     {    
@@ -226,8 +221,8 @@ if (flyingIn&gt;=0)
             }
             vsp = 0;
         }
-        x += hsp;
-        y += vsp;
+        x += hsp * objMain.deltaTime;
+        y += vsp * objMain.deltaTime;
     }
 }
 else
@@ -240,6 +235,15 @@ else
         movingVert=0;
         movingHoriz=0;
     }
+}
+
+//Account for camera scrolling
+//Player and capsule-grabbing hitbox will keep scrolling with the camera even if they're dead
+
+if global.state != states.startRoom
+{
+    x += objCamera.scrollX * objMain.deltaTime;
+    y += objCamera.scrollY * objMain.deltaTime;
 }
 </string>
           </argument>

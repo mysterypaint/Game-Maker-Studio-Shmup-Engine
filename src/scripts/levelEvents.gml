@@ -7,7 +7,7 @@ switch(global.currentMap)
         if objCamera.x<-250{objMain.nextGameLoop=false;}
         if objCamera.x > (global.mapWidth * global.tileWidth) - 32 && !objMain.nextGameLoop
         {
-            changeMap("map01.oel",BGM01);
+            changeMap("map01.oel",musStage1);
         }
         break;
     
@@ -17,9 +17,9 @@ switch(global.currentMap)
         {
             //... Boss time!
             objMain.rememberBGM = false;
-            global.prevSong = BGM01;
+            global.prevSong = musStage1;
             audio_stop_sound(global.currentSong);
-            changeBGM(BGM02,false); //Boss BGM Intro (Loop handled automatically)
+            changeBGM(musBoss1,false); //Boss BGM Intro (Loop handled automatically)
             global.prevMap = "map01.oel"; //Just in case we die here
             global.currentMap = "map01.oel"; //Just in case we die here
             spawnBoss1(); //Spawn the first boss of the game
@@ -34,13 +34,13 @@ switch(global.currentMap)
             objMain.switchingMaps = false;
             objMain.bgmFadeoutMultiplier = 0;
             objMain.showLoop = 182; //For the specified length of frames, tell the player which loop they're on
-            global.currentSong = BGM00;
+            global.currentSong = musFlight2;
             global.prevMap = "map00.oel"; //Set to the same map so we don't accidentally warp back to this map state if we die on the next state
             objCamera.scrollX = 0.3;
             objCamera.y = 0;
             objPlayer1.y = (objPlayer1.y%objCamera.viewportHeight);
             if instance_exists(objPlayer2){objPlayer2.y = (objPlayer2.y%objCamera.viewportHeight);}
-            changeMap("map00.oel",BGM00); //Infinite loop, for demonstration purposes
+            changeMap("map00.oel",musFlight2); //Infinite loop, for demonstration purposes
             objMain.loopCounter++; //Starting from 1, keeps track of how many times we've reached this point of the game (Could be used as a difficulty determinant)
         }
         break;

@@ -20,6 +20,6 @@ if (!argument[0].dead)
     var shieldRatio = ((argument[0].HP-1)/(argument[0].HPMax-1+enlargeShield))/2; //Divide by two because the sprite is twice as large
     
     {
-        draw_sprite_ext(sprForceField,argument[0].forceFrame,argument[0].x+objCamera.scrollX,argument[0].y+objCamera.scrollY,shieldRatio,shieldRatio,0,forceColor,0.45);
+        draw_sprite_ext(sprForceField,argument[0].forceFrame,argument[0].x+objCamera.scrollX+argument[0].flyingIn,argument[0].y+objCamera.scrollY,shieldRatio,shieldRatio,0,forceColor,0.26);
     }
 }

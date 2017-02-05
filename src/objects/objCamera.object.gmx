@@ -67,6 +67,35 @@ background_x[2] = objCamera.x+objMain.bg2XParallax;
         </arguments>
       </action>
     </event>
+    <event eventtype="3" enumb="2">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Move the camera after everything else has moved
+if (global.state!=states.startRoom)
+{
+    x += scrollX * objMain.deltaTime;
+    y += scrollY * objMain.deltaTime;
+}
+
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="3" enumb="0">
       <action>
         <libid>1</libid>
@@ -188,7 +217,7 @@ if (debug)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///Movement code
+            <string>///Move the view and sky background
 
 //Every frame, we should check for any level events (bgm changing, map switching, etc)
 levelEvents();
@@ -198,14 +227,10 @@ background_x[0] = objCamera.x+objMain.bg0XParallax;
 background_x[1] = objCamera.x+objMain.bg1XParallax;
 background_x[2] = objCamera.x+objMain.bg2XParallax;
 
-if (global.state==states.gameMode)
-{
-x += scrollX;
-y += scrollY;
-}
 
-view_xview = objCamera.x;
-view_yview = objCamera.y;
+
+view_xview = x + scrollX * objMain.deltaTime;
+view_yview = y + scrollY * objMain.deltaTime;
 
 objMain.bg0XParallax+=background_hspeed[0];
 objMain.bg1XParallax+=background_hspeed[1];
@@ -214,6 +239,7 @@ objMain.bg2XParallax+=background_hspeed[2];
 background_x[0] = x+objMain.bg0XParallax;
 background_x[1] = x+objMain.bg1XParallax;
 background_x[2] = x+objMain.bg2XParallax;
+
 </string>
           </argument>
         </arguments>

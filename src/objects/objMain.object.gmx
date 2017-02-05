@@ -81,7 +81,7 @@ threshold = 0.8; //Stick sensitvity
 waitTime=300; //Timer for displaying the credits as the game boots up.
             //Recommended to set to approximately 300 for public builds
 
-debugEnabled = true;
+debugEnabled = false;
 
 deltaTime = 1;      //Whenever paused, this is set to 0, and 1 when unpaused!
                     //Try multiplying things with this to account for pausing state!
@@ -225,6 +225,16 @@ else
     global.keyAction2 = ord('X');
     global.keyAction3 = ord('C');
     global.keyPause = vk_enter;
+    
+    global.keyP2Up = ord('W');
+    global.keyP2Down = ord('S');
+    global.keyP2Left = ord('A')
+    global.keyP2Right = ord('D')
+    global.keyP2Action1 = ord('J')
+    global.keyP2Action2 = ord('K')
+    global.keyP2Action3 = ord('L');
+    global.keyP2Pause = ord('H');
+    
     global.grVOptEnabled = false;
     global.frModeEnabled = false;
     windowSize = 2;
@@ -781,10 +791,6 @@ switch(global.state) //Game mode handling
                 global.statePrevious=global.state;
                 global.state=5;
                 global.pauseTimer=10;
-                objCamera.scrollXPrevious=objCamera.scrollX;
-                objCamera.scrollYPrevious=objCamera.scrollY;
-                objCamera.scrollX=0;
-                objCamera.scrollY=0;
                 
                 //Freeze the parallax night sky
                 background_hspeed[0] = 0;
@@ -821,9 +827,7 @@ switch(global.state) //Game mode handling
         audio_resume_sound(global.currentSong);
         global.state=global.statePrevious;
         global.statePrevious=5;
-        global.pauseTimer=10;
-        objCamera.scrollX = objCamera.scrollXPrevious;
-        objCamera.scrollY = objCamera.scrollYPrevious;        
+        global.pauseTimer=10;     
         //Unfreeze the parallax night sky
         background_hspeed[0] = -0.2;
         background_hspeed[1] = -0.4;
@@ -951,12 +955,12 @@ else
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///Handle item equip screen
+            <string>///Handle the item equip screen
 if (global.state==states.equipScreen)
 {
-    if !audio_is_playing(BGM03)
+    if !audio_is_playing(musItemEquip)
     {
-        changeBGM(BGM03,true);
+        changeBGM(musItemEquip,true);
     }
     
     //Get input
@@ -966,7 +970,6 @@ if (global.state==states.equipScreen)
     var keyUp = -keyP1UpPressed;
     var keyDown = keyP1DownPressed;
     var moveY = keyUp+keyDown;
-    
     
     var p2KeyLeft = -keyP2LeftPressed;
     var p2KeyRight = keyP2RightPressed;
@@ -987,7 +990,17 @@ if (global.state==states.equipScreen)
     if (equipChangeTimer==1 || equipBackTimer==1)
     {
         if (menuProgressedLast==1){shieldSelect++;}
-        if (menuProgressedLast==2){shieldSelect--;}
+        if (menuProgressedLast==2)
+        {
+            if (!global.frModeEnabled)
+            {
+                shieldSelect--;
+            }
+            else
+            {
+                shieldSelect-=2;
+            }
+        }
         menuProgressedLast = 0;
         equipChangeTimer=0;
         equipBackTimer=0;
@@ -995,7 +1008,17 @@ if (global.state==states.equipScreen)
     if (p2EquipChangeTimer==1 || p2EquipBackTimer==1)
     {
         if (p2MenuProgressedLast==1){p2ShieldSelect++;}
-        if (p2MenuProgressedLast==2){p2ShieldSelect--;}
+        if (p2MenuProgressedLast==2)
+        {
+            if (!global.frModeEnabled)
+            {
+                p2ShieldSelect--;
+            }
+            else
+            {
+                p2ShieldSelect-=2;
+            }
+        }
         p2MenuProgressedLast = 0;
         p2EquipChangeTimer=0;
         p2EquipBackTimer=0;
@@ -1022,7 +1045,7 @@ if (global.state==states.equipScreen)
     //Move around the menu if we press Cancel, but add a delay between presses.
     if (keyP1Action1Pressed &amp;&amp; shieldSelect&gt;0 &amp;&amp; equipBackTimer&lt;=0 &amp;&amp; equipChangeTimer&lt;=0)
     {
-        if (p2ShieldSelect&lt;=1 &amp;&amp; objMain.currPlayers&gt;1)
+        if ((p2ShieldSelect&lt;=1 &amp;&amp; objMain.currPlayers&gt;1)  || (objMain.currPlayers&lt;=1 &amp;&amp; shieldSelect&lt;=1)) //Only allow menu cancelling if Player 2 isn't finished with weapon configuration, or if we're on single player and just finished weapon configuration.
         {
             audio_stop_sound(sfxMenuCancel);
             audio_play_sound(sfxMenuCancel,0,false);
@@ -1230,7 +1253,7 @@ if (global.state==states.equipScreen)
         loadLevel("map00.oel");
         global.prevMap = "map00.oel";
         audio_stop_sound(global.currentSong);
-        changeBGM(BGM00,false);
+        changeBGM(musFlight2,false);
         objMain.x = objCamera.x;
         objMain.y = objCamera.y;
         global.state = states.startRoom;
@@ -1331,30 +1354,30 @@ show_debug_message("Pad = " + string(async_load[? "pad_index"]));   // triggered
 
 switch(async_load[? "event_type"])             // Parse the async_load map to see which event has been triggered
 {
-case "gamepad discovered":                     // A game pad has been discovered
-    var pad = async_load[? "pad_index"];       // Get the pad index value from the async_load map
-    if (p1HasController &lt;= 0)
-    {
-        p1HasController = pad;
-    }
-    else if (p2HasController &lt;= 0)
-    {
-        p2HasController = pad;
-    }
-    //gamepad_set_axis_deadzone(pad, 0.5);       // Set the "deadzone" for the axis
-    //gamepad_set_button_threshold(pad, 0.1);    // Set the "threshold" for the triggers
-    break;
-case "gamepad lost":                           // Gamepad has been removed or otherwise disabled
-    var pad = async_load[? "pad_index"];       // Get the pad index
-    if (p1HasController == pad)
-    {
-        p1HasController = 0;
-    }
-    else if (p2HasController == pad)
-    {
-        p2HasController = 0;
-    }
-    break;
+    case "gamepad discovered":                     // A game pad has been discovered
+        var pad = async_load[? "pad_index"];       // Get the pad index value from the async_load map
+        if (p1HasController &lt;= 0)
+        {
+            p1HasController = pad;
+        }
+        else if (p2HasController &lt;= 0)
+        {
+            p2HasController = pad;
+        }
+        //gamepad_set_axis_deadzone(pad, 0.5);       // Set the "deadzone" for the axis
+        //gamepad_set_button_threshold(pad, 0.1);    // Set the "threshold" for the triggers
+        break;
+    case "gamepad lost":                           // Gamepad has been removed or otherwise disabled
+        var pad = async_load[? "pad_index"];       // Get the pad index
+        if (p1HasController == pad)
+        {
+            p1HasController = 0;
+        }
+        else if (p2HasController == pad)
+        {
+            p2HasController = 0;
+        }
+        break;
 }
 </string>
           </argument>
@@ -1388,14 +1411,14 @@ if (global.state==states.equipScreen)
 
     draw_set_color(c_black);
     draw_rectangle(-32,-32,500,500,false);
-    draw_background(weaponSelect,0,0);
+    draw_background(bkgWeaponSelect,0,0);
     draw_enable_alphablend(true);
     
     //Player 1
     if (equipChangeTimer%5==0)
     {
-    equipTypeBlinkShow = !equipTypeBlinkShow;
-    equipShieldBlinkShow = !equipShieldBlinkShow;
+        equipTypeBlinkShow = !equipTypeBlinkShow;
+        equipShieldBlinkShow = !equipShieldBlinkShow;
     }
     
     if (global.tick%90==0)
@@ -1445,12 +1468,6 @@ if (global.state==states.equipScreen)
         draw_rectangle(152+(equipShieldPos*48),190,152+(equipShieldPos*48),211,false);     //Left
         draw_rectangle(183+(equipShieldPos*48),190,183+(equipShieldPos*48),211,false);     //Right
         draw_rectangle(155+(equipShieldPos*48),215,180+(equipShieldPos*48),215,false);     //Lower
-        }
-        
-        if (global.frModeEnabled &amp;&amp; frModeFlicker)
-        {
-            draw_set_color(c_yellow);
-            draw_text(0,8*28,"Friendly Mode: Auto-Force Field");
         }
         
         if (equipTypePos==p2EquipTypePos &amp;&amp; currPlayers&gt;1)
@@ -1602,18 +1619,18 @@ if !instance_exists(objCamera)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///Handle Intro and set font
+            <string>///Handle game bootup text and set a global (sprite-based) font
 draw_enable_alphablend(false);
 
 if global.tick==5||global.tick==6
 {
-draw_set_color(c_white);
-draw_rectangle(-8,128,290,140,false);
+    draw_set_color(c_white);
+    draw_rectangle(-8,128,290,140,false);
 }
 else if global.tick==8||global.tick==9
 {
-draw_set_color(c_gray);
-draw_rectangle(-8,40,290,42,false);
+    draw_set_color(c_gray);
+    draw_rectangle(-8,40,290,42,false);
 }
 
 draw_set_font(global.font);
@@ -1622,7 +1639,7 @@ if global.tick&lt;=waitTime+10
 {
     draw_set_color(c_white);
     draw_set_alpha(1);
-    draw_text(8*5,8*12,"    Gradius Engine#         v1.4##          by##     mysterypaint#");
+    draw_text(8*5,8*12,"    Gradius Engine#     v1.5 Preview##          by##     mysterypaint#");
 }
 
 //Fade out on top of the text
@@ -1636,13 +1653,13 @@ if global.tick&lt;=15 || (global.tick &gt;waitTime+5 &amp;&amp; global.tick &lt;
 }
 else if (global.tick&gt;15 &amp;&amp; global.tick&lt;=20) || (global.tick&gt;waitTime &amp;&amp; global.tick&lt;=waitTime+5)
 {
-draw_set_alpha(0.4);
-draw_rectangle(-1,16,257,257,false);
+    draw_set_alpha(0.4);
+    draw_rectangle(-1,16,257,257,false);
 }
 else if global.tick&gt;20 &amp;&amp; global.tick&lt;=waitTime
 {
-draw_set_alpha(0);
-draw_rectangle(-1,16,257,257,false);
+    draw_set_alpha(0);
+    draw_rectangle(-1,16,257,257,false);
 }
 </string>
           </argument>

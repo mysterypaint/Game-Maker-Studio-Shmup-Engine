@@ -6,28 +6,23 @@ if currentMenu==1
     {
         //Start
         case 0:
-            //Jump to the equip screen state
-            //objMain's Step Event and Draw Event control the entire state
-            global.state = states.equipScreen;
-            objMain.shieldSelect = 0;
-            objMain.menuProgressedLast = 0;
-            objMain.p2ShieldSelect = 0;
-            objMain.p2MenuProgressedLast = 0;
-            objMain.currPlayers = 1;
-            instance_destroy();
+            //Set a timer in objTitle to start single-player mode
+            if (alarm[0]<=0)
+            {
+                audio_stop_sound(sfxMenuAccept);
+                audio_play_sound(sfxMenuAccept,1,false);
+                alarm[0] = 100;
+            }
             break;
         //Co-Op Mode (2 Players)
         case 1:
-            //Jump to the equip screen state
-            //objMain's Step Event and Draw Event control the entire state
-            global.state = states.equipScreen;
-            objMain.shieldSelect = 0;
-            objMain.menuProgressedLast = 0;
-            objMain.p2ShieldSelect = 0;
-            objMain.p2MenuProgressedLast = 0;
-            objMain.currPlayers = 2;
-            global.playerLives = 5;
-            instance_destroy();
+            //Set a timer in objTitle to start co-op mode
+            if (alarm[1]<=0)
+            {
+                audio_stop_sound(sfxMenuAccept);
+                audio_play_sound(sfxMenuAccept,1,false);
+                alarm[1] = 100;
+            }
             break;
         //Options
         case 2:

@@ -26,27 +26,7 @@
           <argument>
             <kind>1</kind>
             <string>///Determine a target player to look at.
-var player1 = findPlayer(objPlayer1);
-
-if (instance_exists(objPlayer2))
-{
-    var player2 = findPlayer(objPlayer2);
-    
-    switch(irandom(objMain.currPlayers))
-    {
-        default:
-        case 0:
-            target = player1;
-            break;
-        case 1:
-            target = player2;
-            break;
-    }
-}
-else
-{
-    target = player1;
-}
+lookAtPlayer();
 </string>
           </argument>
         </arguments>
@@ -218,12 +198,14 @@ else
             <kind>1</kind>
             <string>///Always look at the player
 
+if (target.dead)
+{
+    lookAtPlayer(); //Attempt to find a new player to look at if our current one is dead
+}
+
 with (target)
 {
-    if (!dead)
-    {
-        other.direction = point_direction(other.x, other.y, x, y);
-    }
+    other.direction = point_direction(other.x, other.y, x, y);
 }
 </string>
           </argument>

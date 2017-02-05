@@ -171,14 +171,7 @@ if (flyingIn&gt;=0)
             }
         }
     }
-        //Account for camera scrolling before we move the player at all
-        //Player and capsule-grabbing hitbox will keep scrolling with the camera even if they're dead
-        
-        if global.state != states.startRoom
-        {
-            x+=objCamera.scrollX;
-            y+=objCamera.scrollY;
-        }
+
     
     if (!dead &amp;&amp; (global.state == states.gameMode || global.state == states.cutscene)) //Check if the player is still alive
     {    
@@ -223,8 +216,8 @@ if (flyingIn&gt;=0)
         }
         halveMovement=1;
         
-        hsp = playerSpeed*movingHoriz/halveMovement;
-        vsp = -(playerSpeed*movingVert/halveMovement);
+        hsp = playerSpeed*movingHoriz/halveMovement * objMain.deltaTime;;
+        vsp = -(playerSpeed*movingVert/halveMovement) * objMain.deltaTime;;
         
         //Kill if the player hits a wall or enemy bullet within the level
         
@@ -298,6 +291,15 @@ else
         movingVert=0;
         movingHoriz=0;
     }
+}
+
+//Account for camera scrolling
+//Player and capsule-grabbing hitbox will keep scrolling with the camera even if they're dead
+
+if global.state != states.startRoom
+{
+    x += objCamera.scrollX * objMain.deltaTime;
+    y += objCamera.scrollY * objMain.deltaTime;
 }
 </string>
           </argument>
@@ -528,11 +530,11 @@ if (flyingIn&gt;=0)
 //The HUD itself is drawn in objCamera's Draw Event
 if (flyingIn&gt;=0)
 {
-    if (objMain.shieldType==0 &amp;&amp; instance_number(objFrontShield)&lt;=0)
+    if (objMain.p2ShieldType==0 &amp;&amp; instance_number(objFrontShield)&lt;=0)
     {
         hasQuestion = false;
     }
-    else if (objMain.shieldType==1 &amp;&amp; HP &lt;= 1)
+    else if (objMain.p2ShieldType==1 &amp;&amp; HP &lt;= 1)
     {
         hasQuestion = false;
     }

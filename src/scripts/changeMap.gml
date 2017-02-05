@@ -17,11 +17,11 @@ if (objMain.switchingMaps == false && objMain.bgmFadeoutMultiplier<=0)
     
         switch(i)
         {
-            case 0: objToFind="objEnemyParent"; break;
-            case 1: objToFind="objBean"; break;
-            case 2: objToFind="objLion"; break;
-            case 3: objToFind="objDee01"; break;
-            case 4: objToFind="objCapsule"; break;
+            case 0: objToFind = "objEnemyParent"; break;
+            case 1: objToFind = "objBean"; break;
+            case 2: objToFind = "objLion"; break;
+            case 3: objToFind = "objDee01"; break;
+            case 4: objToFind = "objCapsule"; break;
             default: break;
         }
         
@@ -32,14 +32,13 @@ if (objMain.switchingMaps == false && objMain.bgmFadeoutMultiplier<=0)
             for (j = 0; j < instance_number(objToFind); j++)
             {
                 thisEnemy = instance_find(objToFind,j);
-                thisEnemy.silentKill=true;
                 //... Delete all enemies that are not on the camera
                 if !(thisEnemy.x >= objCamera.x-64 &&
                     thisEnemy.x <= objCamera.x+64 + objCamera.viewportWidth &&
                     thisEnemy.y >= objCamera.y-64 &&
                     thisEnemy.y <= objCamera.y+64 + objCamera.viewportHeight)
                 {
-                    with (thisEnemy){instance_destroy();}
+                    with (thisEnemy){silentKill = true; instance_destroy();}
                     totalDeleteCount++;
                 }
                 else

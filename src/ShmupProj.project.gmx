@@ -44,10 +44,10 @@
   <NewExtensions/>
   <sounds name="sound">
     <sounds name="bgm">
-      <sound>sound\BGM00</sound>
-      <sound>sound\BGM01</sound>
-      <sound>sound\BGM02</sound>
-      <sound>sound\BGM03</sound>
+      <sound>sound\musBoss1</sound>
+      <sound>sound\musFlight2</sound>
+      <sound>sound\musItemEquip</sound>
+      <sound>sound\musStage1</sound>
     </sounds>
     <sounds name="sfx">
       <sound>sound\itsjoke</sound>
@@ -102,7 +102,7 @@
       <sprite>sprites\sprTwinLaser</sprite>
       <sprite>sprites\sprForceField</sprite>
     </sprites>
-    <sprite>sprites\spr_crosshair</sprite>
+    <sprite>sprites\sprCrosshair</sprite>
     <sprite>sprites\spr16x16</sprite>
     <sprite>sprites\sprCapsule</sprite>
     <sprite>sprites\sprCursor</sprite>
@@ -114,10 +114,10 @@
   </sprites>
   <backgrounds name="background">
     <background>background\tileset0</background>
-    <background>background\sky1</background>
-    <background>background\sky2</background>
-    <background>background\sky3</background>
-    <background>background\weaponSelect</background>
+    <background>background\bkgSky1</background>
+    <background>background\bkgSky2</background>
+    <background>background\bkgSky3</background>
+    <background>background\bkgWeaponSelect</background>
   </backgrounds>
   <paths name="paths"/>
   <scripts name="scripts">
@@ -155,6 +155,7 @@
     <script>scripts\handleGameOver.gml</script>
     <script>scripts\validateWin.gml</script>
     <script>scripts\findPlayer.gml</script>
+    <script>scripts\lookAtPlayer.gml</script>
   </scripts>
   <objects name="objects">
     <objects name="Enemies">

@@ -83,27 +83,7 @@ image_speed = 0.24 * objMain.deltaTime;
           <argument>
             <kind>1</kind>
             <string>///Determine a target player to look at.
-var player1 = findPlayer(objPlayer1);
-
-if (instance_exists(objPlayer2))
-{
-    var player2 = findPlayer(objPlayer2);
-    
-    switch(irandom(objMain.currPlayers))
-    {
-        default:
-        case 1:
-            target = player1;
-            break;
-        case 2:
-            target = player2;
-            break;
-    }
-}
-else
-{
-    target = player1;
-}
+lookAtPlayer();
 </string>
           </argument>
         </arguments>
@@ -163,12 +143,14 @@ if (global.state != states.startRoom &amp;&amp; !objMain.cleaningRoom &amp;&amp;
           <argument>
             <kind>1</kind>
             <string>///Always look at the player
+if (target.dead) //If the player is dead, attempt to look for a different player
+{
+    lookAtPlayer();
+}
+
 with (target)
 {
-    if (!dead)
-    {
-        other.direction = point_direction(other.x, other.y, x, y);
-    }
+    other.direction = point_direction(other.x, other.y, x, y); //Look at our current target
 }
 </string>
           </argument>

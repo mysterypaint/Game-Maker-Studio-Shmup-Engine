@@ -19,7 +19,7 @@ b1.groupID = 1;
 b2.groupID = 1;
 b3.groupID = 1;
 //Finally, give the boss an eye
-var myEye = instance_create(x,y,objBossEye);
+var myEye = instance_create(objCamera.x+objCamera.viewportWidth+64,128,objBossEye);
 myEye.image_index = 2;
 myEye.groupID = 1; //Share a group ID with the barriers (so it can't die unless all the barriers have been destroyed)
 p1.myEye = myEye; //Let the boss shell know this eye is theirs

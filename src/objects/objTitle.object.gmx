@@ -33,11 +33,11 @@ draw_sprite(sprFont, 0, 0, 0);
 draw_sprite(sprCursor, 0, 0, 0);
 draw_sprite(sprTitleLogo, 0, 0, 0);
 draw_sprite(sprStart, 0, 0, 0);
-draw_sprite(sky1, 0, 0, 0);
-draw_sprite(sky2, 0, 0, 0);
-draw_sprite(sky3, 0, 0, 0);
+draw_sprite(bkgSky1, 0, 0, 0);
+draw_sprite(bkgSky2, 0, 0, 0);
+draw_sprite(bkgSky3, 0, 0, 0);
 draw_sprite(sprEquipHighlight, 0, 0, 0);
-draw_sprite(weaponSelect, 0, 0, 0);
+draw_sprite(bkgWeaponSelect, 0, 0, 0);
 </string>
           </argument>
         </arguments>
@@ -114,6 +114,74 @@ prevKeyP2Pause = global.keyP2Pause;
 
 moveYPressed=0;
 holdYTimer=20;
+
+startP1Blink = true;
+startP2Blink = true;
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="2" enumb="1">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Start co-op mode (timer is set in the menuExecute() script)
+//Jump to the equip screen state
+//objMain's Step Event and Draw Event control the entire state
+global.state = states.equipScreen;
+objMain.shieldSelect = 0;
+objMain.menuProgressedLast = 0;
+objMain.p2ShieldSelect = 0;
+objMain.p2MenuProgressedLast = 0;
+objMain.currPlayers = 2;
+global.playerLives = 5;
+instance_destroy();
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="2" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Start one-player mode (timer is set in the menuExecute() script)
+//Jump to the equip screen state
+//objMain's Step Event and Draw Event control the entire state
+global.state = states.equipScreen;
+objMain.shieldSelect = 0;
+objMain.menuProgressedLast = 0;
+objMain.p2ShieldSelect = 0;
+objMain.p2MenuProgressedLast = 0;
+objMain.currPlayers = 1;
+instance_destroy();
 </string>
           </argument>
         </arguments>
@@ -214,6 +282,10 @@ moveX -= max(keyboard_check(ord('A')),keyboard_check(vk_left),0);
 moveX += max(keyboard_check(ord('D')),keyboard_check(vk_right),0);
 moveXPressed -= max(keyboard_check_pressed(ord('A')),keyboard_check_pressed(vk_left),0);
 moveXPressed += max(keyboard_check_pressed(ord('D')),keyboard_check_pressed(vk_right),0);
+
+//Prevent all movement if the menuExecute() script has already set the timer to start a 1P or Co-Op game.
+if (alarm[0]&gt;0) {moveX=0; moveY=0; pushConfirm = 0; pushCancel=0;}
+if (alarm[1]&gt;0) {moveX=0; moveY=0; pushConfirm = 0; pushCancel=0;}
 
 if currentMenu!=0 &amp;&amp; currentMenu!=3
 {
@@ -533,14 +605,16 @@ holdYTimer--;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///Draw the title
+            <string>///Draw the title menu
 draw_enable_alphablend(false);
 draw_sprite(sprTitleLogo, 0, x, y);
 draw_enable_alphablend(true);
 
 draw_set_color($ff33cc);
 draw_set_alpha(1);
-//draw_text(0,0,string(mpos));
+
+if (alarm[0]%6==0) {startP1Blink = !startP1Blink;}
+if (alarm[1]%6==0) {startP2Blink = !startP2Blink;}
 
 if pressStartText==false &amp;&amp; currentMenu!=3
 {
@@ -548,10 +622,14 @@ if pressStartText==false &amp;&amp; currentMenu!=3
     
     if currentMenu==1 //Main Menu
     {
-        for (m=0; m &lt; array_length_1d(menu); m++;)
-        {
-        draw_text(x+space,(y+m*space)+64,string(menu[m]));
-        }
+        //Start
+        if (startP1Blink){draw_text(x+space,(y+0*space)+64,string(menu[0]));}
+        //Co-Op Start
+        if (startP2Blink){draw_text(x+space,(y+1*space)+64,string(menu[1]));}
+        //Options
+        draw_text(x+space,(y+2*space)+64,string(menu[2]));
+        //Quit
+        draw_text(x+space,(y+3*space)+64,string(menu[3]));
     }
     if currentMenu==2 //Options Menu
     {
@@ -601,10 +679,11 @@ if pressStartText==false &amp;&amp; currentMenu!=3
         
     }
 
+    //Highlight the current menu position we're hovered over
     draw_set_color($83F52C);
-    if currentMenu==1 draw_text(x+space,(y+mpos*space)+64,string(menu[mpos]));
+    if (currentMenu==1 &amp;&amp; startP1Blink &amp;&amp; startP2Blink) draw_text(x+space,(y+mpos*space)+64,string(menu[mpos]));
     else if currentMenu==2 draw_text(x+space,(y+mpos*space)+64,string(menu2[mpos]));
-        
+    //Draw the finger pointing sprite on the menu
     draw_sprite(sprCursor,0,sineX-14,(y+mpos*space)+64-2);
 }
 else if currentMenu==0

@@ -72,27 +72,7 @@ else{isRed=false;}
           <argument>
             <kind>1</kind>
             <string>///Determine a target player to look at.
-var player1 = findPlayer(objPlayer1);
-
-if (instance_exists(objPlayer2))
-{
-    var player2 = findPlayer(objPlayer2);
-    
-    switch(irandom(objMain.currPlayers))
-    {
-        default:
-        case 1:
-            target = player1;
-            break;
-        case 2:
-            target = player2;
-            break;
-    }
-}
-else
-{
-    target = player1;
-}
+lookAtPlayer();
 </string>
           </argument>
         </arguments>
@@ -151,12 +131,15 @@ if (global.state != states.startRoom &amp;&amp; !objMain.cleaningRoom &amp;&amp;
           <argument>
             <kind>1</kind>
             <string>///Always look at the player
+
+if (target.dead)
+{
+    lookAtPlayer(); //Attempt to find a new player to look at if our current one is dead
+}
+
 with (target)
 {
-    if (!dead)
-    {
-        other.direction = point_direction(other.x, other.y, x, y);
-    }
+    other.direction = point_direction(other.x, other.y, x, y);
 }
 </string>
           </argument>
@@ -242,17 +225,14 @@ image_index = (imgIndex-1);
             <string>///Handle movement
 if (active)
 {
-    if (instance_exists(objPlayer))
+    if (!target.dead)
     {
-        if (!objPlayer.dead)
+        if distance_to_point(target.x, target.y) &gt; 0
         {
-            if distance_to_point(objPlayer.x, objPlayer.y) &gt; 0
-            {
-                move_towards_point(objPlayer.x,objPlayer.y, 1.5*objMain.deltaTime);
-            }
+            move_towards_point(target.x,target.y, 1.5*objMain.deltaTime);
         }
     }
-    
+
     //Shoot bullets at the player, at a random rate
     if objMain.loopCounter&gt;1
     {

@@ -8,6 +8,7 @@ See it in action here: https://github.com/mysterypaint/Game-Maker-Studio-Shmup-E
 This engine features:
   - Dynamic game state system (Opening credits, titlescreen, game mode, pausing, cutscene mode, game over mode, "START" mode [The START window before the player gains control])
   - The standard Gradius arsenal and HUD
+  - Co-Op Mode
   - A fully playable level
   - Game Loop system (increasing difficulty; infinite play)
   - Window resizing hotkeys (1, 2, 3, Alt+Enter, Holding Esc closes game)
@@ -22,7 +23,8 @@ The engine also has many debug features (Press Q to toggle debug mode):
   - R: Set X camera scroll to 0.3
   - T: Increase the player's speed
   - U: Trigger Kon.Code (Unlimited uses)
-  - I: Give the player a Speedup
+  - I: Give Player 1 a Speedup
+  - C: Give Player 2 a Speedup
   - Numpad +/-: Increment/decrement player lives
   - Right/Left-click: Change tile value the mouse is currently hovered over
   - Shift+Right-click: Set tile on top of mouse's value to 0

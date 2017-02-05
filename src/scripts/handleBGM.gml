@@ -10,9 +10,9 @@ var sngStrm = objMain.songStream;
 
 switch(currSng)
 {
-    case BGM00: introLength = 1.311; loopLength = 20.971; songLoops = true; break;
-    case BGM01: introLength = 6.079; loopLength = 83.986; songLoops = true; break;
-    case BGM02: introLength = 1.723; loopLength = 13.263; songLoops = true; break;
+    case musFlight2: introLength = 1.311; loopLength = 20.971; songLoops = true; break;
+    case musStage1: introLength = 6.079; loopLength = 83.986; songLoops = true; break;
+    case musBoss1: introLength = 1.723; loopLength = 13.263; songLoops = true; break;
     case -99: nothing = true; break;
     default: break;
 }
